@@ -1,4 +1,4 @@
-# REPAIR-HERO
+# REPAIR-BUSINESS
 
 *Manage your Repair Business - Repairs, Invoices, Payments & Reports. Multi-User Management, ready for scalability.*
 
@@ -25,7 +25,3 @@ REPAIR-HERO was made with Laravel 7 and tested on PHP-7 and PHP-8 without any is
 
 *Everything was made with standard code keeping in mind that it will be use on different kind of repair business and is ready to be customize, front end is open to be changed easily  and backend is easy to read like another Laravel App*
 
-### LICENSE
-
-Complete **FREE**, resell it, change it, do whatever you want and in the process report some bugs or improvements to make it better. 
-Front-end and images may have diferrent license.
