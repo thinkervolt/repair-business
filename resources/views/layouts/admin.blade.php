@@ -13,7 +13,7 @@
   <meta name="author" content="">
   <link rel="shortcut icon" href="{{asset('vendor/fontawesome-free/favicon.ico')}}">
 
-  <title>{{ config('app.name', 'Laravel') }} - @yield('page')</title>
+  <title>{{ config('app.name', 'REPAIR-BUSINESS') }} - @yield('page')</title>
   
 
   <!-- Custom fonts for this template-->
