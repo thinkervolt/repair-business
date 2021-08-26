@@ -57,7 +57,11 @@
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Logs</h1>
-          </div>
+
+
+
+
+        </div>
 
 
             @if(!$logs->isEmpty())
@@ -68,13 +72,13 @@
                 @foreach($logs as $log)
                     <div class="row">
                         <div class="col-md">
-                            <p class="small text-muted p-0 m-0">{{$log->data ?? '. . .'}}</p>
+                            <p class="small text-muted p-0 m-0">{{$log->data}}</p>
                         </div>
                         <div class="col-md-auto">
-                            <p class="small text-muted p-0 m-0">by {{ $log->user_data->name ?? '. . .'}}</p>
+                            <p class="small text-muted p-0 m-0">by {{ $log->user_data->name}}</p>
                         </div>
                         <div class="col-md-auto">
-                            <p class="small text-muted p-0 m-0">{{ date_format($log->created_at ?? '. . .',"M d, Y h:iA")}}</p>
+                            <p class="small text-muted p-0 m-0">{{ date_format($log->created_at,"M d, Y h:iA")}}</p>
                         </div>
                     </div>
                 @endforeach

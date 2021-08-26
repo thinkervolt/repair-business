@@ -13,7 +13,7 @@
   <meta name="author" content="">
   <link rel="shortcut icon" href="{{asset('vendor/fontawesome-free/favicon.ico')}}">
 
-  <title>{{ config('app.name', 'REPAIR-BUSINESS') }} - @yield('page')</title>
+  <title>{{ config('app.name', 'Laravel') }} - @yield('page')</title>
   
 
   <!-- Custom fonts for this template-->
@@ -123,9 +123,17 @@
       <hr class="sidebar-divider">
 
       <li class="nav-item">
-        <a class="nav-link" href="{{ route('create-report') }}">
-        <i class="far fa-file-alt"></i>
-          <span>Reports</span></a>
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReports" aria-expanded="true" aria-controls="collapseReports">
+            <i class="far fa-file-alt"></i>
+            <span>Reports</span>
+          </a>
+          <div id="collapseReports" class="collapse" aria-labelledby="collapseReports" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+   
+              <a  class="collapse-item" href="{{ route('create-report') }}">Create Report</a>
+           
+              <a class="collapse-item" href="{{ route('create-register-report') }}">Register Report</a>
+            </div>
       </li>
 
       <hr class="sidebar-divider">

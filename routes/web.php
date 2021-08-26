@@ -110,8 +110,12 @@ Route::delete('/setting-invoice/delete/{id}', 'InvoiceController@delete_setting_
 
 /* REPORTS ROUTES */
 Route::get('/create-report', 'ReportController@create_report')->name('create-report');
+Route::get('/create-register-report', 'ReportController@create_register_report')->name('create-register-report');
 Route::post('/get-report', 'ReportController@get_report')->name('get-report');
+Route::post('/get-register-report', 'ReportController@get_register_report')->name('get-register-report');
 Route::get('/print-report/{report_from}/{report_to}/{report_invoices}/{report_repairs}/{report_payment}', 'ReportController@print_report')->name('print-report');
+Route::get('/print-register-report', 'ReportController@print_register_report')->name('print-register-report');
+Route::post('/register-report/insert-data', 'ReportController@register_report_insert')->name('register-report-insert');
 
 /* USERS ROUTES */
 Route::get('/profile', 'UserController@profile')->name('profile');
