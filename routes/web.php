@@ -119,3 +119,19 @@ Route::put('/profile/update-password', 'UserController@update_password')->name('
 Route::get('/users', 'UserController@users')->name('users')->middleware('admin');
 Route::put('/users/update-user/{id}', 'UserController@update_user')->name('update-user')->middleware('admin');
 Route::delete('/users/delete/{id}', 'UserController@delete_user')->name('delete-user')->middleware('admin');
+
+/* INVENTORY ROUTES */
+Route::get('/inventory/category/index', 'InventoryController@inventory_index_category')->name('inventory-index-category');
+Route::post('/inventory/category/create', 'InventoryController@inventory_create_category')->name('inventory-create-category');
+Route::put('/inventory/category/update/{id}', 'InventoryController@inventory_update_category')->name('inventory-update-category');
+Route::delete('/inventory/category/delete/{id}', 'InventoryController@inventory_delete_category')->name('inventory-delete-category');
+
+Route::get('/inventory/transaction/index', 'InventoryController@inventory_index_transaction')->name('inventory-index-transaction');
+Route::post('/inventory/transaction/create', 'InventoryController@inventory_create_transaction')->name('inventory-create-transaction');
+Route::put('/inventory/transaction/update/{id}', 'InventoryController@inventory_update_transaction')->name('inventory-update-transaction');
+Route::delete('/inventory/transaction/delete/{id}', 'InventoryController@inventory_delete_transaction')->name('inventory-delete-transaction');
+
+Route::get('/inventory/product/index', 'InventoryController@inventory_index_product')->name('inventory-index-product');
+Route::post('/inventory/product/create', 'InventoryController@inventory_create_product')->name('inventory-create-product');
+Route::put('/inventory/product/update/{id}', 'InventoryController@inventory_update_product')->name('inventory-update-product');
+Route::delete('/inventory/product/delete/{id}', 'InventoryController@inventory_delete_product')->name('inventory-delete-product');

@@ -106,6 +106,23 @@
       <hr class="sidebar-divider">
 
       <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseInventory" aria-expanded="true" aria-controls="collapseInventory">
+          <i class="fas fa-th"></i>
+          <span>Inventory</span>
+        </a>
+        <div id="collapseInventory" class="collapse" aria-labelledby="collapseInventory" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+ 
+            <a  class="collapse-item" href="{{ route('new-payment') }}">Inventory</a>
+         
+            <a class="collapse-item" href="{{ route('inventory-index-category') }}">Categories</a>
+          </div>
+        </div>
+      </li>
+
+      <hr class="sidebar-divider">
+
+      <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePayments" aria-expanded="true" aria-controls="collapsePayments">
           <i class="fas fa-money-bill-alt"></i>
           <span>Payments</span>
