@@ -23,5 +23,9 @@ REPAIR-HERO was made with Laravel 7 and tested on PHP-7 and PHP-8 without any is
 * Run **composer-install** 
 * Seed Database for **user**  and **configuration table**.
 
+### DATABASE AUTO-BACKUP
+
+If you setup your Task Scheduling with Cron the application will backup everyday the database to /storage/app/database-plan, you can run `php artisan database:plan` to test it. 
+
 *Everything was made with standard code keeping in mind that it will be use on different kind of repair business and is ready to be customize, front end is open to be changed easily  and backend is easy to read like another Laravel App*
 
