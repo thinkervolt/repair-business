@@ -39,7 +39,7 @@ class DataBasePlan extends Command
      */
     public function handle()
     {
-        $database_plan_path = storage_path()."/app/database-plan";
+        $database_plan_path = storage_path()."/app/database-plan/";
 
         if(!Storage::exists($database_plan_path)){
             Storage::makeDirectory($database_plan_path);
