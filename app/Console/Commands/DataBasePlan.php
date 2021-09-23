@@ -39,14 +39,14 @@ class DataBasePlan extends Command
      */
     public function handle()
     {
-        $database_plan_path = storage_path()."/app/database-plan/";
+        $database_plan_path = storage_path()."/app/database-plan";
 
         if(!Storage::exists($database_plan_path)){
             Storage::makeDirectory($database_plan_path);
         }
 
         $filename = "database-plan-" . Carbon::now()->format('Y-m-d') . ".gz";
-        $command = "mysqldump --user=" . env('DB_USERNAME') ." --password=" . env('DB_PASSWORD') . " --host=" . env('DB_HOST') . " " . env('DB_DATABASE') . "  | gzip > " . $database_plan_path . $filename;
+        $command = "mysqldump --user=" . env('DB_USERNAME') ." --password=" . env('DB_PASSWORD') . " --host=" . env('DB_HOST') . " " . env('DB_DATABASE') . "  | gzip > " . $database_plan_path ."/". $filename;
         $returnVar = NULL;
         $output  = NULL;
 
