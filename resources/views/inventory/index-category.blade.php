@@ -1,45 +1,8 @@
 @extends('layouts.admin')
-@section('page') Invoices @endsection
-
-@section('search')
-    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" method="post" action="{{route('search-invoice')}}" >
-    @csrf
-
-    
-        <div class="input-group">
-              <input type="text" class="form-control bg-light border-0 small" id="search"  name="search" value="@if(isset($search)){{$search}}@endif" aria-label="Search" aria-describedby="basic-addon2">
-            <div class="input-group-append">
-                <button class="btn btn-secondary" type="button">
-                  <i class="fas fa-search fa-sm"></i>
-                </button>
-            </div>
-        </div>
-    </form>
+@section('page') Categories @endsection
 
 
-@endsection
 
-@section('mobile-search-buttom')
-    <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fas fa-search fa-fw"></i>
-    </a>
-@endsection
-
-@section('mobile-search')
-  
-
-    <form class="form-inline mr-auto w-100 navbar-search" method="post" action="{{route('search-invoice')}}" >
-    @csrf
-        <div class="input-group">
-            <input type="text" class="form-control bg-light border-0 small" id="search"  name="search" value="@if(isset($search)){{$search}}@endif" aria-label="Search" aria-describedby="basic-addon2">
-                <div class="input-group-append">
-                    <button class="btn btn-secondary" type="button">
-                            <i class="fas fa-search fa-sm"></i>
-                    </button>
-                </div>
-        </div>
-    </form>
-@endsection
 
 @section('page-content') 
 
@@ -56,7 +19,7 @@
           @endif
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Invoices</h1>
+            <h1 class="h3 mb-0 text-gray-800">Inventory - Categories</h1>
            
           </div>
 
@@ -67,58 +30,61 @@
 
           <div class="col">
 
+
+                     <!-- FORM -->
+                     <form action="{{route('inventory-create-category')}}" method="POST">
+                        @csrf
+        
+                            <div class="form-group row m-0">
+                                <label for="name" class="col-sm-2 col-form-label">Name</label>
+                                <div class="col-sm-10">
+                                <input type="text" class="form-control form-control-sm @error('name') is-invalid @enderror" id="name" value="{{old('name')}}" name="name" placeholder="">
+                                @error('name')
+                                    <span class="invalid-feedback mb-1" role="alert">
+                                    {{ $message }}
+                                    </span>
+                                @enderror
+                                </div>
+                            </div>
+        
+                            <div class="form-group row m-0">
+                                <div class="col-sm-2"> </div>
+                                <div class="col-sm-10">
+                                    <button type="submit" class="btn btn-block btn-primary mt-3 mb-2 btn-sm"><i class="fa fa-save"></i> Create</button>
+                                </div>
+                            </div>
+                        </form>
+                    <!-- END FORM -->
+
                 <!-- INDEX -->
 
-@if(!$invoices->isEmpty())
+@if(!$inventory_categories->isEmpty())
     <div class="table-responsive">
 
         <table class="table table-sm mt-3 table-hover ">
             <thead>
             <tr>
                 <th  scope="col">ID</th>
-                <th  scope="col">CUSTOMER</th>
-                <th  scope="col">DESCRIPTION</th>
-                <th  scope="col">STATUS</th>
-                <th  scope="col">BALANCE</th>
+                <th  scope="col">NAME</th>
                 <th  scope="col"></th>
                 <th  scope="col"></th>
             </tr>
             </thead>
             <tbody>
 
-            @foreach($invoices as $invoice)
+            @foreach($inventory_categories as $inventory_category)
                     <tr>
-                    <td><p class="m-0 p-0">{{$invoice->id}}</p></td>
-                    <td>
-                        
-                        <p class="m-0 p-0">{{$invoice->customer_name}}</p>
-                        <p class="m-0 p-0">{{preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $invoice->customer_phone)}}</p>
-                        <p class="m-0 p-0">{{$invoice->customer_email}}</p>
-                        <p class="m-0 p-0">{{$invoice->customer_company}}</p>
-                    </td>
-                    <td>
-                        @foreach($invoice->items as $item)
-                            <p class="m-0 p-0">{{$item->name}} - {{$item->description}}</p>
-                        @endforeach
-                    </td>
-                    <td>
-                        @if(isset($invoice->status)) <p class="font-weight-bold text-uppercase m-0 p-0 text-{{$invoice->status_data->color}}" >{{$invoice->status_data->name}}</p> @endif
-                    </td>
-                    <td>
-                    <p class="@if($invoice->balance < 0) text-success @endif @if($invoice->balance > 0) text-danger @endif"> $ {{number_format((float)$invoice->balance, 2, '.', ',')}} </p>
-                    </td>
-                    <td>
-                    {{ date_format($invoice->created_at,"M d, Y")}}
-                    </td>
-                 
-                    <td ><a class="btn btn-primary btn-block btn-sm" href="{{route('view-invoice',$invoice)}}"><i class="fas fa-binoculars"></i> View</a></td>
+                    <td><p class="m-0 p-0">{{$inventory_category->id}}</p></td>
+                    <td><input type="text" class="form-control form-control-sm" value= "{{$inventory_category->name}}"></td>
+                    <td ><a class="btn btn-warning btn-block btn-sm" href="{{route('view-invoice',$inventory_category)}}"><i class="fas fa-edit"></i> Update</a></td>
+                    <td ><a class="btn btn-danger btn-block btn-sm" href="{{route('view-invoice',$inventory_category)}}"><i class="fas fa-trash"></i> Delete</a></td>
                     </tr>
             
             @endforeach
 
             </tbody>
         </table>
-        {{ $invoices->links() }}
+        {{ $inventory_categories->links() }}
     </div>
 @else
 
