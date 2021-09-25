@@ -113,7 +113,8 @@
         <div id="collapseInventory" class="collapse" aria-labelledby="collapseInventory" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
  
-            <a  class="collapse-item" href="{{ route('new-payment') }}">Inventory</a>
+            <a  class="collapse-item" href="{{ route('inventory-index-product') }}">Products</a>
+            <a  class="collapse-item" href="{{ route('inventory-index-product') }}">Transactions</a>
          
             <a class="collapse-item" href="{{ route('inventory-index-category') }}">Categories</a>
           </div>

@@ -132,6 +132,7 @@ Route::put('/inventory/transaction/update/{id}', 'InventoryController@inventory_
 Route::delete('/inventory/transaction/delete/{id}', 'InventoryController@inventory_delete_transaction')->name('inventory-delete-transaction');
 
 Route::get('/inventory/product/index', 'InventoryController@inventory_index_product')->name('inventory-index-product');
+Route::get('/inventory/product/view/{id}', 'InventoryController@inventory_view_product')->name('inventory-view-product');
 Route::post('/inventory/product/create', 'InventoryController@inventory_create_product')->name('inventory-create-product');
 Route::put('/inventory/product/update/{id}', 'InventoryController@inventory_update_product')->name('inventory-update-product');
 Route::delete('/inventory/product/delete/{id}', 'InventoryController@inventory_delete_product')->name('inventory-delete-product');

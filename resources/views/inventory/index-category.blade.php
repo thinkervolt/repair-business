@@ -74,12 +74,23 @@
 
             @foreach($inventory_categories as $inventory_category)
                     <tr>
+                    <form action="{{route('inventory-update-category',$inventory_category)}}" method="POST">
+                        @csrf
+                        @method('PUT')
                     <td><p class="m-0 p-0">{{$inventory_category->id}}</p></td>
-                    <td><input type="text" class="form-control form-control-sm" value= "{{$inventory_category->name}}"></td>
-                    <td ><a class="btn btn-warning btn-block btn-sm" href="{{route('view-invoice',$inventory_category)}}"><i class="fas fa-edit"></i> Update</a></td>
-                    <td ><a class="btn btn-danger btn-block btn-sm" href="{{route('view-invoice',$inventory_category)}}"><i class="fas fa-trash"></i> Delete</a></td>
+                    <td><input type="text" name="name" class="form-control form-control-sm" value= "{{$inventory_category->name}}"></td>
+                    <td ><button type="submit"  class="btn btn-warning btn-block btn-sm"><i class="fas fa-edit"></i> Update</button></td>
+                    </form>
+                    <td >
+                        <form action="{{route('inventory-delete-category',$inventory_category)}}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            
+                            <button type="submit" class="btn btn-danger btn-block btn-sm" ><i class="fas fa-trash"></i> Delete</button>
+                        </form>
+                    </td>
+
                     </tr>
-            
             @endforeach
 
             </tbody>
