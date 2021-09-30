@@ -103,7 +103,7 @@ class InventoryController extends Controller
         $request->validate([
             'category' => 'required|numeric',
             'name' => 'required|min:2|max:50',
-            'barcode' => 'nullable|numeric|required|unique:inventory_products,barcode',
+            'barcode' => 'nullable|numeric|unique:inventory_products,barcode',
             'purchase_price' => 'required|numeric|between:-99999.99,99999.99',
             'selling_price' => 'required|numeric|between:-99999.99,99999.99',
             'quantity' => 'required|numeric|between:1,99999',
@@ -167,7 +167,7 @@ class InventoryController extends Controller
         $request->validate([
             'category' => 'required|numeric',
             'name' => 'required|min:2|max:50',
-            'barcode' => 'nullable|numeric|required|unique:inventory_products,barcode,'.$inventory_product->id,
+            'barcode' => 'nullable|numeric|unique:inventory_products,barcode,'.$inventory_product->id,
             'min_stock' => 'nullable|numeric|between:0,99999',
             'max_stock' => 'nullable|numeric|between:0,99999',
             'email_alert' => 'required|alpha|min:2|max:3',

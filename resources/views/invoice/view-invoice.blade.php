@@ -16,7 +16,7 @@
               </div>
           @endif
 
-          <div id="invoice-alert" class="alert alert-danger alert-dismissible fade d-none">
+          <div id="invoice-alert" class="alert  alert-dismissible fade d-none">
             <li id="invoice-alert-message"></li>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>

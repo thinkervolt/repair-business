@@ -47,17 +47,21 @@
                   if(response.response == 'barcode-not-found'){
                     $("#invoice-alert-message").text('Product not found, scan again or check your Inventory');
                     $('#invoice-alert').removeClass('d-none');
-                    $('#invoice-alert').addClass('show');
+                    $('#invoice-alert').addClass('show alert-danger');
                   }
 
                   if(response.response == 'product-out-stock'){
 
                     $("#invoice-alert-message").text('Product not Available, out of Stock');
                     $('#invoice-alert').removeClass('d-none');
-                    $('#invoice-alert').addClass('show');
+                    $('#invoice-alert').addClass('show alert-danger');
                   }
 
                   if(response.response == 'new-transaction-created'){
+                    
+                    $("#invoice-alert-message").text('Product has been Added');
+                    $('#invoice-alert').removeClass('d-none');
+                    $('#invoice-alert').addClass('show alert-success');
                     document.location.reload(true);
                   }
 
