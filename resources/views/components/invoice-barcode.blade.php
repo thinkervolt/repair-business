@@ -45,15 +45,16 @@
 
                  
                   if(response.response == 'barcode-not-found'){
-                    $("#modal-title").text('PRODUCT NOT FOUND');
-                    $("#modal-message").text('Product not found, scan again or check your Inventory');
-                    $('#modal').modal('show');
+                    $("#invoice-alert-message").text('Product not found, scan again or check your Inventory');
+                    $('#invoice-alert').removeClass('d-none');
+                    $('#invoice-alert').addClass('show');
                   }
 
                   if(response.response == 'product-out-stock'){
-                    $("#modal-title").text('PRODUCT OUT STOCK');
-                    $("#modal-message").text('Product not Available, out of Stock');
-                    $('#modal').modal('show');
+
+                    $("#invoice-alert-message").text('Product not Available, out of Stock');
+                    $('#invoice-alert').removeClass('d-none');
+                    $('#invoice-alert').addClass('show');
                   }
 
                   if(response.response == 'new-transaction-created'){
@@ -72,23 +73,3 @@
 
 </script>
 
-
-<div class="modal" tabindex="-1" role="dialog" id="modal">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          
-          <h5 class="modal-title text-danger" id="modal-title"></h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p id="modal-message"></p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>

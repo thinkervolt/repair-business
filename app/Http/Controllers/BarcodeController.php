@@ -78,10 +78,7 @@ class BarcodeController extends Controller
             $response = 'barcode-not-found';
         }
 
-        $transactions = App\InventoryTransaction::where('invoice_id',$invoice->id)->get();
-  
-  
-        return compact('response','transactions');
+        return compact('response');
 
     }
 }

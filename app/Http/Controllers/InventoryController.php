@@ -86,7 +86,7 @@ class InventoryController extends Controller
         $category_search = App\InventoryCategory::select('id')->where('name', 'LIKE', '%' . $request->search . '%');
 
         $search = App\InventoryProduct::select('id')->where('name', 'LIKE', '%' . $request->search . '%')
-        ->orwhere('barcode', 'LIKE', '%' . $request->search . '%')
+        ->orwhere('barcode', 'LIKE', '%' . preg_replace("/[^0-9]/", "", $request->search ) . '%')
         ->orwherein('category_id',$category_search);
 
         $inventory_products = App\InventoryProduct::whereIn('id',$search)->orderBy('created_at','DESC')->paginate(25); 
@@ -103,7 +103,7 @@ class InventoryController extends Controller
         $request->validate([
             'category' => 'required|numeric',
             'name' => 'required|min:2|max:50',
-            'barcode' => 'required',
+            'barcode' => 'numeric|required|unique:inventory_products,barcode',
             'purchase_price' => 'required|numeric|between:-99999.99,99999.99',
             'selling_price' => 'required|numeric|between:-99999.99,99999.99',
             'quantity' => 'required|numeric|between:1,99999',
@@ -116,7 +116,7 @@ class InventoryController extends Controller
         $inventory_product = new App\InventoryProduct();
         $inventory_product->name = $request->name;
         $inventory_product->category_id = $request->category;
-        $inventory_product->barcode = $request->barcode;
+        $inventory_product->barcode = preg_replace("/[^0-9]/", "", $request->barcode);
         $inventory_product->min_stock = $request->min_stock;
         $inventory_product->max_stock = $request->max_stock;
         $inventory_product->email_alert = $request->email_alert;
@@ -162,10 +162,12 @@ class InventoryController extends Controller
 
     public function inventory_update_product(request $request, $id)
     {
+        $inventory_product = App\InventoryProduct::findOrFail($id);
+
         $request->validate([
             'category' => 'required|numeric',
             'name' => 'required|min:2|max:50',
-            'barcode' => 'required',
+            'barcode' => 'numeric|required|unique:inventory_products,barcode,'.$inventory_product->id,
             'min_stock' => 'nullable|numeric|between:0,99999',
             'max_stock' => 'nullable|numeric|between:0,99999',
             'email_alert' => 'required|alpha|min:2|max:3',
@@ -173,10 +175,10 @@ class InventoryController extends Controller
             'selling_price' => 'required|numeric|between:-99999.99,99999.99',
         ]);
 
-        $inventory_product = App\InventoryProduct::findOrFail($id);
+      
         $inventory_product->name = $request->name;
         $inventory_product->category_id = $request->category;
-        $inventory_product->barcode = $request->barcode;
+        $inventory_product->barcode = preg_replace("/[^0-9]/", "", $request->barcode);
         $inventory_product->min_stock = $request->min_stock;
         $inventory_product->max_stock = $request->max_stock;
         $inventory_product->email_alert = $request->email_alert;
@@ -332,52 +334,58 @@ class InventoryController extends Controller
         $product = App\InventoryProduct::findOrFail($product_id);
         $invoice = App\Invoice::findOrFail($invoice_id);
 
-        $check_transaction = App\InventoryTransaction::where('product_id',$product_id)->where('invoice_id',$invoice_id)->first();
+        $purchases = App\InventoryTransaction::where('product_id',$product->id)->where('transaction','purchase')->sum('quantity');
+        $sells = App\InventoryTransaction::where('product_id',$product->id)->where('transaction','sell')->sum('quantity');
+        $stock = $purchases - $sells;
 
-        if($check_transaction){
+        if($stock > 0 ){
 
-            $inventory_transaction = $check_transaction;
+            $check_transaction = App\InventoryTransaction::where('product_id',$product_id)->where('invoice_id',$invoice_id)->first();
 
-            $inventory_transaction->quantity = $inventory_transaction ->quantity + 1;
+            if($check_transaction){
+                $inventory_transaction = $check_transaction;
+                $inventory_transaction->quantity = $inventory_transaction ->quantity + 1;
+                $inventory_transaction->save();
+            }else{
+
+            $inventory_transaction = new App\InventoryTransaction();
+            $inventory_transaction->product_id = $product_id;
+            $inventory_transaction->invoice_id = $invoice_id;
+            $inventory_transaction->transaction = 'sell';
+            $inventory_transaction->selling_price = $product->selling_price;
+            $inventory_transaction->quantity = 1;
             $inventory_transaction->save();
 
+            }
 
+            $transactions_sum = 0;
+            $transactions = App\InventoryTransaction::where('invoice_id',$invoice_id)->get();
+            foreach($transactions as $transaction){
+                $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
+            }
+
+            $items_sum = App\InvoiceItem::where('invoice',$invoice_id)->sum('total') + $transactions_sum;
+            $payments_sum = App\Payment::where('invoice',$invoice_id)->sum('amount');
+
+            $invoice->subtotal = (float)$items_sum;
+            $invoice->tax = (float)($items_sum / 100) *  (float)$invoice->tax_porcentage;
+            $invoice->total = (float)$items_sum + (($items_sum / 100) *  (float)$invoice->tax_porcentage);
+            $invoice->balance = ((float)$items_sum + (($items_sum / 100) *  (float)$invoice->tax_porcentage)) - $payments_sum;
+            $invoice->save();
+    
+            $log = new App\Log; 
+            $log->table = 'inventory_transactions';
+            $log->data = 'Inventory Transaction has been Created';
+            $log->ref = $inventory_transaction->id;
+            $log->user = Auth::user()->id;
+            $log->save();
+
+            return redirect()->route('view-invoice',$invoice_id)->with('error','Transactions has been Created.')->with('alert', 'alert-success');
         }else{
 
-        $inventory_transaction = new App\InventoryTransaction();
-        $inventory_transaction->product_id = $product_id;
-        $inventory_transaction->invoice_id = $invoice_id;
-        $inventory_transaction->transaction = 'sell';
-        $inventory_transaction->selling_price = $product->selling_price;
-        $inventory_transaction->quantity = 1;
-        $inventory_transaction->save();
+            return redirect()->route('view-invoice',$invoice_id)->with('error','Product is out of Stock')->with('alert', 'alert-danger');
 
         }
-
-        $transactions_sum = 0;
-        $transactions = App\InventoryTransaction::where('invoice_id',$invoice_id)->get();
-        foreach($transactions as $transaction){
-            $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
-        }
-
-        $items_sum = App\InvoiceItem::where('invoice',$invoice_id)->sum('total') + $transactions_sum;
-        $payments_sum = App\Payment::where('invoice',$invoice_id)->sum('amount');
-
-        $invoice->subtotal = (float)$items_sum;
-        $invoice->tax = (float)($items_sum / 100) *  (float)$invoice->tax_porcentage;
-        $invoice->total = (float)$items_sum + (($items_sum / 100) *  (float)$invoice->tax_porcentage);
-        $invoice->balance = ((float)$items_sum + (($items_sum / 100) *  (float)$invoice->tax_porcentage)) - $payments_sum;
-        $invoice->save();
-   
-        $log = new App\Log; 
-        $log->table = 'inventory_transactions';
-        $log->data = 'Inventory Transaction has been Created';
-        $log->ref = $inventory_transaction->id;
-        $log->user = Auth::user()->id;
-        $log->save();
-
-        return redirect()->route('view-invoice',$invoice_id)->with('error','Transactions has been Created.')->with('alert', 'alert-success');
-
 
         
     }
