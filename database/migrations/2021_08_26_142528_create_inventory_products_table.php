@@ -17,7 +17,9 @@ class CreateInventoryProductsTable extends Migration
             $table->id();
             $table->string('name');
             $table->integer('category_id');
-            $table->string('barcode');
+            $table->string('barcode'); 
+            $table->string('supplier')->nullable();
+            $table->decimal('selling_price',  9, 2);
             $table->integer('min_stock')->nullable();
             $table->integer('max_stock')->nullable();
             $table->string('email_alert')->nullable();

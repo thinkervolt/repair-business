@@ -107,6 +107,36 @@
     
   @endif
 
+  
+  @if(!$transactions->isEmpty())
+ 
+    @foreach($transactions as $transaction)
+    <tr>
+
+      <td class="center col-auto">{{$item_count = $item_count + 1}}</td>
+      <td class="left strong">
+        {{$transaction->product->barcode}}
+      </td>
+      <td class="left">
+      <p >{{$transaction->product->name}}</p>
+
+      </td>
+
+      <td class="right">
+      {{$transaction->selling_price}}
+      </td>
+        <td class="center">
+        
+        {{$transaction->quantity}}
+        </td>
+      <td class="right">$ {{number_format((float)($transaction->selling_price * $transaction->quantity), 2, '.', ',')}}
+      
+      </td>
+    </tr>
+    @endforeach
+    
+  @endif
+
 
 
 </tbody>

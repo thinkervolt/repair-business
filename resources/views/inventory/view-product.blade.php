@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('page') View Product @endsection
+@section('page') Product @endsection
 
 
 
@@ -35,8 +35,9 @@
 
 
                      <!-- FORM -->
-                     <form action="{{route('inventory-create-product')}}" method="POST">
+                     <form action="{{route('inventory-update-product',$product)}}" method="POST">
                         @csrf
+                        @method('PUT')
 
                         <div class="form-group row m-0">
                             <label for="category" class="col-sm-2 col-form-label">Category</label>
@@ -75,6 +76,29 @@
                                 <div class="col-sm-10">
                                 <input type="text" class="form-control form-control-sm @error('barcode') is-invalid @enderror" id="barcode" value="{{ $product->barcode}}" name="barcode" placeholder="">
                                 @error('barcode')
+                                    <span class="invalid-feedback mb-1" role="alert">
+                                    {{ $message }}
+                                    </span>
+                                @enderror
+                                </div>
+                            </div> 
+                            <div class="form-group row m-0">
+                                <label for="selling_price" class="col-sm-2 col-form-label">Selling Price</label>
+                                <div class="col-sm-10">
+                                <input type="text" class="form-control form-control-sm @error('selling_price') is-invalid @enderror" id="selling_price" value="{{$product->selling_price}}" name="selling_price" placeholder="">
+                                @error('selling_price')
+                                    <span class="invalid-feedback mb-1" role="alert">
+                                    {{ $message }}
+                                    </span>
+                                @enderror
+                                </div>
+                            </div>
+
+                            <div class="form-group row m-0">
+                                <label for="supplier" class="col-sm-2 col-form-label">Supplier</label>
+                                <div class="col-sm-10">
+                                <input type="text" class="form-control form-control-sm @error('supplier') is-invalid @enderror" id="supplier" value="{{$product->supplier}}" name="supplier" placeholder="">
+                                @error('supplier')
                                     <span class="invalid-feedback mb-1" role="alert">
                                     {{ $message }}
                                     </span>
@@ -129,6 +153,24 @@
                             </div>
                         </form>
 
+                        <form action="{{route('inventory-delete-product',$product)}}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <div class="form-group row m-0 p-0">
+                                <div class="col-sm-2"> </div>
+                                <div class="col-sm-10">
+                                    <button type="submit" class="btn btn-block btn-danger mb-2 btn-sm"><i class="fa fa-trash"></i> Delete</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="form-group row m-0 p-0">
+                            <div class="col-sm-2"> </div>
+                            <div class="col-sm-10">
+                                <a href="{{route('inventory-restock-transaction',$product)}}" class="btn btn-block btn-primary mb-2 btn-sm"><i class="fas fa-truck-loading"></i> Restock</a>
+                            </div>
+                        </div>
+
                         <p class="d-block d-sm-inline m-0 small">id: {{$product->id}}</p>
                         <p class="d-block d-sm-inline m-0 small">created_at: {{$product->created_at}}</p>
                         <p class="d-block d-sm-inline m-0 small">updated_at: {{$product->updated_at}}</p>
@@ -144,7 +186,6 @@
         <tr>
             <th  scope="col">ID</th>
             <th  scope="col">TRANSACTION</th>
-            <th  scope="col">SUPPLIER</th>
             <th  scope="col">PURCHASE PRICE</th>
             <th  scope="col">SELLING PRICE</th>
             <th  scope="col">QUANTITY</th>
@@ -159,12 +200,11 @@
                 
                 <td>{{$transaction->id}}</td>
                 <td class="text-uppercase">{{$transaction->transaction}}</td>
-                <td>{{$transaction->supplier}}</td>
                 <td>{{$transaction->purchase_price}}</td>
                 <td>{{$transaction->selling_price}}</td>
                 <td><p class="m-0 p-0 @if($transaction->transaction == 'purchase') text-success @endif @if($transaction->transaction == 'sell') text-danger @endif">@if($transaction->transaction == 'sell') - @endif @if($transaction->transaction == 'purchase') + @endif{{$transaction->quantity}}</p></td>
                 <td>{{ date_format($transaction->created_at,"M d, Y")}}</td>
-                <td></td>
+                <td><a class="btn btn-primary btn-block btn-sm" href="{{route('inventory-view-transaction',$transaction)}}"><i class="fas fa-binoculars"></i> View</a></td>
 
                 </tr>
         @endforeach

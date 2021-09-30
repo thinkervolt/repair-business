@@ -94,6 +94,9 @@
           <a href="{{route('index-repair',[$task = 'invoice',$invoice])}}" class="btn btn-primary btn-sm btn-block"><i class="fas fa-plus"></i>  Repair</a>
         </div>
         <div class="col-sm">
+          <a href="{{route('inventory-index-product',[$task = 'invoice',$invoice])}}" class="btn btn-primary btn-sm btn-block"><i class="fas fa-plus"></i>  Product</a>
+        </div>
+        <div class="col-sm">
 
      
           <a  href="{{route('print-invoice',[$invoice,'print'])}}" class="btn btn-primary btn-sm btn-block mb-1" target="popup" onclick="window.open('{{route('print-invoice',[$invoice,'print'])}}','popup','width=600,height=600'); return false;">
@@ -173,6 +176,51 @@
     @endforeach
     
   @endif
+
+
+  <!-- INVENTORY ITEMS -->
+
+
+
+  @if(!$transactions->isEmpty())
+  @foreach($transactions as $transaction)
+  <tr>
+    <td>
+    <form method="POST" action="{{route('inventory-cancel-transaction',[$invoice,$transaction,])}}">
+    @method('delete')
+    @csrf
+    <button class="btn btn-danger btn-block btn-sm mb-1"><i class="fas fa-trash"></i> Delete</button>
+
+    </form>
+
+    </td>
+    <td class="center col-auto">{{$item_count = $item_count + 1}}</td>
+    <td class="left strong">
+      <input type="text" class="form-control form-control-sm" disabled value="{{$transaction->product->barcode}}">
+
+    </td>
+    <td class="left">
+      <input type="text" class="form-control form-control-sm" disabled value="{{$transaction->product->name}}">
+  
+    </td>
+
+    <td class="right">
+    <input type="text" class="form-control form-control-sm" disabled value="{{$transaction->selling_price}}">
+    </td>
+      <td class="center">
+      
+        <input type="text" class="form-control form-control-sm" disabled value="{{$transaction->quantity}}">
+      </td>
+    <td class="right">$ {{number_format((float)($transaction->selling_price * $transaction->quantity ), 2, '.', ',')}}
+    
+    </td>
+    
+  </tr>
+  @endforeach
+  
+@endif
+
+<!-- END INVENTORY ITEMS -->
 
   <!-- NEW ITEM -->
 

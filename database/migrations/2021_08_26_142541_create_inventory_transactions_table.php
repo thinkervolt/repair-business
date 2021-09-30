@@ -17,10 +17,9 @@ class CreateInventoryTransactionsTable extends Migration
             $table->id();
             $table->string('transaction');
             $table->integer('product_id');
-            $table->decimal('purchase_price', 9, 2)->nullable();
+            $table->decimal('ammount', 9, 2)->nullable();
             $table->decimal('selling_price',  9, 2)->nullable();
             $table->integer('quantity');
-            $table->string('supplier')->nullable();
             $table->integer('invoice_id')->nullable();
             $table->timestamps();
         });

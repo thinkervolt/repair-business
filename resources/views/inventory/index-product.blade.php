@@ -1,7 +1,45 @@
 @extends('layouts.admin')
 @section('page') Products @endsection
 
+@section('search')
+    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" method="post" action="{{route('inventory-search-product',[$task,$id])}}" >
+    @csrf
 
+    
+        <div class="input-group">
+              <input type="text" class="form-control bg-light border-0 small" id="search"  name="search" value="@if(isset($search)){{$search}}@endif" aria-label="Search" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-secondary" type="button">
+                  <i class="fas fa-search fa-sm"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+
+
+@endsection
+
+@section('mobile-search-buttom')
+    <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-search fa-fw"></i>
+    </a>
+@endsection
+
+@section('mobile-search')
+  
+
+    <form class="form-inline mr-auto w-100 navbar-search" method="post" action="{{route('inventory-search-product',[$task,$id])}}" >
+    @csrf
+        <div class="input-group">
+            <input type="text" class="form-control bg-light border-0 small" id="search"  name="search" value="@if(isset($search)){{$search}}@endif" aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-secondary" type="button">
+                            <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+        </div>
+    </form>
+@endsection
 
 
 @section('page-content') 
@@ -29,6 +67,8 @@
           <div class="row">
 
           <div class="col">
+
+            @if(!isset($search))
 
 
                      <!-- FORM -->
@@ -178,6 +218,8 @@
                         </form>
                     <!-- END FORM -->
 
+                    @endif
+
                 <!-- INDEX -->
 
 @if(!$inventory_products->isEmpty())
@@ -188,8 +230,12 @@
             <tr>
                 <th  scope="col">BARCODE</th>
                 <th  scope="col">NAME</th>
+                <th  scope="col">CATEGORY</th>
                 <th  scope="col">STOCK</th>
                 <th  scope="col"></th>
+                @if($task == 'invoice')
+                <th  scope="col"></th>
+                @endif
             </tr>
             </thead>
             <tbody>
@@ -199,11 +245,25 @@
                     
                     <td>{{$product->barcode}}</td>
                     <td>{{$product->name}}</td>
+                    <td>{{$product->category->name}}</td>
                     <td>{{ ($product->transactions->where('transaction', 'purchase')->sum('quantity')) - ($product->transactions->where('transaction', 'sell')->sum('quantity')) }}</td>
 
                     <td class="text-right">
-                        <a href="{{route('inventory-view-product',$product)}}" class="btn btn-primary"><i class="fas fa-eye"></i> View</a>
+                        <a href="{{route('inventory-view-product',$product)}}" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> View</a>
                     </td>
+                    @if($task == 'invoice')
+                    <td class="text-right">
+                       
+                        <form  method="POST" action="{{route('inventory-sell-transaction',[$id,$product])}}">
+                        @csrf
+                        @method('POST')
+
+                        <button type="submit" class="btn btn-primary  btn-sm" ><i class="fas fa-plus"></i> Add to Invoice</a>
+                        </form>
+
+                   
+                    </td>
+                    @endif
 
                     </tr>
             @endforeach

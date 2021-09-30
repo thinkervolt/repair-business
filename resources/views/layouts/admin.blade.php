@@ -114,7 +114,7 @@
           <div class="bg-white py-2 collapse-inner rounded">
  
             <a  class="collapse-item" href="{{ route('inventory-index-product') }}">Products</a>
-            <a  class="collapse-item" href="{{ route('inventory-index-product') }}">Transactions</a>
+            <a  class="collapse-item" href="{{ route('inventory-index-transaction') }}">Transactions</a>
          
             <a class="collapse-item" href="{{ route('inventory-index-category') }}">Categories</a>
           </div>
@@ -256,7 +256,7 @@
               </div>
             </li>
 
-      
+        
 
             <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -306,9 +306,8 @@
         </nav>
         <!-- End of Topbar -->
 
-
-
         @yield('page-content')
+      
 
       </div>
       <!-- End of Main Content -->
@@ -334,8 +333,6 @@
     <i class="fas fa-angle-up"></i>
   </a>
 
-
-
   <!-- Bootstrap core JavaScript-->
   <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
   <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -345,6 +342,11 @@
 
   <!-- Custom scripts for all pages-->
   <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+
+
+  @if(Route::current()->getName() == 'view-invoice')
+    @include('components.invoice-barcode') 
+  @endif
 
 
 </body>
