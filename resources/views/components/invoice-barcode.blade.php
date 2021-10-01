@@ -41,9 +41,8 @@
               contentType: "application/x-www-form-urlencoded",
               success: function(response, textStatus, jqXHR) {
                
-                  console.log(response);
-
-                 
+                  //console.log(response);
+                  
                   if(response.response == 'barcode-not-found'){
                     $("#invoice-alert-message").text('Product not found, scan again or check your Inventory');
                     $('#invoice-alert').removeClass('d-none');
