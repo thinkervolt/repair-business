@@ -81,4 +81,118 @@ class BarcodeController extends Controller
         return compact('response');
 
     }
+
+    public function repair_barcode(request $request)
+    {
+  
+        $repair = App\Repair::where('id',$request->repair)->first(); 
+        $product = App\InventoryProduct::where('barcode',$request->barcode)->first();
+
+
+        if($product){
+
+            $purchases = App\InventoryTransaction::where('product_id',$product->id)->where('transaction','purchase')->sum('quantity');
+            $sells = App\InventoryTransaction::where('product_id',$product->id)->where('transaction','sell')->sum('quantity');
+            $stock = $purchases - $sells;
+
+            if($stock > 0 ){
+
+                /* SELL TRANSACTION */
+                
+                $check_transaction = App\InventoryTransaction::where('product_id',$product->id)->where('repair_id',$repair->id)->first();
+        
+                if($check_transaction){
+                    $inventory_transaction = $check_transaction;
+                    $inventory_transaction->quantity = $inventory_transaction ->quantity + 1;
+                    $inventory_transaction->save();
+                }else{
+                    $inventory_transaction = new App\InventoryTransaction();
+                    $inventory_transaction->product_id = $product->id;
+                    $inventory_transaction->repair_id = $repair->id;
+                    $inventory_transaction->transaction = 'sell';
+                    $inventory_transaction->selling_price = $product->selling_price;
+                    $inventory_transaction->quantity = 1;
+                    $inventory_transaction->save();
+                }
+        
+                $log = new App\Log; 
+                $log->table = 'inventory_transactions';
+                $log->data = 'Inventory Transaction has been Created';
+                $log->ref = $inventory_transaction->id;
+                $log->user = Auth::user()->id;
+                $log->save();
+
+                $response = 'new-transaction-created';
+        
+                
+                /* SELL TRANSACTION */
+
+            }else{
+                $response = 'part-out-stock';
+            }
+
+        }else{
+            $response = 'barcode-not-found';
+        }
+
+        return compact('response');
+
+    }
+
+
+    public function barcode(request $request)
+    {
+        $barcode = $request->barcode;
+
+        $product = App\InventoryProduct::where('barcode',$barcode)->first();
+
+        if($product){
+
+            $purchases = App\InventoryTransaction::where('product_id',$product->id)->where('transaction','purchase')->sum('quantity');
+            $sells = App\InventoryTransaction::where('product_id',$product->id)->where('transaction','sell')->sum('quantity');
+            $stock = $purchases - $sells;
+
+            $data_response = $stock;
+            $response = 'product-found';
+            $data = $product;
+
+        }else{
+            if(str_starts_with($barcode, 'INV')){
+                $invoice_id = str_replace('INV', '', $barcode);
+                $invoice = App\Invoice::where('id',$invoice_id)->first();
+
+                if($invoice){
+                    $data = $invoice;
+                    $data_response = null;
+                    $response = 'invoice-found';
+                }else{
+                    $data_response = $barcode;
+                    $response = 'barcode-not-found';
+                    $data = null;
+                }
+            }elseif(str_starts_with($barcode, 'REP')){
+                $repair_id = str_replace('REP', '', $barcode);
+                $repair = App\Invoice::where('id',$repair_id)->first();
+
+                if($repair){
+                    $data = $repair;
+                    $response = 'repair-found';
+                    $data_response = null;
+                }else{
+                    $data_response = $barcode;
+                    $response = 'barcode-not-found';
+                    $data = null;
+                }
+            }else{
+                
+                $data_response = $barcode;
+                $response = 'barcode-not-found';
+                $data = null;
+            }
+        }
+
+        return compact('response','data','data_response');
+
+    }
 }
+

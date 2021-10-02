@@ -21,7 +21,7 @@
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
-        </div>
+          </div>
 
 
 
@@ -195,7 +195,7 @@
   @foreach($transactions as $transaction)
   <tr>
     <td>
-    <form method="POST" action="{{route('inventory-cancel-transaction',[$invoice,$transaction,])}}">
+    <form method="POST" action="{{route('inventory-cancel-transaction',['invoice',$invoice,$transaction,])}}">
     @method('delete')
     @csrf
     <button class="btn btn-danger btn-block btn-sm mb-1"><i class="fas fa-trash"></i> Delete</button>

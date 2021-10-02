@@ -110,7 +110,7 @@
                             <div class="form-group row m-0">
                                 <label for="barcode" class="col-sm-2 col-form-label">Barcode</label>
                                 <div class="col-sm-10">
-                                <input type="number" class="form-control form-control-sm @error('barcode') is-invalid @enderror" id="barcode" value="{{old('barcode')}}" name="barcode" placeholder="">
+                                <input type="text" class="form-control form-control-sm @error('barcode') is-invalid @enderror" id="barcode" value="@if($task == 'create-product') {{$id}} @else {{old('barcode')}} @endif" name="barcode" placeholder="">
                                 @error('barcode')
                                     <span class="invalid-feedback mb-1" role="alert">
                                     {{ $message }}
@@ -236,6 +236,9 @@
                 @if($task == 'invoice')
                 <th  scope="col"></th>
                 @endif
+                @if($task == 'repair')
+                <th  scope="col"></th>
+                @endif
             </tr>
             </thead>
             <tbody>
@@ -254,11 +257,25 @@
                     @if($task == 'invoice')
                     <td class="text-right">
                        
-                        <form  method="POST" action="{{route('inventory-sell-transaction',[$id,$product])}}">
+                        <form  method="POST" action="{{route('inventory-sell-transaction',['invoice',$id,$product])}}">
                         @csrf
                         @method('POST')
 
                         <button type="submit" class="btn btn-primary  btn-sm" ><i class="fas fa-plus"></i> Add to Invoice</a>
+                        </form>
+
+                   
+                    </td>
+                    @endif
+
+                    @if($task == 'repair')
+                    <td class="text-right">
+                       
+                        <form  method="POST" action="{{route('inventory-sell-transaction',['repair',$id,$product])}}">
+                        @csrf
+                        @method('POST')
+
+                        <button type="submit" class="btn btn-primary  btn-sm" ><i class="fas fa-plus"></i> Add to Repair</a>
                         </form>
 
                    

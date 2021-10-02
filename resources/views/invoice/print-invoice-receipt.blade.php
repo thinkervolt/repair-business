@@ -265,7 +265,7 @@ body,html{
 
   <div class="data-block">
     <div class="barcode">
-        @php echo DNS1D::getBarcodeSVG('I'.$invoice->id, 'C39',2,50,'black' ,false); @endphp
+        @php echo DNS1D::getBarcodeSVG('INV'.$invoice->id, 'C39',2,50,'black' ,false); @endphp
     </div>
 </div>
 

@@ -49,6 +49,14 @@
                                 @endif
                             </div>
                         </div>
+                        <div class="form-group row m-0">
+                            <label  class="col-sm-2 col-form-label">Repair</label>
+                            <div class="col-sm-10">
+                                @if(isset($transaction->repair_id))
+                                <a href="{{ route('view-repair',$transaction->repair_id)}}" class="btn btn-link btn-block border btn-sm text-left"> {{$transaction->repair_id}}</a>
+                                @endif
+                            </div>
+                        </div>
 
                         <div class="form-group row m-0">
                             <label for="transaction" class="col-sm-2 col-form-label">Transaction</label>

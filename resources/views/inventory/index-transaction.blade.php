@@ -78,6 +78,7 @@
                 <th  scope="col">DATE</th>
                 <th  scope="col">TRANSACTION</th>
                 <th  scope="col">INVOICE</th>
+                <th  scope="col">REPAIR</th>
                 <th  scope="col">PRODUCT</th>
                 <th  scope="col">QUANTITY</th>
                 <th  scope="col">SUPPLIER</th>
@@ -90,7 +91,8 @@
                     <tr>
                     <td>{{ date_format($transaction->created_at,"M d, Y")}}</td>
                     <td class="text-uppercase">{{$transaction->transaction}}</td>
-                    <td>@if(isset($transaction->invoice)) <a href="{{route('view-invoice',$transaction->invoice)}}" >{{$payment->invoice}}</a> @endif </td>
+                    <td>@if(isset($transaction->invoice_id)) <a href="{{route('view-invoice',$transaction->invoice_id)}}" >{{$transaction->invoice_id}}</a> @endif </td>
+                    <td>@if(isset($transaction->repair_id)) <a href="{{route('view-repair',$transaction->repair_id)}}" >{{$transaction->repair_id}}</a> @endif </td>
                     <td>{{$transaction->product->name}}</td>
                     <td><p class="m-0 p-0 @if($transaction->transaction == 'purchase') text-success @endif @if($transaction->transaction == 'sell') text-danger @endif">@if($transaction->transaction == 'sell') - @endif @if($transaction->transaction == 'purchase') + @endif{{$transaction->quantity}}</p></td>
                     <td>{{$transaction->product->supplier}}</td>

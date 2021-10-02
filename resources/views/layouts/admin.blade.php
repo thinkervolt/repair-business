@@ -346,6 +346,10 @@
 
   @if(Route::current()->getName() == 'view-invoice')
     @include('components.invoice-barcode') 
+  @elseif(Route::current()->getName() == 'view-repair')
+    @include('components.repair-barcode') 
+  @else
+  @include('components.barcode') 
   @endif
 
 

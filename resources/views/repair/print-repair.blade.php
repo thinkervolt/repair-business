@@ -160,7 +160,7 @@ body,html{
 <div class="data-block">
 
 <div class="barcode">
-    @php echo DNS1D::getBarcodeSVG('R'.$repair->id, 'C39',2,50,'black' ,false); @endphp
+    @php echo DNS1D::getBarcodeSVG('REP'.$repair->id, 'C39',2,50,'black' ,false); @endphp
 </div>
 
 

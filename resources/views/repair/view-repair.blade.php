@@ -12,8 +12,16 @@
                   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                   </button>
-              </div>
+              </div> 
           @endif
+
+          <div id="repair-alert" class="alert  alert-dismissible fade d-none">
+            <li id="repair-alert-message"></li>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">View Repair #{{$repair->id}}</h1>
@@ -32,8 +40,8 @@
             </button>
 
             </form>
-
             <a href="{{route('index-customer',[$task = 'repair', $repair])}}" class="btn btn-primary btn-sm"><i class="fas fa-exchange-alt"></i>  Customer</a>
+            <a href="{{route('inventory-index-product',[$task = 'repair',$repair])}}" class="btn btn-primary btn-sm "><i class="fas fa-plus"></i>  Product</a>
             </div>
           </div>
 
@@ -408,6 +416,65 @@
 
 @endif
 
+<hr>
+<h4 class="mt-2">PARTS</h4>  
+@if(!$transactions->isEmpty())
+<div class="table-responsive">
+
+    <table class="table table-sm mt-3 table-hover ">
+        <thead>
+            <tr>
+            <th></th>
+            <th>Item</th>
+            <th>Description</th>
+            <th class="right">Unit Cost</th>
+            <th class="center">Qty</th>
+            <th class="right">Total</th>
+            </tr>
+            </thead>
+  @foreach($transactions as $transaction)
+  <tr>
+    <td>
+    <form method="POST" action="{{route('inventory-cancel-transaction',[$task,$repair,$transaction,])}}">
+    @method('delete')
+    @csrf
+    <button class="btn btn-danger btn-block btn-sm mb-1"><i class="fas fa-trash"></i> Delete</button>
+
+    </form>
+
+    </td>
+    
+    <td class="left strong">
+      <input type="text" class="form-control form-control-sm" disabled value="{{$transaction->product->barcode}}">
+
+    </td>
+    <td class="left">
+      <input type="text" class="form-control form-control-sm" disabled value="{{$transaction->product->name}}">
+  
+    </td>
+
+    <td class="right">
+    <input type="text" class="form-control form-control-sm" disabled value="{{$transaction->selling_price}}">
+    </td>
+      <td class="center">
+      
+        <input type="text" class="form-control form-control-sm" disabled value="{{$transaction->quantity}}">
+      </td>
+    <td class="right">$ {{number_format((float)($transaction->selling_price * $transaction->quantity ), 2, '.', ',')}}
+    
+    </td>
+    
+  </tr>
+
+  @endforeach
+</table>
+</div>
+  @else
+
+  <div class="alert alert-secondary" role="alert">
+  Nothing has been found!
+  </div>
+  @endif
 <hr>
 
 <h4 class="mt-2">INVOICES</h4>                    

@@ -10,7 +10,7 @@ class RepairController extends Controller
 {
           /**
      * Create a new controller instance.
-     *
+     * 
      * @return void
      */
     public function __construct()
@@ -111,11 +111,12 @@ class RepairController extends Controller
         $logs =  App\Log::where('table','repairs')->where('ref',$id)->orderBy('created_at','DESC')->paginate('25');
         $comments = App\RepairItem::where('group','comment')->where('repair',$id)->get();
         $jobs = App\RepairItem::where('group','job')->where('repair',$id)->get();
+        $transactions = App\InventoryTransaction::where('repair_id',$id)->get();
 
         $invoice_items= App\InvoiceItem::select('invoice')->where('ref',$id);
         $invoices = App\Invoice::wherein('id',$invoice_items)->where('active','yes')->orderBy('created_at','DESC')->paginate(25);
 
-        return view('repair.view-repair',compact('repair','users','statuses','priorities','logs','comments','jobs','invoices'));
+        return view('repair.view-repair',compact('repair','users','statuses','priorities','logs','comments','jobs','invoices','transactions'));
         
     }
 

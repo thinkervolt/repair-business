@@ -221,7 +221,7 @@
 
 <div class="text-center p-3 my-2">
 
-        @php echo DNS1D::getBarcodeSVG('I'.$invoice->id, 'C39',3,80,'black' ,false); @endphp
+        @php echo DNS1D::getBarcodeSVG('INV'.$invoice->id, 'C39',3,80,'black' ,false); @endphp
    
 </div>
 

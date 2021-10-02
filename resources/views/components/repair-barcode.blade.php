@@ -44,32 +44,32 @@
 
         $.ajax({
               type: "post",
-              url: "/barcode/invoice",
+              url: "/barcode/repair",
               dataType:"json",
-              data: "barcode="+barcode+"&invoice={{$invoice->id}}",
+              data: "barcode="+barcode+"&repair={{$repair->id}}",
               contentType: "application/x-www-form-urlencoded",
               success: function(response, textStatus, jqXHR) {
                
                   //console.log(response);
                   
                   if(response.response == 'barcode-not-found'){
-                    $("#invoice-alert-message").text('Product not found, scan again or check your Inventory');
-                    $('#invoice-alert').removeClass('d-none');
-                    $('#invoice-alert').addClass('show alert-danger');
+                    $('#repair-alert-message').text('Part not found, scan again or check your Inventory');
+                    $('#repair-alert').removeClass('d-none');
+                    $('#repair-alert').addClass('show alert-danger');
                   }
 
-                  if(response.response == 'product-out-stock'){
+                  if(response.response == 'part-out-stock'){
 
-                    $("#invoice-alert-message").text('Product not Available, out of Stock');
-                    $('#invoice-alert').removeClass('d-none');
-                    $('#invoice-alert').addClass('show alert-danger');
+                    $('#repair-alert-message').text('Part not Available, out of Stock');
+                    $('#repair-alert').removeClass('d-none');
+                    $('#repair-alert').addClass('show alert-danger');
                   }
 
                   if(response.response == 'new-transaction-created'){
                     
-                    $("#invoice-alert-message").text('Product has been Added');
-                    $('#invoice-alert').removeClass('d-none');
-                    $('#invoice-alert').addClass('show alert-success');
+                    $('#repair-alert-message').text('Part has been Added');
+                    $('#repair-alert').removeClass('d-none');
+                    $('#repair-alert').addClass('show alert-success');
                     document.location.reload(true);
                   }
 

@@ -74,7 +74,7 @@
                             <div class="form-group row m-0">
                                 <label for="barcode" class="col-sm-2 col-form-label">Barcode</label>
                                 <div class="col-sm-10">
-                                <input type="number" class="form-control form-control-sm @error('barcode') is-invalid @enderror" id="barcode" value="{{ $product->barcode}}" name="barcode" placeholder="">
+                                <input type="text" class="form-control form-control-sm @error('barcode') is-invalid @enderror" id="barcode" value="{{ $product->barcode}}" name="barcode" placeholder="">
                                 @error('barcode')
                                     <span class="invalid-feedback mb-1" role="alert">
                                     {{ $message }}

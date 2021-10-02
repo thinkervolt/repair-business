@@ -310,12 +310,15 @@ class InvoiceController extends Controller
         $payments = App\Payment::where('invoice',$id);
         $payments->delete();
 
+        $payments = App\InventoryTransaction::where('invoice_id',$id);
+        $payments->delete();
+
         $logs = App\Log::where('table','invoices')->where('ref',$id);
         $logs->delete();
 
         return back()->with('error','Invoice has been Destroyed.')->with('alert', 'alert-danger');
     }
-
+ 
     public function print_invoice($id,$task)
     {
         $invoice = App\Invoice::findOrFail($id);
