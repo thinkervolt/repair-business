@@ -76,14 +76,22 @@ class PaymentController extends Controller
             $payment->invoice = $id;
             $payment->save();
 
-            $items_sum = App\InvoiceItem::where('invoice',$id)->sum('total');
-            $payments_sum = App\Payment::where('invoice',$id)->sum('amount');
+            
+            $transactions_sum = 0;
+            $transactions = App\InventoryTransaction::where('invoice_id',$invoice->id)->get();
+            foreach($transactions as $transaction){
+                $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
+            }
+
+            $items_sum = App\InvoiceItem::where('invoice',$invoice->id)->sum('total') + $transactions_sum;
+            $payments_sum = App\Payment::where('invoice',$invoice->id)->sum('amount');
 
             $invoice->subtotal = (float)$items_sum;
             $invoice->tax = (float)($items_sum / 100) *  (float)$invoice->tax_porcentage;
             $invoice->total = (float)$items_sum + (($items_sum / 100) *  (float)$invoice->tax_porcentage);
             $invoice->balance = ((float)$items_sum + (($items_sum / 100) *  (float)$invoice->tax_porcentage)) - $payments_sum;
             $invoice->save();
+            
 
             $log = new App\Log; 
             $log->table = 'invoices';
@@ -128,7 +136,14 @@ class PaymentController extends Controller
         $payment->delete();
 
         
-        $items_sum = App\InvoiceItem::where('invoice',$invoice->id)->sum('total');
+  
+        $transactions_sum = 0;
+        $transactions = App\InventoryTransaction::where('invoice_id',$invoice->id)->get();
+        foreach($transactions as $transaction){
+            $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
+        }
+
+        $items_sum = App\InvoiceItem::where('invoice',$invoice->id)->sum('total') + $transactions_sum;
         $payments_sum = App\Payment::where('invoice',$invoice->id)->sum('amount');
 
         $invoice->subtotal = (float)$items_sum;
