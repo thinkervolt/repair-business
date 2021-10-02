@@ -106,6 +106,24 @@
       <hr class="sidebar-divider">
 
       <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseInventory" aria-expanded="true" aria-controls="collapseInventory">
+          <i class="fas fa-th"></i>
+          <span>Inventory</span>
+        </a>
+        <div id="collapseInventory" class="collapse" aria-labelledby="collapseInventory" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+ 
+            <a  class="collapse-item" href="{{ route('inventory-index-product') }}">Products</a>
+            <a  class="collapse-item" href="{{ route('inventory-index-transaction') }}">Transactions</a>
+         
+            <a class="collapse-item" href="{{ route('inventory-index-category') }}">Categories</a>
+          </div>
+        </div>
+      </li>
+
+      <hr class="sidebar-divider">
+
+      <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePayments" aria-expanded="true" aria-controls="collapsePayments">
           <i class="fas fa-money-bill-alt"></i>
           <span>Payments</span>
@@ -238,7 +256,7 @@
               </div>
             </li>
 
-      
+        
 
             <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -288,9 +306,8 @@
         </nav>
         <!-- End of Topbar -->
 
-
-
         @yield('page-content')
+      
 
       </div>
       <!-- End of Main Content -->
@@ -316,8 +333,6 @@
     <i class="fas fa-angle-up"></i>
   </a>
 
-
-
   <!-- Bootstrap core JavaScript-->
   <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
   <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -327,6 +342,15 @@
 
   <!-- Custom scripts for all pages-->
   <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+
+
+  @if(Route::current()->getName() == 'view-invoice')
+    @include('components.invoice-barcode') 
+  @elseif(Route::current()->getName() == 'view-repair')
+    @include('components.repair-barcode') 
+  @else
+  @include('components.barcode') 
+  @endif
 
 
 </body>

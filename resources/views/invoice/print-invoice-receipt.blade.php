@@ -157,6 +157,37 @@ body,html{
 
   @endif
 
+      @if(!$transactions->isEmpty())
+    @foreach($transactions as $transaction)
+    <tr >
+        <td >
+            <p class="small-data-line">{{$item_count = $item_count + 1}}</p>
+        </td>
+        <td>
+            <p class="data-line">{{$transaction->product->barcode}}</p>
+        </td>
+        <td>
+        <p class="small-data-line"> ({{$transaction->selling_price}} X {{$transaction->quantity}})</p>
+        </td>
+        <td>
+        <p class="data-line right">${{number_format((float)($transaction->selling_price * $transaction->quantity), 2, '.', ',')}}</p>
+        </td>
+    </tr>
+    <tr >
+        <td></td>
+            
+        <td  colspan="2">
+            <p class="small-data-line">{{$transaction->product->name}}</p>
+        </td>
+        <td>
+        </td>
+    </tr>
+    @endforeach
+
+  @endif
+
+
+
 
     <tr>
         <td></td>
@@ -234,7 +265,7 @@ body,html{
 
   <div class="data-block">
     <div class="barcode">
-        @php echo DNS1D::getBarcodeSVG('I'.$invoice->id, 'C39',2,50,'black' ,false); @endphp
+        @php echo DNS1D::getBarcodeSVG('INV'.$invoice->id, 'C39',2,50,'black' ,false); @endphp
     </div>
 </div>
 

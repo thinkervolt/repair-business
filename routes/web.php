@@ -119,3 +119,33 @@ Route::put('/profile/update-password', 'UserController@update_password')->name('
 Route::get('/users', 'UserController@users')->name('users')->middleware('admin');
 Route::put('/users/update-user/{id}', 'UserController@update_user')->name('update-user')->middleware('admin');
 Route::delete('/users/delete/{id}', 'UserController@delete_user')->name('delete-user')->middleware('admin');
+
+/* INVENTORY ROUTES */
+Route::get('/inventory/categories/index', 'InventoryController@inventory_index_category')->name('inventory-index-category');
+Route::post('/inventory/categories/create', 'InventoryController@inventory_create_category')->name('inventory-create-category');
+Route::put('/inventory/category/update/{id}', 'InventoryController@inventory_update_category')->name('inventory-update-category');
+Route::delete('/inventory/category/delete/{id}', 'InventoryController@inventory_delete_category')->name('inventory-delete-category')->middleware('admin');
+
+Route::get('/inventory/transactions/index', 'InventoryController@inventory_index_transaction')->name('inventory-index-transaction')->middleware('admin');
+Route::post('/inventory/transactions/index', 'InventoryController@inventory_index_transaction')->name('inventory-search-transaction')->middleware('admin');
+Route::get('/inventory/transaction/view/{id}', 'InventoryController@inventory_view_transaction')->name('inventory-view-transaction')->middleware('admin');
+Route::get('/inventory/transaction/restock/{id}', 'InventoryController@inventory_restock_transaction')->name('inventory-restock-transaction');
+Route::post('/inventory/transaction/sell/{task}/{id}/{product_id}', 'InventoryController@inventory_sell_transaction')->name('inventory-sell-transaction');
+Route::delete('/inventory/transaction/cancel/{task}/{id}/{transaction}', 'InventoryController@inventory_cancel_transaction')->name('inventory-cancel-transaction');
+Route::post('/inventory/transaction/create/{id}', 'InventoryController@inventory_create_transaction')->name('inventory-create-transaction');
+Route::put('/inventory/transaction/update/{id}', 'InventoryController@inventory_update_transaction')->name('inventory-update-transaction');
+Route::delete('/inventory/transaction/delete/{id}', 'InventoryController@inventory_delete_transaction')->name('inventory-delete-transaction');
+Route::get('/inventory/transaction/quick-sell/{id}', 'InventoryController@inventory_quick_sell_transaction')->name('inventory-quick-sell-transaction');
+
+Route::get('/inventory/products/{task?}/{id?}', 'InventoryController@inventory_index_product')->name('inventory-index-product');
+Route::post('/inventory/products/{task?}/{id?}', 'InventoryController@inventory_index_product')->name('inventory-search-product');
+Route::get('/inventory/product/view/{id}', 'InventoryController@inventory_view_product')->name('inventory-view-product');
+Route::post('/inventory/product/create', 'InventoryController@inventory_create_product')->name('inventory-create-product');
+Route::put('/inventory/product/update/{id}', 'InventoryController@inventory_update_product')->name('inventory-update-product');
+Route::delete('/inventory/product/delete/{id}', 'InventoryController@inventory_delete_product')->name('inventory-delete-product')->middleware('admin');
+
+/* BARCODE ROUTES */
+
+Route::post('/barcode', 'BarcodeController@barcode')->name('barcode');
+Route::post('/barcode/invoice', 'BarcodeController@invoice_barcode')->name('invoice-barcode');
+Route::post('/barcode/repair', 'BarcodeController@repair_barcode')->name('repair-barcode');

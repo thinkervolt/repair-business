@@ -58,7 +58,8 @@ class InvoiceController extends Controller
         $invoice_statuses = App\InvoiceSetting::where('group','status')->get();
         $logs =  App\Log::where('table','invoices')->where('ref',$id)->orderBy('created_at','DESC')->paginate('25');
         $payments = App\Payment::where('invoice',$id)->where('active','yes')->get();
-        return view('invoice.view-invoice',compact('invoice','invoice_items','invoice_statuses','logs','payments'));
+        $transactions = App\InventoryTransaction::where('invoice_id',$id)->get();
+        return view('invoice.view-invoice',compact('invoice','invoice_items','invoice_statuses','logs','payments','transactions'));
     }
 
     
@@ -309,16 +310,20 @@ class InvoiceController extends Controller
         $payments = App\Payment::where('invoice',$id);
         $payments->delete();
 
+        $payments = App\InventoryTransaction::where('invoice_id',$id);
+        $payments->delete();
+
         $logs = App\Log::where('table','invoices')->where('ref',$id);
         $logs->delete();
 
         return back()->with('error','Invoice has been Destroyed.')->with('alert', 'alert-danger');
     }
-
+ 
     public function print_invoice($id,$task)
     {
         $invoice = App\Invoice::findOrFail($id);
         $invoice_items = App\InvoiceItem::where('invoice',$id)->get();
+        $transactions = App\InventoryTransaction::where('invoice_id',$id)->get();
         $invoice_statuses = App\InvoiceSetting::where('group','status')->get();
         $logs =  App\Log::where('table','invoices')->where('ref',$id)->orderBy('created_at','DESC')->paginate('25');
         $payments = App\Payment::where('invoice',$id)->where('active','yes')->get();
@@ -327,11 +332,11 @@ class InvoiceController extends Controller
         $terms = $company_profile->terms;
 
         if($task == 'print'){
-        return view('invoice.print-invoice',compact('invoice','invoice_items','invoice_statuses','logs','payments','terms'));
+        return view('invoice.print-invoice',compact('invoice','invoice_items','invoice_statuses','logs','payments','terms','transactions'));
         }
 
         if($task == 'receipt'){
-            return view('invoice.print-invoice-receipt',compact('invoice','invoice_items','invoice_statuses','logs','payments','terms'));
+            return view('invoice.print-invoice-receipt',compact('invoice','invoice_items','invoice_statuses','logs','payments','terms','transactions'));
         }
 
 
@@ -486,8 +491,16 @@ class InvoiceController extends Controller
         $invoice_item->group = 'repair';
         $invoice_item->save();
 
+        
 
-        $items_sum = App\InvoiceItem::where('invoice',$invoice)->sum('total');
+        $transactions_sum = 0;
+        $transactions = App\InventoryTransaction::where('invoice_id',$invoice)->get();
+        foreach($transactions as $transaction){
+            $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
+        }
+
+
+        $items_sum = App\InvoiceItem::where('invoice',$invoice)->sum('total') + $transactions_sum;
         $payments_sum = App\Payment::where('invoice',$invoice)->sum('amount');
 
 
@@ -537,7 +550,16 @@ class InvoiceController extends Controller
 
         
         $invoice = App\Invoice::findOrFail($id);
-        $items_sum = App\InvoiceItem::where('invoice',$id)->sum('total');
+
+        $transactions_sum = 0;
+        $transactions = App\InventoryTransaction::where('invoice_id',$id)->get();
+        foreach($transactions as $transaction){
+            $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
+        }
+
+
+        $items_sum = App\InvoiceItem::where('invoice',$id)->sum('total') + $transactions_sum;
+
         $payments_sum = App\Payment::where('invoice',$id)->sum('amount');
 
 
@@ -608,7 +630,14 @@ class InvoiceController extends Controller
 
             
             $invoice = App\Invoice::findOrFail($invoice_item->invoice);
-            $items_sum = App\InvoiceItem::where('invoice',$invoice->id)->sum('total');
+
+            $transactions_sum = 0;
+            $transactions = App\InventoryTransaction::where('invoice_id',$invoice->id)->get();
+            foreach($transactions as $transaction){
+                $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
+            }
+    
+            $items_sum = App\InvoiceItem::where('invoice',$invoice->id)->sum('total')+ $transactions_sum;
             $payments_sum = App\Payment::where('invoice',$invoice->id)->sum('amount');
 
     
@@ -649,7 +678,17 @@ class InvoiceController extends Controller
 
             
             $invoice = App\Invoice::findOrFail($invoice_item->invoice);
-            $items_sum = App\InvoiceItem::where('invoice',$invoice->id)->sum('total');
+
+            $transactions_sum = 0;
+            $transactions = App\InventoryTransaction::where('invoice_id',$invoice->id)->get();
+            foreach($transactions as $transaction){
+                $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
+            }
+    
+      
+
+
+            $items_sum = App\InvoiceItem::where('invoice',$invoice->id)->sum('total')+ $transactions_sum;
             $payments_sum = App\Payment::where('invoice',$invoice->id)->sum('amount');
             $invoice->subtotal = (float)$items_sum;
             $invoice->tax = (float)($items_sum / 100) *  (float)$invoice->tax_porcentage;
