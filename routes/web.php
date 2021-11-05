@@ -149,9 +149,3 @@ Route::delete('/inventory/product/delete/{id}', 'InventoryController@inventory_d
 Route::post('/barcode', 'BarcodeController@barcode')->name('barcode');
 Route::post('/barcode/invoice', 'BarcodeController@invoice_barcode')->name('invoice-barcode');
 Route::post('/barcode/repair', 'BarcodeController@repair_barcode')->name('repair-barcode');
-
-
-/* MAIL ROUTES */
-
-Route::get('/mail/database', 'MailController@database')->name('mail-database');
-
