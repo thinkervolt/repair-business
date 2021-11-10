@@ -12,7 +12,7 @@ class DataBasePlan extends Command
      * The name and signature of the console command.
      *
      * @var string
-     */ 
+     */
     protected $signature = 'database:plan';
 
     /**
@@ -20,7 +20,7 @@ class DataBasePlan extends Command
      *
      * @var string
      */
-    protected $description = 'Weekly Data';
+    protected $description = 'mysql-dump';
 
     /**
      * Create a new command instance.
@@ -47,6 +47,7 @@ class DataBasePlan extends Command
         }
 
         $filename = "database-plan-" . Carbon::now()->format('Y-m-d') . ".gz";
+
         $command = "mysqldump --no-tablespaces --user=" . env('DB_USERNAME') ." --password=" . env('DB_PASSWORD') . " --host=" . env('DB_HOST') . " " . env('DB_DATABASE') . "  | gzip > ". storage_path()  . $database_plan_path . $filename;
         $returnVar = NULL;
         $output  = NULL;

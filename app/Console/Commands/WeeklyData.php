@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Mail;
 use Illuminate\Support\Facades\File; 
+use stdClass;
 
 class WeeklyData extends Command
 {
@@ -22,7 +23,7 @@ class WeeklyData extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Weekly Data';
 
     /**
      * Create a new command instance.
@@ -54,8 +55,15 @@ class WeeklyData extends Command
         /* END MYSQL DUMP */
 
         /* EMAIL */
+        $mail_data = new stdClass();
+        $mail_data->title = 'Weekly - Data and Reports';
+        $mail_data->preview = 'Weekly - Data and Reports';
+        $mail_data->greeting= 'I am a Robot,';
+        $mail_data->main_message= 'Please do not Reply, here is some weekly data that I collected for you from your Repair Business App.';
+        $mail_data->footer_main_message= 'If you need to restore your System or Database, please send your attachments to your Service Provider.';
+
         $attachment = storage_path()  . $database_plan_path . $filename;
-        Mail::to('rustedchip@gmail.com')->send(new \App\Mail\WeeklyData($attachment));
+        Mail::to('rustedchip@gmail.com','ROBOT')->send(new \App\Mail\WeeklyData($attachment,$mail_data));
         /* END EMAIL */
 
         File::delete(storage_path()  . $database_plan_path . $filename);
