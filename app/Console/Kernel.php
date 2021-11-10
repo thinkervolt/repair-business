@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        'App\Console\Commands\DataBasePlan'
+        'App\Console\Commands\DataBasePlan',
+        'App\Console\Commands\WeeklyData',
     ];
 
     /**
@@ -25,6 +26,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('database:plan')->daily();
+        $schedule->command('weekly:data')->weekly();
     }
 
     /**
