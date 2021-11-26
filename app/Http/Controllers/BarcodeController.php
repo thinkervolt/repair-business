@@ -172,7 +172,7 @@ class BarcodeController extends Controller
                 }
             }elseif(str_starts_with($barcode, 'REP')){
                 $repair_id = str_replace('REP', '', $barcode);
-                $repair = App\Invoice::where('id',$repair_id)->first();
+                $repair = App\Repair::where('id',$repair_id)->first();
 
                 if($repair){
                     $data = $repair;
