@@ -7,6 +7,11 @@ use App;
 
 class PublicController extends Controller
 {
+    public function welcome()
+    {
+        return view('welcome');
+
+    }
     public function customer_signup()
     {
 

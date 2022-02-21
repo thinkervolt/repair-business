@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App;
-
 class AdminController extends Controller
 {
     /**
@@ -15,6 +14,7 @@ class AdminController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+ 
     }
 
     /**
