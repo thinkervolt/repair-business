@@ -80,7 +80,7 @@ class CustomerController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('view-customer',$customer->id)->with('error','Customer has been Created.')->with('alert', 'alert-success');
+        return redirect()->route('view-customer',$customer->id)->with('error','Customer has been Created.')->with('error-color', 'success');
     }
 
     public function view_customer($id)
@@ -130,7 +130,7 @@ class CustomerController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return back()->with('error','Customer has been Updated.')->with('alert', 'alert-warning');
+        return back()->with('error','Customer has been Updated.')->with('error-color', 'warning');
     }
 
     public function delete_customer($id)
@@ -146,7 +146,7 @@ class CustomerController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('index-customer')->with('error','Customer has been Deleted.')->with('alert', 'alert-danger');
+        return redirect()->route('index-customer')->with('error','Customer has been Deleted.')->with('error-color', 'danger');
     }
 
     public function restore_customer($id)
@@ -162,7 +162,7 @@ class CustomerController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('view-customer',$customer->id)->with('error','Customer has been Restored.')->with('alert', 'alert-success');
+        return redirect()->route('view-customer',$customer->id)->with('error','Customer has been Restored.')->with('error-color', 'success');
     }
 
     public function destroy_customer($id)
@@ -177,7 +177,7 @@ class CustomerController extends Controller
 
 
 
-        return back()->with('error','Customer has been Destroyed.')->with('alert', 'alert-danger');
+        return back()->with('error','Customer has been Destroyed.')->with('error-color', 'danger');
     }
 
 

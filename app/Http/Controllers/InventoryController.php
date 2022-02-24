@@ -32,7 +32,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
         
-        return back()->with('error','Inventory Category has been Created.')->with('alert', 'alert-success');
+        return back()->with('error','Inventory Category has been Created.')->with('error-color', 'success');
 
         
     }
@@ -54,7 +54,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
         
-        return back()->with('error','Inventory Category has been Updated.')->with('alert', 'alert-success');
+        return back()->with('error','Inventory Category has been Updated.')->with('error-color', 'success');
 
         
     }
@@ -73,7 +73,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
         
-        return back()->with('error','Inventory Category has been Deleted.')->with('alert', 'alert-danger');
+        return back()->with('error','Inventory Category has been Deleted.')->with('error-color', 'danger');
 
         
     }
@@ -150,7 +150,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
         
-        return back()->with('error','Inventory Product and Transaction have been Created.')->with('alert', 'alert-success');
+        return back()->with('error','Inventory Product and Transaction have been Created.')->with('error-color', 'success');
 
         
     }
@@ -196,7 +196,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
         
-        return back()->with('error','Inventory Product has been Updated.')->with('alert', 'alert-warning');
+        return back()->with('error','Inventory Product has been Updated.')->with('error-color', 'warning');
 
         
     }
@@ -216,7 +216,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('inventory-index-product')->with('error','Product and Transactions have been Deleted.')->with('alert', 'alert-danger');
+        return redirect()->route('inventory-index-product')->with('error','Product and Transactions have been Deleted.')->with('error-color', 'danger');
 
 
     }
@@ -273,7 +273,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
         
-        return back()->with('error','Inventory Transaction has been Updated.')->with('alert', 'alert-warning');
+        return back()->with('error','Inventory Transaction has been Updated.')->with('error-color', 'warning');
 
         
     }
@@ -291,7 +291,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('inventory-index-transaction')->with('error','Transactions has been Deleted.')->with('alert', 'alert-danger');
+        return redirect()->route('inventory-index-transaction')->with('error','Transactions has been Deleted.')->with('error-color', 'danger');
 
 
     }
@@ -324,7 +324,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('inventory-view-product',$id)->with('error','Transactions has been Created.')->with('alert', 'alert-success');
+        return redirect()->route('inventory-view-product',$id)->with('error','Transactions has been Created.')->with('error-color', 'success');
 
 
         
@@ -384,10 +384,10 @@ class InventoryController extends Controller
                 $log->user = Auth::user()->id;
                 $log->save();
     
-                return redirect()->route('view-invoice',$id)->with('error','Transactions has been Created.')->with('alert', 'alert-success');
+                return redirect()->route('view-invoice',$id)->with('error','Transactions has been Created.')->with('error-color', 'success');
             }else{
     
-                return redirect()->route('view-invoice',$id)->with('error','Product is out of Stock')->with('alert', 'alert-danger');
+                return redirect()->route('view-invoice',$id)->with('error','Product is out of Stock')->with('error-color', 'danger');
     
             }
 
@@ -430,10 +430,10 @@ class InventoryController extends Controller
                 $log->user = Auth::user()->id;
                 $log->save();
     
-                return redirect()->route('view-repair',$id)->with('error','Transactions has been Created.')->with('alert', 'alert-success');
+                return redirect()->route('view-repair',$id)->with('error','Transactions has been Created.')->with('error-color', 'success');
             }else{
     
-                return redirect()->route('view-repair',$id)->with('error','Product is out of Stock')->with('alert', 'alert-danger');
+                return redirect()->route('view-repair',$id)->with('error','Product is out of Stock')->with('error-color', 'danger');
     
             }
 
@@ -476,7 +476,7 @@ class InventoryController extends Controller
             $log->user = Auth::user()->id;
             $log->save();
 
-            return redirect()->route('view-invoice',$id)->with('error','Transactions has been Deleted.')->with('alert', 'alert-danger');
+            return redirect()->route('view-invoice',$id)->with('error','Transactions has been Deleted.')->with('error-color', 'danger');
         }
 
         if($task == 'repair'){
@@ -491,7 +491,7 @@ class InventoryController extends Controller
             $log->user = Auth::user()->id;
             $log->save();
 
-            return redirect()->route('view-repair',$id)->with('error','Transactions has been Deleted.')->with('alert', 'alert-danger');
+            return redirect()->route('view-repair',$id)->with('error','Transactions has been Deleted.')->with('error-color', 'danger');
         }
 
 
@@ -604,10 +604,10 @@ class InventoryController extends Controller
             //END NEW PAYMENT
 
 
-            return redirect()->route('view-invoice',$invoice->id)->with('error','Quick Transactions has been Created.')->with('alert', 'alert-success');
+            return redirect()->route('view-invoice',$invoice->id)->with('error','Quick Transactions has been Created.')->with('error-color', 'success');
         }else{
 
-            return back()->with('error','Product is out of Stock')->with('alert', 'alert-danger');
+            return back()->with('error','Product is out of Stock')->with('error-color', 'danger');
 
         }
 
