@@ -1,0 +1,41 @@
+version: "3"
+services:
+    db:
+        image: mysql
+        ports: 
+            - ":3306"
+        environment:
+            MYSQL_DATABASE: repair_business
+            MYSQL_USER: user
+            MYSQL_PASSWORD: password
+            MYSQL_ROOT_PASSWORD: password
+        volumes:
+            - ./mysql:/var/lib/mysql
+        command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--default-authentication-plugin=mysql_native_password']
+        container_name: "repair-business-database"
+        healthcheck:
+            test: "exit 0"
+         
+        networks:
+            - default
+    www:
+        build: .
+        ports: 
+            - "8001:80"
+        volumes:
+            - ../:/var/www/html/
+            - ./apache2.conf:/etc/apache2/apache2.conf
+        working_dir:
+            /var/www/html/
+        #command: php artisan migrate --seed
+        tty: true
+        links:
+            - db
+        networks:
+            - default
+        container_name: "repair-business-webserver"
+        depends_on:
+            db:
+                condition: service_healthy
+
+
