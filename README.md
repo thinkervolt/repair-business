@@ -29,3 +29,7 @@ If you setup your Task Scheduling with Cron the application will backup everyday
 
 *Everything was made with standard code keeping in mind that it will be use on different kind of repair business and is ready to be customize, front end is open to be changed easily  and backend is easy to read like another Laravel App*
 
+### DOCKER
+
+Perform all basic operations `composer install, app_key generation and storage permissions` before build and run docker compose file inside of `docker` directory.
+Docker Compose file has one-time command that will run migrations and database seed, make sure that you uncomment it until database seed is complete.
