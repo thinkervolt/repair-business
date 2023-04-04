@@ -225,7 +225,7 @@
                 <h6 class="dropdown-header bg-secondary">
                   Notifications
                 </h6>
-                @if(!$notifications->isEmpty())
+                @if(isset($notifications))
 
                   @foreach($notifications as $notification)
                   <a class="dropdown-item d-flex align-items-center" href="{{route('notification',$notification)}}">
