@@ -10,7 +10,7 @@ services:
             MYSQL_PASSWORD: password
             MYSQL_ROOT_PASSWORD: password
         volumes:
-            - ./mysql:/var/lib/mysql
+            - ./docker/mysql:/var/lib/mysql
         command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--default-authentication-plugin=mysql_native_password']
         container_name: "repair-business-database"
         healthcheck:
@@ -23,8 +23,8 @@ services:
         ports: 
             - "8001:80"
         volumes:
-            - ../:/var/www/html/
-            - ./apache2.conf:/etc/apache2/apache2.conf
+            - ./:/var/www/html/
+            - ./docker/apache2.conf:/etc/apache2/apache2.conf
         working_dir:
             /var/www/html/
         #command: php artisan migrate --seed
