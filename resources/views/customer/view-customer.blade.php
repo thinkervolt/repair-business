@@ -149,12 +149,10 @@
         <div class="form-group row m-0">
             <div class="col-sm-2"> </div>
             <div class="col-sm-10">
-                <button type="submit" class="btn btn-block btn-warning mt-3 mb-2 btn-sm"><i class="fa fa-edit"></i> Update</button>
+                <button type="submit" class="btn  btn-warning mt-3 mb-2 btn-sm"><i class="fa fa-edit"></i> Update</button>
                 
             </div>
         </div>
-
-
 
     </form >
        
@@ -165,7 +163,7 @@
         <div class="form-group row m-0">
             <div class="col-sm-2"> </div>
             <div class="col-sm-10">
-                <button type="submit" class="btn btn-block btn-danger mt-1 mb-2 btn-sm"><i class="fa fa-trash"></i> Delete</button>
+                <button type="submit" class="btn btn-danger mt-1 mb-2 btn-sm"><i class="fa fa-trash"></i> Delete</button>
                 
             </div>
         </div>
@@ -176,7 +174,7 @@
     <div class="form-group row m-0">
         <div class="col-sm-2"> </div>
             <div class="col-sm-10">
-                <a  href="{{route('create-repair',$customer)}}" class="btn btn-block btn-primary mt-1 mb-2 btn-sm"><i class="fas fa-wrench"></i> Create Repair</a>
+                <a  href="{{route('create-repair',$customer)}}" class="btn btn-primary mt-1 mb-2 btn-sm"><i class="fas fa-wrench"></i> Create Repair</a>
             </div>
     </div>
    

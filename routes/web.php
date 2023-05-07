@@ -135,4 +135,7 @@ Route::delete('/inventory/product/delete/{id}', 'InventoryController@inventory_d
 /* BARCODE ROUTES */
 Route::post('/barcode', 'BarcodeController@barcode')->name('barcode')->middleware('verified')->middleware('notification');    
 Route::post('/barcode/invoice', 'BarcodeController@invoice_barcode')->name('invoice-barcode')->middleware('verified')->middleware('notification');    
-Route::post('/barcode/repair', 'BarcodeController@repair_barcode')->name('repair-barcode')->middleware('verified')->middleware('notification');    
+Route::post('/barcode/repair', 'BarcodeController@repair_barcode')->name('repair-barcode')->middleware('verified')->middleware('notification');
+
+/* APP ROUTES */
+Route::get('/app/session/set-sidebar-position/{position}', 'AppController@set_sidebar_position')->name('set-sidebar-position');
