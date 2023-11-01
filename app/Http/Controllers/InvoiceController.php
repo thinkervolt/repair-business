@@ -152,7 +152,7 @@ class InvoiceController extends Controller
             $invoice->company_name = $company_profile->name;
             $invoice->company_phone = preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $company_profile->phone);
             $invoice->company_email = $company_profile->email;
-            $invoice->company_address = $company_profile->email;
+            $invoice->company_address = $company_profile->address;
             $invoice->tax_porcentage = $invoice_tax;
             $invoice->subtotal = 0;
             $invoice->tax = 0;
@@ -352,15 +352,14 @@ class InvoiceController extends Controller
         $invoice = App\Invoice::findOrFail($id);
         $customer_data = App\Customer::findOrFail($customer);
 
-
         $invoice->customer_id = $customer_data->id;
         $invoice->customer_name = $customer_data->first_name.' '. $customer_data->last_name;
         $invoice->customer_phone = preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $customer_data->phone);
         $invoice->customer_email = $customer_data->email;
         $invoice->customer_address = $customer_data->address.' '.$customer_data->city.' '.$customer_data->state.' '.$customer_data->zip;
+        $invoice->customer_company = $customer_data->company;
 
         $invoice->save();
-
 
         $log = new App\Log; 
         $log->table = 'invoices';
