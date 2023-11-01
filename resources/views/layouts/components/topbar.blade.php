@@ -43,7 +43,8 @@
                 <h6 class="dropdown-header bg-secondary">
                     Notifications
                 </h6>
-                @if (isset($notifications))
+
+                @if (!empty($notifications_count))
 
                     @foreach ($notifications as $notification)
                         <a class="dropdown-item d-flex align-items-center"
