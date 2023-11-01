@@ -17,6 +17,7 @@
                 _inputString = '';
 
             }, 80);
+
         };
     $(document).on({
         keypress: _onKeypress

@@ -87,22 +87,18 @@
                         <a href="{{ url('/home') }}">Home</a>
                     @else
                          <a href="{{ route('login') }}">Login</a>
-                     @endauth
+                    @endauth
                 @endif
                 
             </div>
 
 
             <div class="content">
-
-
                 <div class=" m-b-md ">
                 <p class="title">{{ config('app.name', 'REPAIR-HERO') }}</p>
                 <p style="font-size:15px;color:black" >Powered by <a href="https://thinkervolt.com" style="font-weight: bold; font-family:arial; color:black;text-decoration:none;">thinkervolt<a></p>
-               
+            
                 </div>
-                
-
             </div>
         </div>
     </body>

@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         $db_connection = DB::connection()->getPdo();
         if($db_connection ){
             if (Schema::hasTable('notifications')){
@@ -35,5 +38,6 @@ class AppServiceProvider extends ServiceProvider
                 View::share('notifications_count', $notifications_count);
             }
         } 
+
     }
 }
