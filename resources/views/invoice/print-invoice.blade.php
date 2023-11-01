@@ -246,7 +246,6 @@
 
 <script>
 window.print();
- setTimeout(window.close, 0);
 </script>
 
 
