@@ -3,7 +3,8 @@
 
 <head>@include('layouts.components.head')</head>
 
-<body id="page-top" class="@if (Session::has('sidebar-position')) @if (Session::get('sidebar-position') == 'close')  sidebar-toggled @endif @endif ">
+<body id="page-top"
+    class="@if (Session::has('sidebar-position')) @if (Session::get('sidebar-position') == 'close')  sidebar-toggled @endif @endif ">
 
     <div id="wrapper">
         @include('layouts.components.sidebar')

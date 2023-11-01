@@ -4,7 +4,7 @@
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-wrench"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">{{ config('app.name', 'Laravel') }}</div>
+        <div class="sidebar-brand-text mx-3">{{ config('app.name', 'REPAIR-BUSINESS') }}</div>
     </a>
     <hr class="sidebar-divider my-0">
     <li class="nav-item">
