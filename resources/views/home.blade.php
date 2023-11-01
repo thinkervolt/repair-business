@@ -31,7 +31,7 @@
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Earnings - Today
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                    ${{ number_format((float) $current_year_income['current_day'], 2, '.', ',') }}</div>
+                                    $ {{ number_format((float) $current_year_income['current_day'], 2, '.', ',') }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -51,7 +51,7 @@
                                 <div class="text-xs font-weight-bold text-success  text-uppercase mb-1">Earnings -
                                     {{ date('M') }}</div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                    ${{ number_format((float) $current_year_income['current_month'], 2, '.', ',') }}</div>
+                                    $ {{ number_format((float) $current_year_income['current_month'], 2, '.', ',') }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -71,7 +71,7 @@
                                 <div class="text-xs font-weight-bold text-success  text-uppercase mb-1">Earnings -
                                     {{ date('Y') }}</div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                    ${{ number_format((float) $current_year_income['total'], 2, '.', ',') }}</div>
+                                    $ {{ number_format((float) $current_year_income['total'], 2, '.', ',') }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
