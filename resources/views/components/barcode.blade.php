@@ -16,7 +16,8 @@
                 $(e.target).trigger('altdeviceinput', _inputString);
                 _inputString = '';
 
-            }, 20);
+            }, 80);
+
         };
     $(document).on({
         keypress: _onKeypress

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App;
+use Auth;
 
 class ReportController extends Controller
 {
@@ -29,6 +30,81 @@ class ReportController extends Controller
         
 
         return view('report.create-report');
+    }
+
+    public function create_register_report()
+    {
+        
+
+        return view('report.create-register-report');
+    }
+
+    public function get_register_report(request $request)
+    {
+        $cash_register = $request->cash;
+        $card_register = $request->card;
+
+        $payments = App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->get();
+
+        $payment_data = array(
+            'date' => $request->date,
+            'count' => App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->count(),
+            'total' => App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->sum('amount'), 
+            'total_cash' => App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->where('method','cash')->sum('amount'),
+            'total_card' => App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->where('method','card')->sum('amount'),
+            'total_check' => App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->where('method','check')->sum('amount'),
+            'total_other' => App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->where('method','other')->sum('amount'), 
+            'cash_register' => $cash_register,
+            'card_register' => $card_register,
+            );
+
+        return view('report.get-register-report',compact('payments','payment_data'));
+    }
+
+    
+
+    public function register_report_insert(request $request)
+    {
+
+        if($request->cash != 0 ){
+            $cash_payment =  new App\Payment;
+            $cash_payment->amount = $request->cash;
+            $cash_payment->method = 'cash';
+            $cash_payment->ref = 'NON-INVOICED-CASH-TRANSACTIONS-'.$request->date;
+            $cash_payment->active = 'yes';
+            $cash_payment->created_at = $request->date.' 00:00:00';
+            $cash_payment->save();
+
+            $log = new App\Log; 
+            $log->table = 'invoices';
+            $log->data = 'Payment has been Created [$'.$request->cash.'][cash][NON-INVOICED-CASH-TRANSACTIONS-'.$request->date.']';
+            $log->ref = $cash_payment->id;
+            $log->user = Auth::user()->id;
+            $log->save();
+        }
+
+        if($request->card != 0){
+            $card_payment =  new App\Payment;
+            $card_payment->amount = $request->card;
+            $card_payment->method = 'card';
+            $card_payment->ref = 'NON-INVOICED-CARD-TRANSACTIONS-'.$request->date;
+            $card_payment->active = 'yes';
+            $card_payment->created_at = $request->date.' 00:00:00';
+            $card_payment->save();
+
+            $log = new App\Log; 
+            $log->table = 'invoices';
+            $log->data = 'Payment has been Created [$'.$request->card.'][cash][NON-INVOICED-CARD-TRANSACTIONS-'.$request->date.']';
+            $log->ref = $card_payment->id;
+            $log->user = Auth::user()->id;
+            $log->save();
+        }
+
+            
+        return redirect()->route('index-payment')->with('error','Repair has been Created.')->with('error','Payments have been Created')->with('alert', 'alert-success');
+
+        
+
     }
 
          

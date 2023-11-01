@@ -24,6 +24,185 @@
 </head>
 
 
+<body id="page-top">
+
+  <!-- Page Wrapper -->
+  <div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-secondary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+      <!-- Sidebar - Brand -->
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('dashboard') }}">
+        <div class="sidebar-brand-icon rotate-n-15">
+          <i class="fas fa-wrench"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">{{ config('app.name', 'Laravel') }}</div>
+      </a>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider my-0">
+
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('dashboard') }}">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Dashboard</span></a>
+      </li>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+
+      <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCustomers" aria-expanded="true" aria-controls="collapseCustomers">
+            <i class="fas fa-users"></i>
+          <span>Customers</span>
+        </a>
+        <div id="collapseCustomers" class="collapse" aria-labelledby="collapseCustomers" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="{{ route('create-customer') }}">Create Customer</a>
+            <a class="collapse-item" href="{{ route('index-customer') }}">Customers</a>
+          </div>
+        </div>
+      </li>
+      <hr class="sidebar-divider">
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRepairs" aria-expanded="true" aria-controls="collapseRepairs">
+          <i class="fas fa-tools"></i>
+          <span>Repairs</span>
+        </a>
+        <div id="collapseRepairs" class="collapse" aria-labelledby="collapseRepairs" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="{{ route('create-repair') }}">Create Repair</a>
+            <a class="collapse-item" href="{{ route('index-repair') }}">Repairs</a>
+            <a class="collapse-item" href="{{ route('setting-repair') }}">Settings</a>
+          </div>
+        </div>
+      </li>
+
+      <hr class="sidebar-divider">
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseInvoices" aria-expanded="true" aria-controls="collapseInvoices">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <span>Invoices</span>
+        </a>
+        <div id="collapseInvoices" class="collapse" aria-labelledby="collapseInvoices" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <form method="POST" id="create-invoice" action="{{ route('create-invoice',[0,'empty']) }}">
+
+            @csrf
+            <a href="#" class="collapse-item" onclick="document.getElementById('create-invoice').submit();">Create Invoice</a>
+            </form>
+            <a class="collapse-item" href="{{ route('index-invoice') }}">Invoices</a>
+            <a class="collapse-item" href="{{ route('setting-invoice') }}">Settings</a>
+          </div>
+        </div>
+      </li>
+
+      <hr class="sidebar-divider">
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseInventory" aria-expanded="true" aria-controls="collapseInventory">
+          <i class="fas fa-th"></i>
+          <span>Inventory</span>
+        </a>
+        <div id="collapseInventory" class="collapse" aria-labelledby="collapseInventory" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+ 
+            <a  class="collapse-item" href="{{ route('inventory-index-product') }}">Products</a>
+            <a  class="collapse-item" href="{{ route('inventory-index-transaction') }}">Transactions</a>
+         
+            <a class="collapse-item" href="{{ route('inventory-index-category') }}">Categories</a>
+          </div>
+        </div>
+      </li>
+
+      <hr class="sidebar-divider">
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePayments" aria-expanded="true" aria-controls="collapsePayments">
+          <i class="fas fa-money-bill-alt"></i>
+          <span>Payments</span>
+        </a>
+        <div id="collapsePayments" class="collapse" aria-labelledby="collapsePayments" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+ 
+            <a  class="collapse-item" href="{{ route('new-payment') }}">Create Payment</a>
+         
+            <a class="collapse-item" href="{{ route('index-payment') }}">Payments</a>
+          </div>
+        </div>
+      </li>
+
+      <hr class="sidebar-divider">
+
+      <li class="nav-item">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReports" aria-expanded="true" aria-controls="collapseReports">
+            <i class="far fa-file-alt"></i>
+            <span>Reports</span>
+          </a>
+          <div id="collapseReports" class="collapse" aria-labelledby="collapseReports" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+   
+              <a  class="collapse-item" href="{{ route('create-report') }}">Create Report</a>
+           
+              <a class="collapse-item" href="{{ route('create-register-report') }}">Register Report</a>
+            </div>
+      </li>
+
+      <hr class="sidebar-divider">
+
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('index-setting') }}">
+          <i class="fas fa-sliders-h"></i>
+          <span>Settings</span></a>
+      </li>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('index-trash') }}">
+          <i class="fas fa-fw fa-trash-alt"></i>
+          <span>Trash</span></a>
+      </li>
+
+
+      <!-- Divider -->
+      <hr class="sidebar-divider d-none d-md-block">
+
+      <!-- Sidebar Toggler (Sidebar) -->
+      <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+          <!-- Sidebar Toggle (Topbar) -->
+          <button id="sidebarToggleTop" class="btn btn-link text-secondary d-md-none rounded-circle mr-3">
+            <i class="fa fa-bars"></i>
+          </button>
+
+          <!-- Topbar Search -->
+
+          @yield('search')
+
+          <!-- Topbar Navbar -->
+          <ul class="navbar-nav ml-auto">
+
 <body id="page-top @if (Session::has('sidebar-position')) @if (Session::get('sidebar-position') == 'close')  sidebar-toggled @endif @endif ">
 
     <div id="wrapper">
@@ -110,12 +289,37 @@
                 </div>
             </li>
 
+
+            <div class="topbar-divider d-none d-sm-block"></div>
+
+            <!-- Nav Item - User Information -->
+            <li class="nav-item dropdown no-arrow">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
+                <i class="fas fa-user "></i>
+              </a>
+              <!-- Dropdown - User Information -->
+              <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+              <a class="dropdown-item" href="{{ route('profile') }}">
+           
+                  <i class="fas fa-address-card fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Profile
+                </a>
+                <a class="dropdown-item" href="{{route('index-log')}}">
+                  <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Activity Log
+                </a>
+                <a class="dropdown-item" href="{{ route('register') }}">
+                  <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Create User
+
             <hr class="sidebar-divider">
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePayments"
                     aria-expanded="true" aria-controls="collapsePayments">
                     <i class="fas fa-money-bill-alt"></i>
                     <span>Payments</span>
+
                 </a>
                 <div id="collapsePayments" class="collapse" aria-labelledby="collapsePayments"
                     data-parent="#accordionSidebar">
@@ -136,6 +340,10 @@
                     <span>Reports</span></a>
             </li>
 
+
+        @yield('page-content')
+      
+
             <hr class="sidebar-divider">
 
             <li class="nav-item">
@@ -152,6 +360,7 @@
                     <i class="fas fa-fw fa-trash-alt"></i>
                     <span>Trash</span></a>
             </li>
+
 
 
             <!-- Divider -->
@@ -357,6 +566,7 @@
         <i class="fas fa-angle-up"></i>
     </a>
 
+
     <!-- Bootstrap core JavaScript-->
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -368,6 +578,7 @@
     <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
 
 
+
     @if (Route::current()->getName() == 'view-invoice')
         @include('components.invoice-barcode')
     @elseif(Route::current()->getName() == 'view-repair')
@@ -375,6 +586,15 @@
     @else
         @include('components.barcode')
     @endif
+
+
+  @if(Route::current()->getName() == 'view-invoice')
+    @include('components.invoice-barcode') 
+  @elseif(Route::current()->getName() == 'view-repair')
+    @include('components.repair-barcode') 
+  @else
+  @include('components.barcode') 
+  @endif
 
 
 </body>
