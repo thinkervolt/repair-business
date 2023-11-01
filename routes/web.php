@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 /* PUBLIC ROUTES */ 
 Route::get('/', 'PublicController@welcome')->name('welcome');
