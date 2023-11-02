@@ -27,7 +27,10 @@
             <h1 class="h3 mb-0 text-gray-800">View Repair #{{$repair->id}}</h1>
 
             <div>
-            <a href="{{route('print-repair',$repair)}}"  class="btn btn-primary btn-sm" target="popup" onclick="window.open('{{route('print-repair',$repair)}}','popup','width=600,height=600'); return false;">
+            <a href="{{route('mail-repair',$repair)}}"  class="btn btn-primary btn-sm my-1">
+                <i class="fas fa-envelope"></i> Mail Receipt
+            </a>
+            <a href="{{route('print-repair',$repair)}}"  class="btn btn-primary btn-sm my-1" target="popup" onclick="window.open('{{route('print-repair',$repair)}}','popup','width=600,height=600'); return false;">
                 <i class="fas fa-receipt"></i> Receipt
             </a>
 
@@ -35,13 +38,13 @@
 
             @csrf
 
-            <button type="submit" class="btn btn-primary btn-sm">
+            <button type="submit" class="btn btn-secondary btn-sm my-1">
                 <i class="fas fa-file-invoice-dollar"></i> Invoice
             </button>
 
             </form>
-            <a href="{{route('index-customer',[$task = 'repair', $repair])}}" class="btn btn-primary btn-sm"><i class="fas fa-exchange-alt"></i>  Customer</a>
-            <a href="{{route('inventory-index-product',[$task = 'repair',$repair])}}" class="btn btn-primary btn-sm "><i class="fas fa-plus"></i>  Product</a>
+            <a href="{{route('index-customer',[$task = 'repair', $repair])}}" class="btn btn-secondary btn-sm my-1"><i class="fas fa-exchange-alt"></i>  Customer</a>
+            <a href="{{route('inventory-index-product',[$task = 'repair',$repair])}}" class="btn btn-secondary btn-sm my-1"><i class="fas fa-plus"></i>  Product</a>
             </div>
           </div>
 
