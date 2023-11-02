@@ -61,6 +61,7 @@ Route::put('/delete-repair/{id}', 'RepairController@delete_repair')->name('delet
 Route::put('/restore-repair/{id}', 'RepairController@restore_repair')->name('restore-repair')->middleware('verified')->middleware('notification');    
 Route::delete('/destroy-repair/{id}', 'RepairController@destroy_repair')->name('destroy-repair')->middleware('admin')->middleware('verified')->middleware('notification');    
 Route::get('print-repair/{id}', 'RepairController@print_repair')->name('print-repair')->middleware('verified')->middleware('notification');    
+Route::get('mail-repair/{id}', 'RepairController@mail_repair')->name('mail-repair')->middleware('verified')->middleware('notification');    
 Route::put('/update-customer-repair/{customer}/{repair}', 'RepairController@update_customer_repair')->name('update-customer-repair')->middleware('verified')->middleware('notification');    
 
 /* REPAIR SETTINGS ROUTES */

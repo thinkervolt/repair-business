@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App;
 use Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class RepairController extends Controller
 {
@@ -235,6 +236,23 @@ class RepairController extends Controller
         $company_profile = App\CompanyProfile::first();
 
         return view('repair.print-repair',compact('repair','users','statuses','priorities','logs','comments','jobs','company_profile'));
+    }
+
+    public function mail_repair($id)
+    {
+        $repair = App\Repair::findOrFail($id);
+        $users = App\User::where('active','yes')->get();
+        $statuses = App\RepairSetting::where('group','status')->get();
+        $priorities = App\RepairSetting::where('group','priority')->get();
+        $logs =  App\Log::where('table','repairs')->where('ref',$id)->orderBy('created_at','DESC')->paginate('25');
+        $comments = App\RepairItem::where('group','comment')->where('repair',$id)->get();
+        $jobs = App\RepairItem::where('group','job')->where('repair',$id)->get();
+        $company_profile = App\CompanyProfile::first();
+
+
+        /* return view('repair.print-repair',compact('repair','users','statuses','priorities','logs','comments','jobs','company_profile')); */
+        $pdf = Pdf::loadView('repair.mail-repair',compact('repair','users','statuses','priorities','logs','comments','jobs','company_profile'))->setOptions(['defaultFont' => 'sans-serif']);
+        $pdf->save(public_path().'/repair-receipt.pdf');
     }
 
 
