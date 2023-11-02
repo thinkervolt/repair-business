@@ -252,7 +252,6 @@ class RepairController extends Controller
         $company_profile = App\CompanyProfile::first();
 
 
-        /* return view('repair.print-repair',compact('repair','users','statuses','priorities','logs','comments','jobs','company_profile')); */
         $pdf = Pdf::loadView('repair.mail-repair', compact('repair', 'users', 'statuses', 'priorities', 'logs', 'comments', 'jobs', 'company_profile'))->setOptions(['defaultFont' => 'sans-serif']);
         $pdf->save(public_path() . '/repair-receipt.pdf');
 
@@ -266,6 +265,14 @@ class RepairController extends Controller
                     if (File::exists(public_path() . '/repair-receipt.pdf')) {
                         File::delete(public_path() . '/repair-receipt.pdf');
                     }
+
+                    $log = new App\Log;
+                    $log->table = 'repairs';
+                    $log->data = 'Email has been Sent';
+                    $log->ref = $repair->id;
+                    $log->user = Auth::user()->id;
+                    $log->save();
+
                     return back()->with('error', 'Email has been Sent.')->with('alert', 'alert-success');
                 } catch (Exception $ex) {
                     if (File::exists(public_path() . '/repair-receipt.pdf')) {

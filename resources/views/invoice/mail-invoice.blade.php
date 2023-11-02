@@ -23,7 +23,10 @@
     .print-area-container {
         display: block;
         width: 100%;
-        margin: 0;
+        margin-left: 0;
+        margin-right: 0;
+        margin-bottom: 0;
+        margin-top: 20px;
         padding: 0;
     }
 
@@ -275,14 +278,6 @@
             <p class="small-data-line justify">{{ $terms }}</p>
 
         </div>
-
-
-
-
-
-        <script>
-            window.print();
-        </script>
 
 </body>
 

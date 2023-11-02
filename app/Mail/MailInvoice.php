@@ -11,14 +11,11 @@ class MailInvoice extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public $mail_data;
+
+    public function __construct($mail_data)
     {
-        //
+        $this->mail_data = $mail_data;
     }
 
     /**
@@ -28,6 +25,8 @@ class MailInvoice extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.invoice');
+
+        return $this->markdown('emails.invoice')->subject('invoice-by-mail')->attach(public_path().'/invoice-receipt.pdf');
+        
     }
 }

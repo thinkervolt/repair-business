@@ -1,12 +1,3 @@
 @component('mail::message')
-# Introduction
-
-The body of your message.
-
-@component('mail::button', ['url' => ''])
-Button Text
-@endcomponent
-
-Thanks,<br>
-{{ config('app.name') }}
+Here you go {{$mail_data->invoice->customer_name}}, We attached to this E-mail your Requested Invoice.
 @endcomponent
