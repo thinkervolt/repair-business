@@ -18,5 +18,5 @@
 ### Docker
 Perform operations easily with Docker. Preconfigured Docker Compose eases setup with one-time commands for migrations and database seed.
 
-![DASHBOARD](github-media/dashboard.jpg)
+![DASHBOARD](github-media/dashboard.png)
 
