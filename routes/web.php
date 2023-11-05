@@ -61,6 +61,7 @@ Route::put('/delete-repair/{id}', 'RepairController@delete_repair')->name('delet
 Route::put('/restore-repair/{id}', 'RepairController@restore_repair')->name('restore-repair')->middleware('verified')->middleware('notification');    
 Route::delete('/destroy-repair/{id}', 'RepairController@destroy_repair')->name('destroy-repair')->middleware('admin')->middleware('verified')->middleware('notification');    
 Route::get('print-repair/{id}', 'RepairController@print_repair')->name('print-repair')->middleware('verified')->middleware('notification');    
+Route::get('mail-repair/{id}', 'RepairController@mail_repair')->name('mail-repair')->middleware('verified')->middleware('notification');    
 Route::put('/update-customer-repair/{customer}/{repair}', 'RepairController@update_customer_repair')->name('update-customer-repair')->middleware('verified')->middleware('notification');    
 
 /* REPAIR SETTINGS ROUTES */
@@ -79,7 +80,8 @@ Route::post('/index-invoice/{task?}', 'InvoiceController@index_invoice')->name('
 Route::get('/view-invoice/{id}', 'InvoiceController@view_invoice')->name('view-invoice')->middleware('verified')->middleware('notification');    
 Route::post('/create-invoice/{id}/{task}', 'InvoiceController@create_invoice')->name('create-invoice')->middleware('verified')->middleware('notification');    
 Route::put('/update-invoice/{id}', 'InvoiceController@update_invoice')->name('update-invoice')->middleware('verified')->middleware('notification');    
-Route::get('/print-invoice/{id}/{task}', 'InvoiceController@print_invoice')->name('print-invoice')->middleware('verified')->middleware('notification');    
+Route::get('/print-invoice/{id}/{task}', 'InvoiceController@print_invoice')->name('print-invoice')->middleware('verified')->middleware('notification');
+Route::get('/email-invoice/{id}', 'InvoiceController@email_invoice')->name('email-invoice')->middleware('verified')->middleware('notification');    
 Route::put('/delete-invoice/{id}', 'InvoiceController@delete_invoice')->name('delete-invoice')->middleware('verified')->middleware('notification');    
 Route::put('/restore-invoice/{id}', 'InvoiceController@restore_invoice')->name('restore-invoice')->middleware('verified')->middleware('notification');    
 Route::delete('/destroy-invoice/{id}', 'InvoiceController@destroy_invoice')->name('destroy-invoice')->middleware('admin')->middleware('verified')->middleware('notification');    
