@@ -13,7 +13,6 @@ RUN docker-php-ext-install pdo pdo_mysql zip
 
 COPY ./ /var/www/
 COPY google-app-run-files/000-default.conf /etc/apache2/sites-available/000-default.conf
-COPY google-app-run-files/ports.conf /etc/apache2/ports.conf
 COPY google-app-run-files/.env.google-app-run /var/www/.env
 
 RUN composer install
