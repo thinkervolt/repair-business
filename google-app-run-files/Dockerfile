@@ -1,9 +1,9 @@
-FROM composer:2.2 as build
+FROM composer:2.5 as build
 WORKDIR /app
 COPY . /app
 RUN composer install
 
-FROM php:7.2-apache-buster
+FROM php:8.1-apache-buster
 RUN docker-php-ext-install pdo pdo_mysql
 
 COPY --from=build /app /var/www/
