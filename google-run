@@ -17,7 +17,6 @@ COPY google-app-run-files/ports.conf /etc/apache2/ports.conf
 COPY google-app-run-files/.env.google-app-run /var/www/.env
 
 RUN composer install
-RUN php artisan:key generate
 
 RUN chmod 777 -R /var/www/storage/ && \
     chown -R www-data:www-data /var/www/ && \
