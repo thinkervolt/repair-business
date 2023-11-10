@@ -5,9 +5,10 @@ WORKDIR /var/www/
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN docker-php-ext-install pdo
-RUN docker-php-ext-install zip --with-libzip
 RUN docker-php-ext-install pdo_mysql
 RUN apt install git
+RUN docker-php-ext-configure zip --with-libzip
+RUN docker-php-ext-install zip
 
 COPY ./ /var/www/
 COPY google-app-run-files/000-default.conf /etc/apache2/sites-available/000-default.conf
