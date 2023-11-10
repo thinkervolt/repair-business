@@ -3,7 +3,10 @@ FROM php:8.0.30-apache-buster
 WORKDIR /var/www/
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN docker-php-ext-install pdo pdo_mysql zip
+
+RUN docker-php-ext-install pdo
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install pdo_mysql
 
 COPY ./ /var/www/
 COPY google-app-run-files/000-default.conf /etc/apache2/sites-available/000-default.conf
