@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . /app
 RUN composer install
 
-FROM php:8.1-apache-buster
+FROM php:8.2-apache-buster
 RUN docker-php-ext-install pdo pdo_mysql
 
 COPY --from=build /app /var/www/
