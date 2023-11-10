@@ -2,7 +2,7 @@ FROM php:8.1-rc-apache-buster
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN docker-php-ext-install pdo pdo_mysql
 
-COPY --from=build /app /var/www/
+COPY ./ /var/www/
 COPY google-app-run-files/000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY google-app-run-files/ports.conf /etc/apache2/ports.conf
 COPY google-app-run-files/.env.google-app-run /var/www/.env
