@@ -1,6 +1,7 @@
 FROM composer:2.6.5 as build
 WORKDIR /app
 COPY . /app
+RUN composer update
 RUN composer install
 
 FROM php:8.1-rc-apache-buster
