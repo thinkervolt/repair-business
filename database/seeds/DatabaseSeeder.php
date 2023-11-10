@@ -24,19 +24,12 @@ class DatabaseSeeder extends Seeder
         ]);
         
         DB::table('company_profiles')->insert([
-            'name' => 'REPAIR-BUSINESS',
-            'phone' => '888000000',
-            'email' => 'support@thinkervolt.com',
-            'address' =>'999 Developer Street, Los Angeles, CA90999',
-            'terms' => 
-            
-            'Copyright 2023 thinkervolt - Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
-            documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
-            publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the 
-            following conditions:  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE 
-            SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR
-            A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-            WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.',
+            'name' => 'INCOMPLETE BUSINESS PROFILE - NAME',
+            'phone' => 'INCOMPLETE BUSINESS PROFILE - PHONE',
+            'email' => 'INCOMPLETE BUSINESS PROFILE - EMAIL',
+            'address' =>'INCOMPLETE BUSINESS PROFILE - ADDRESS',
+            'terms' => 'INCOMPLETE BUSINESS PROFILE - TERMS AND CONDITIONS :: TERMS AND CONDITIONS NOT SET - NAVIGATE TO SETTINGS AND ADD YOUR OWN TERMS AND CONDITIONS THAT WILL BE PRINTED ON INVOICES, RECEIPTS AND WILL SHOW ON CUSTOMER SING-UP PAGE. 
+            ',
 
             'created_at' => date("Y-m-d H:i:s"),
             'updated_at' => date("Y-m-d H:i:s"),
@@ -44,10 +37,99 @@ class DatabaseSeeder extends Seeder
 
         DB::table('settings')->insert([
             'name' => 'invoice_tax',
-            'data' => '7.45',
+            'data' => 'INCOMPLETE BUSINESS PROFILE - INVOICE-TAX-RATE',
             'group' => 'tax',
             'created_at' => date("Y-m-d H:i:s"),
             'updated_at' => date("Y-m-d H:i:s"),
         ]);
+
+        DB::table('repair_settings')->insert([
+            'name' => 'RECEIVED',
+            'group' => 'status',
+            'color' => 'secondary',
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+        ]);
+
+        DB::table('repair_settings')->insert([
+            'name' => 'IN-PROGRESS',
+            'group' => 'warning',
+            'color' => 'secondary',
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+        ]);
+        DB::table('repair_settings')->insert([
+            'name' => 'FINISHED',
+            'group' => 'status',
+            'color' => 'primary',
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+        ]);
+        DB::table('repair_settings')->insert([
+            'name' => 'DELIVERED',
+            'group' => 'status',
+            'color' => 'success',
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+        ]);
+        DB::table('repair_settings')->insert([
+            'name' => 'CANCELED',
+            'group' => 'status',
+            'color' => 'danger',
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+        ]);
+        DB::table('repair_settings')->insert([
+            'name' => 'LOW',
+            'group' => 'priority',
+            'color' => 'secondary',
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+        ]);
+        DB::table('repair_settings')->insert([
+            'name' => 'NORMAL',
+            'group' => 'priority',
+            'color' => 'primary',
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+        ]);
+        DB::table('repair_settings')->insert([
+            'name' => 'URGENT',
+            'group' => 'priority',
+            'color' => 'danger',
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+        ]);
+
+
+
+
+
+
+        DB::table('invoice_settings')->insert([
+            'name' => 'PENDING',
+            'group' => 'status',
+            'color' => 'secondary',
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+        ]);
+
+        DB::table('invoice_settings')->insert([
+            'name' => 'OVERDUE',
+            'group' => 'status',
+            'color' => 'danger',
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+        ]);
+        DB::table('invoice_settings')->insert([
+            'name' => 'PAID',
+            'group' => 'status',
+            'color' => 'success',
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+        ]);
+
+
+
     }
 }
