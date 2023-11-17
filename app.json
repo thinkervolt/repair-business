@@ -1,0 +1,11 @@
+{
+    "name":"repair-business",
+    "hooks": {
+        "prebuild": {
+            "commands": [
+                "mv google-run Dockerfile"
+            ]
+        }
+    }
+
+}
