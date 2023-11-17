@@ -1,5 +1,7 @@
 FROM php:8.0.30-apache-buster
 
+EXPOSE ${PORT}
+
 WORKDIR /var/www/
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
