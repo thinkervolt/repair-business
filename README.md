@@ -22,6 +22,3 @@
 Perform operations easily with Docker. Preconfigured Docker Compose eases setup with one-time commands for migrations and database seed.
 
 ![DASHBOARD](github-media/dashboard.png)
-
-[![Run on Google Cloud](github-media/run-on-google-cloud-button.svg)](https://console.cloud.google.com/cloudshell/editor?shellonly=true&cloudshell_image=gcr.io/cloudrun/button&cloudshell_git_repo=https://github.com/thinkervolt/repair-business.git)
-
