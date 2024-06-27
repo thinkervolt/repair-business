@@ -1,0 +1,10 @@
+services:
+    repair-business:
+        build: .
+        ports:
+          - "5050:8000"
+        volumes:
+            - ../:/app/
+        restart: always
+        tty: true
+        container_name: "repair-business-app"
