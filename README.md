@@ -22,3 +22,7 @@
 Perform operations easily with Docker. Preconfigured Docker Compose eases setup with one-time commands for migrations and database seed.
 
 ![DASHBOARD](github-media/dashboard.png)
+
+### Easy and Quick Development
+Folder `dev` has all files to run `docker compose up -d`, it will create a container that you can open at `localhost:5050` and use the application with
+user:`administrator` and password:`password`.
