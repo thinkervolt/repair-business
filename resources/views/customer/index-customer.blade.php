@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('page')
-    Customers
+    {{ __('repair-business.customers') }}
 @endsection
 
 @section('search')
@@ -46,37 +46,22 @@
 
 @section('page-content')
     <div class="container-fluid">
-        @if (session()->has('error'))
-            <div class="alert {{ session()->get('alert') }} alert-dismissible fade show">
-                <li>{{ session()->get('error') }}</li>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
+
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Customers</h1>
+            <h1 class="h3 mb-0 text-gray-800">{{ __('repair-business.customers') }}</h1>
         </div>
-
-
-
-        <!-- Content Row -->
         <div class="row">
-
             <div class="col">
-
-                <!-- INDEX -->
-
                 @if (!$customers->isEmpty())
                     <div class="table-responsive">
 
                         <table class="table table-sm mt-3 table-hover ">
                             <thead>
                                 <tr>
-                                    <th scope="col">NAME</th>
-                                    <th scope="col">PHONE</th>
-                                    <th scope="col">E-MAIL</th>
-                                    <th scope="col">COMPANY</th>
+                                    <th scope="col">{{ __('repair-business.table_name') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_phone') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_email') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_company') }}</th>
                                     <th scope="col"></th>
                                 </tr>
                             </thead>
@@ -92,7 +77,7 @@
                                         <td class="text-right">
                                             <a class="btn btn-primary  btn-sm"
                                                 href="{{ route('view-customer', $customer) }}"><i
-                                                    class="fas fa-binoculars"></i> View</a>
+                                                    class="fas fa-binoculars"></i> {{ __('repair-business.button_view') }}</a>
                                             @if (isset($task))
                                                 @if ($task == 'repair')
                                                     <form class="mt-1" method="POST"
@@ -101,7 +86,7 @@
                                                         @method('PUT')
 
                                                         <button type="submit" class="btn btn-primary btn-sm"><i
-                                                                class="fas fa-plus"></i> Add to Repair</a>
+                                                                class="fas fa-plus"></i>{{ __('repair-business.button_add-to-repair') }}</a>
                                                     </form>
                                                 @endif
 
@@ -112,7 +97,7 @@
                                                         @method('PUT')
 
                                                         <button type="submit" class="btn btn-primary btn-sm"><i
-                                                                class="fas fa-plus"></i> Add to Invoice</a>
+                                                                class="fas fa-plus"></i> {{ __('repair-business.button_add-to-invoice') }}</a>
                                                     </form>
                                                 @endif
                                             @endif
