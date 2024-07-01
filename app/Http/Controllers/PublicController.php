@@ -10,14 +10,18 @@ class PublicController extends Controller
     public function welcome()
     {
         return view('welcome');
-
     }
     public function customer_signup()
     {
 
-        $company_profile = App\CompanyProfile::first();
-        return view('customer-sign-up',compact('company_profile'));
+        /* business-profile */
+        $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+        $company_profile = (object)[];
+        foreach ($business_profile_settings as $setting) {
+            $company_profile->{$setting->name} = $setting->data;
+        }
 
+        return view('customer-sign-up', compact('company_profile'));
     }
 
     public function public_new_customer(request $request)
@@ -54,8 +58,6 @@ class PublicController extends Controller
 
 
 
-        return back()->with('error','You have been Signed-Up')->with('alert', 'alert-success');
-
+        return back()->with('error', 'You have been Signed-Up')->with('alert', 'alert-success');
     }
 }
-

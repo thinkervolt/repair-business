@@ -1,10 +1,9 @@
 @extends('layouts.admin')
 @section('page')
-    Dashboard
+    {{ __('repair-business.dashboard') }}
 @endsection
 
 @section('page-content')
-    <!-- Begin Page Content -->
     <div class="container-fluid">
         @if (session()->has('error'))
             <div class="alert {{ session()->get('alert') }} alert-dismissible fade show">
@@ -13,22 +12,17 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-        @endif
-
-        <!-- Page Heading -->
+        @endif 
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+            <h1 class="h3 mb-0 text-gray-800">{{ __('repair-business.dashboard') }}</h1>
         </div>
-
-        <!-- Content Row -->
         <div class="row">
-            <!-- Earnings (Daily)  -->
             <div class="col-lg mb-4">
                 <div class="card border-left-success shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Earnings - Today
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">{{ __('repair-business.earnings') }} - {{ __('repair-business.today') }}
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
                                     $ {{ number_format((float) $current_year_income['current_day'], 2, '.', ',') }}</div>
@@ -40,15 +34,12 @@
                     </div>
                 </div>
             </div>
-
-
-            <!-- Earnings (Monthly)  -->
             <div class="col-lg mb-4">
                 <div class="card border-left-success  shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success  text-uppercase mb-1">Earnings -
+                                <div class="text-xs font-weight-bold text-success  text-uppercase mb-1">{{ __('repair-business.earnings') }} -
                                     {{ date('M') }}</div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
                                     $ {{ number_format((float) $current_year_income['current_month'], 2, '.', ',') }}</div>
@@ -60,15 +51,12 @@
                     </div>
                 </div>
             </div>
-
-
-            <!-- Earnings (Yearly) Card Example -->
             <div class="col-lg mb-4">
                 <div class="card border-left-success  shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success  text-uppercase mb-1">Earnings -
+                                <div class="text-xs font-weight-bold text-success  text-uppercase mb-1">{{ __('repair-business.earnings') }} -
                                     {{ date('Y') }}</div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
                                     $ {{ number_format((float) $current_year_income['total'], 2, '.', ',') }}</div>
@@ -80,15 +68,13 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Earnings (Monthly) Card Example -->
             <div class="col-lg mb-4">
                 <div class="card border-left-secondary shadow h-100 py-2">
                     <div class="card-body">
                         <a style="text-decoration:none;" href="{{ route('index-repair', ['no-invoice', 0]) }}">
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Repairs not Invoiced
+                                    <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">{{ __('repair-business.repairs-not-invoiced') }}
                                     </div>
                                     <div class="row no-gutters align-items-center">
                                         <div class="col-auto">
@@ -106,15 +92,13 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Pending Requests Card Example -->
             <div class="col-lg mb-4">
                 <div class="card border-left-secondary shadow h-100 py-2">
                     <div class="card-body">
                         <a style="text-decoration:none;" href="{{ route('index-invoice', 'unpaid') }}">
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Unpaid Invoices
+                                    <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">{{ __('repair-business.unpaid-invoices') }}
                                     </div>
                                     <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $unpaid_invoices }}</div>
                                 </div>
@@ -127,44 +111,31 @@
                 </div>
             </div>
         </div>
-
-        <!-- Content Row -->
-
         <div class="row">
-
-            <!-- Area Chart -->
             <div class="col">
                 <div class="card shadow mb-4 border-left-primary">
-                    <!-- Card Header - Dropdown -->
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-
+                        <h6 class="m-0 font-weight-bold text-primary">{{ __('repair-business.earnings-overview') }}</h6>
                     </div>
-                    <!-- Card Body -->
                     <div class="card-body">
                         <div class="chart-area">
-                            <canvas id="myAreaChart"></canvas>
+                            <canvas id="yearly-earnings"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- /.container-fluid -->
 @endsection
 
 @section('scripts')
-    <!-- Page level plugins -->
     <script src="{{ asset('vendor/chart.js/Chart.min.js') }}"></script>
     <script>
-        // Set new default font family and font color to mimic Bootstrap's default styling
         Chart.defaults.global.defaultFontFamily = 'Nunito',
             '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
         Chart.defaults.global.defaultFontColor = '#858796';
 
         function number_format(number, decimals, dec_point, thousands_sep) {
-            // *     example: number_format(1234.56, 2, ',', ' ');
-            // *     return: '1 234,56'
             number = (number + '').replace(',', '').replace(' ', '');
             var n = !isFinite(+number) ? 0 : +number,
                 prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
@@ -175,7 +146,6 @@
                     var k = Math.pow(10, prec);
                     return '' + Math.round(n * k) / k;
                 };
-            // Fix for IE parseFloat(0.55).toFixed(0) = 0;
             s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
             if (s[0].length > 3) {
                 s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
@@ -186,16 +156,25 @@
             }
             return s.join(dec);
         }
-
-        // Area Chart Example
-        var ctx = document.getElementById("myAreaChart");
+        var ctx = document.getElementById("yearly-earnings");
         var myLineChart = new Chart(ctx, {
             type: 'line',
 
             data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                labels: ["{{ __('repair-business.january') }}", 
+                         "{{ __('repair-business.february') }}", 
+                         "{{ __('repair-business.march') }}", 
+                         "{{ __('repair-business.april') }}", 
+                         "{{ __('repair-business.may') }}", 
+                         "{{ __('repair-business.june') }}", 
+                         "{{ __('repair-business.july') }}", 
+                         "{{ __('repair-business.august') }}", 
+                         "{{ __('repair-business.september') }}", 
+                         "{{ __('repair-business.october') }}", 
+                         "{{ __('repair-business.november') }}", 
+                         "{{ __('repair-business.december') }}"],
                 datasets: [{
-                        label: "Earnings {{ date('Y') }}",
+                        label: "{{ __('repair-business.earnings') }} {{ date('Y') }}",
                         lineTension: 0.3,
                         backgroundColor: "rgba(78, 115, 223, 0.05)",
                         borderColor: "rgba(78, 115, 223, 1)",
@@ -207,8 +186,6 @@
                         pointHoverBorderColor: "rgba(78, 115, 223, 1)",
                         pointHitRadius: 10,
                         pointBorderWidth: 2,
-
-
                         data: [
                             {{ $current_year_income['jan'] }},
                             {{ $current_year_income['feb'] }},
@@ -225,7 +202,7 @@
                         ],
                     },
                     {
-                        label: "Earnings {{ date('Y', strtotime('last year')) }}",
+                        label: "{{ __('repair-business.earnings') }} {{ date('Y', strtotime('last year')) }}",
                         lineTension: 0.3,
                         backgroundColor: "rgba(78, 115, 223, 0.05)",
                         borderColor: "rgba(197, 197, 197, 1)",
@@ -282,7 +259,6 @@
                         ticks: {
                             maxTicksLimit: 5,
                             padding: 10,
-                            // Include a dollar sign in the ticks
                             callback: function(value, index, values) {
                                 return '$' + number_format(value);
                             }

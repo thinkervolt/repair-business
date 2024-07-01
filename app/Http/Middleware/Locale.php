@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\View;
 
-class Notifications
+class Locale
 {
     /**
      * Handle an incoming request.
@@ -16,10 +16,16 @@ class Notifications
      */
     public function handle($request, Closure $next)
     {
-        $notifications = \App\Notification::take(3)->get(); 
-        $notifications_count = \App\Notification::count(); 
-        View::share('notifications', $notifications);
-        View::share('notifications_count', $notifications_count);
+
+        $locale = \App\Setting::where('group', 'language')->first();
+
+        if ($locale) {
+            $locale =  $locale->data;
+            if (isset($locale)) {
+                app()->setLocale($locale);
+            }
+        }
+
         return $next($request);
-    } 
+    }
 }

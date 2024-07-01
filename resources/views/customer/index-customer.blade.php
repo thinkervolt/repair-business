@@ -127,7 +127,7 @@
                     </div>
                 @else
                     <div class="alert alert-secondary" role="alert">
-                        Nothing has been found!
+                        {{ __('repair-business.no-information-to-show') }}
                     </div>
                 @endif
             </div>

@@ -9,7 +9,7 @@ use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
 use Exception;
-use Illuminate\Support\Facades\File; 
+use Illuminate\Support\Facades\File;
 
 class RepairController extends Controller
 {
@@ -230,7 +230,13 @@ class RepairController extends Controller
         $comments = App\RepairItem::where('group', 'comment')->where('repair', $id)->get();
         $jobs = App\RepairItem::where('group', 'job')->where('repair', $id)->get();
 
-        $company_profile = App\CompanyProfile::first();
+        /* business-profile */
+        $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+        $company_profile = (object)[];
+        foreach ($business_profile_settings as $setting) {
+            $company_profile->{$setting->name} = $setting->data;
+        }
+
 
         return view('repair.print-repair', compact('repair', 'users', 'statuses', 'priorities', 'logs', 'comments', 'jobs', 'company_profile'));
     }
@@ -249,7 +255,13 @@ class RepairController extends Controller
         $logs =  App\Log::where('table', 'repairs')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
         $comments = App\RepairItem::where('group', 'comment')->where('repair', $id)->get();
         $jobs = App\RepairItem::where('group', 'job')->where('repair', $id)->get();
-        $company_profile = App\CompanyProfile::first();
+        /* business-profile */
+        $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+        $company_profile = (object)[];
+        foreach ($business_profile_settings as $setting) {
+            $company_profile->{$setting->name} = $setting->data;
+        }
+
 
 
         $pdf = Pdf::loadView('repair.mail-repair', compact('repair', 'users', 'statuses', 'priorities', 'logs', 'comments', 'jobs', 'company_profile'))->setOptions(['defaultFont' => 'sans-serif']);

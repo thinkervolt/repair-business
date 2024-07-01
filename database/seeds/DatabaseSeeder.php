@@ -23,17 +23,6 @@ class DatabaseSeeder extends Seeder
             'updated_at' => date("Y-m-d H:i:s"),
         ]);
         
-        DB::table('company_profiles')->insert([
-            'name' => 'INCOMPLETE BUSINESS PROFILE - NAME',
-            'phone' => 'INCOMPLETE BUSINESS PROFILE - PHONE',
-            'email' => 'INCOMPLETE BUSINESS PROFILE - EMAIL',
-            'address' =>'INCOMPLETE BUSINESS PROFILE - ADDRESS',
-            'terms' => 'INCOMPLETE BUSINESS PROFILE - TERMS AND CONDITIONS :: TERMS AND CONDITIONS NOT SET - NAVIGATE TO SETTINGS AND ADD YOUR OWN TERMS AND CONDITIONS THAT WILL BE PRINTED ON INVOICES, RECEIPTS AND WILL SHOW ON CUSTOMER SING-UP PAGE. 
-            ',
-
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at' => date("Y-m-d H:i:s"),
-        ]);
 
         DB::table('settings')->insert([
             'name' => 'invoice_tax',
@@ -101,11 +90,6 @@ class DatabaseSeeder extends Seeder
             'updated_at' => date("Y-m-d H:i:s"),
         ]);
 
-
-
-
-
-
         DB::table('invoice_settings')->insert([
             'name' => 'PENDING',
             'group' => 'status',
@@ -128,6 +112,18 @@ class DatabaseSeeder extends Seeder
             'created_at' => date("Y-m-d H:i:s"),
             'updated_at' => date("Y-m-d H:i:s"),
         ]);
+        DB::table('settings')->insert([
+            'name' => 'language',
+            'data' => 'en',
+            'group' => 'language',
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+        ]);
+
+        $this->call([
+            BusinessProfileSeeder::class,
+        ]);
+
 
 
 

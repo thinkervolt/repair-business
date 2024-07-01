@@ -74,7 +74,13 @@ class InvoiceController extends Controller
 
             $repair = App\Repair::findOrFail($id);
 
-            $company_profile = App\CompanyProfile::first();
+            /* business-profile */
+            $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+            $company_profile = (object)[];
+            foreach ($business_profile_settings as $setting) {
+                $company_profile->{$setting->name} = $setting->data;
+            }
+
 
             $invoice_tax_string = App\Setting::where('name', 'invoice_tax')->where('group', 'tax')->firstOrFail();
             $invoice_tax = (float)$invoice_tax_string->data;
@@ -144,8 +150,16 @@ class InvoiceController extends Controller
 
         if ($task == 'empty') {
 
+            /* business-profile */
+            $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+            $company_profile = (object)[];
+            foreach ($business_profile_settings as $setting) {
+                $company_profile->{$setting->name} = $setting->data;
+            }
 
-            $company_profile = App\CompanyProfile::first();
+
+
+
 
             $invoice_tax_string = App\Setting::where('name', 'invoice_tax')->where('group', 'tax')->firstOrFail();
             $invoice_tax = (float)$invoice_tax_string->data;
@@ -322,7 +336,13 @@ class InvoiceController extends Controller
         $logs =  App\Log::where('table', 'invoices')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
         $payments = App\Payment::where('invoice', $id)->where('active', 'yes')->get();
 
-        $company_profile = App\CompanyProfile::first();
+        /* business-profile */
+        $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+        $company_profile = (object)[];
+        foreach ($business_profile_settings as $setting) {
+            $company_profile->{$setting->name} = $setting->data;
+        }
+
         $terms = $company_profile->terms;
 
         if ($task == 'print') {
@@ -347,7 +367,13 @@ class InvoiceController extends Controller
         $logs =  App\Log::where('table', 'invoices')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
         $payments = App\Payment::where('invoice', $id)->where('active', 'yes')->get();
 
-        $company_profile = App\CompanyProfile::first();
+        /* business-profile */
+        $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+        $company_profile = (object)[];
+        foreach ($business_profile_settings as $setting) {
+            $company_profile->{$setting->name} = $setting->data;
+        }
+
         $terms = $company_profile->terms;
 
         /* return view('invoice.email-invoice',compact('invoice','invoice_items','invoice_statuses','logs','payments','terms','transactions')); */

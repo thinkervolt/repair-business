@@ -28,9 +28,8 @@ class SettingController extends Controller
      
     public function index_setting()
     {
-        $settings = App\Setting::all();
-        $company_profile = App\CompanyProfile::first();
-        return view('setting.index-setting',compact('settings','company_profile'));
+        $settings = App\Setting::orderBy('group','asc')->get();
+        return view('setting.index-setting',compact('settings'));
         
     }
 
