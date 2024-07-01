@@ -5,14 +5,6 @@
 
 @section('page-content')
     <div class="container-fluid">
-        @if (session()->has('error'))
-            <div class="alert {{ session()->get('alert') }} alert-dismissible fade show">
-                <li>{{ session()->get('error') }}</li>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif 
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">{{ __('repair-business.dashboard') }}</h1>
         </div>
@@ -22,7 +14,8 @@
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">{{ __('repair-business.earnings') }} - {{ __('repair-business.today') }}
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    {{ __('repair-business.earnings') }} - {{ __('repair-business.today') }}
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
                                     $ {{ number_format((float) $current_year_income['current_day'], 2, '.', ',') }}</div>
@@ -39,7 +32,8 @@
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success  text-uppercase mb-1">{{ __('repair-business.earnings') }} -
+                                <div class="text-xs font-weight-bold text-success  text-uppercase mb-1">
+                                    {{ __('repair-business.earnings') }} -
                                     {{ date('M') }}</div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
                                     $ {{ number_format((float) $current_year_income['current_month'], 2, '.', ',') }}</div>
@@ -56,7 +50,8 @@
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success  text-uppercase mb-1">{{ __('repair-business.earnings') }} -
+                                <div class="text-xs font-weight-bold text-success  text-uppercase mb-1">
+                                    {{ __('repair-business.earnings') }} -
                                     {{ date('Y') }}</div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
                                     $ {{ number_format((float) $current_year_income['total'], 2, '.', ',') }}</div>
@@ -74,7 +69,8 @@
                         <a style="text-decoration:none;" href="{{ route('index-repair', ['no-invoice', 0]) }}">
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">{{ __('repair-business.repairs-not-invoiced') }}
+                                    <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                        {{ __('repair-business.repairs-not-invoiced') }}
                                     </div>
                                     <div class="row no-gutters align-items-center">
                                         <div class="col-auto">
@@ -98,7 +94,8 @@
                         <a style="text-decoration:none;" href="{{ route('index-invoice', 'unpaid') }}">
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">{{ __('repair-business.unpaid-invoices') }}
+                                    <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                        {{ __('repair-business.unpaid-invoices') }}
                                     </div>
                                     <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $unpaid_invoices }}</div>
                                 </div>
@@ -161,18 +158,19 @@
             type: 'line',
 
             data: {
-                labels: ["{{ __('repair-business.january') }}", 
-                         "{{ __('repair-business.february') }}", 
-                         "{{ __('repair-business.march') }}", 
-                         "{{ __('repair-business.april') }}", 
-                         "{{ __('repair-business.may') }}", 
-                         "{{ __('repair-business.june') }}", 
-                         "{{ __('repair-business.july') }}", 
-                         "{{ __('repair-business.august') }}", 
-                         "{{ __('repair-business.september') }}", 
-                         "{{ __('repair-business.october') }}", 
-                         "{{ __('repair-business.november') }}", 
-                         "{{ __('repair-business.december') }}"],
+                labels: ["{{ __('repair-business.january') }}",
+                    "{{ __('repair-business.february') }}",
+                    "{{ __('repair-business.march') }}",
+                    "{{ __('repair-business.april') }}",
+                    "{{ __('repair-business.may') }}",
+                    "{{ __('repair-business.june') }}",
+                    "{{ __('repair-business.july') }}",
+                    "{{ __('repair-business.august') }}",
+                    "{{ __('repair-business.september') }}",
+                    "{{ __('repair-business.october') }}",
+                    "{{ __('repair-business.november') }}",
+                    "{{ __('repair-business.december') }}"
+                ],
                 datasets: [{
                         label: "{{ __('repair-business.earnings') }} {{ date('Y') }}",
                         lineTension: 0.3,
