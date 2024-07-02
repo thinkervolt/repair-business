@@ -198,6 +198,15 @@ class InvoiceController extends Controller
         $items_sum = App\InvoiceItem::where('invoice', $id)->sum('total');
         $payments_sum = App\Payment::where('invoice', $id)->sum('amount');
 
+        $transactions_sum =  0;
+
+        $transactions = App\InventoryTransaction::where('invoice_id', $id)->get();
+
+        foreach($transactions as $transaction){
+
+            $transactions_sum = $transactions_sum + ($transaction->quantity * $transaction->selling_price);
+        }
+
         $invoice_log_update = '';
 
         if ($invoice->customer_name != $request->customer_name) {
@@ -257,10 +266,13 @@ class InvoiceController extends Controller
         $invoice->status = $request->status;
         $invoice->tax_porcentage = $request->tax_porcentage;
 
-        $invoice->subtotal = (float)$items_sum;
-        $invoice->tax = (float)($items_sum / 100) *  (float)$request->tax_porcentage;
-        $invoice->total = (float)$items_sum + (($items_sum / 100) *  (float)$request->tax_porcentage);
-        $invoice->balance = ((float)$items_sum + (($items_sum / 100) *  (float)$request->tax_porcentage)) - $payments_sum;
+
+        $invoice_items = $items_sum + $transactions_sum; 
+
+        $invoice->subtotal = (float)$invoice_items;
+        $invoice->tax = (float)($invoice_items / 100) *  (float)$request->tax_porcentage;
+        $invoice->total = (float)$invoice_items + (($invoice_items / 100) *  (float)$request->tax_porcentage);
+        $invoice->balance = ((float)$invoice_items + (($invoice_items / 100) *  (float)$request->tax_porcentage)) - $payments_sum;
         $invoice->save();
 
         $log = new App\Log;
@@ -378,7 +390,7 @@ class InvoiceController extends Controller
 
         /* return view('invoice.email-invoice',compact('invoice','invoice_items','invoice_statuses','logs','payments','terms','transactions')); */
 
-        $pdf = Pdf::loadView('invoice.mail-invoice', compact('invoice', 'invoice_items', 'invoice_statuses', 'logs', 'payments', 'terms', 'transactions'))->setOptions(['defaultFont' => 'sans-serif']);
+        $pdf = Pdf::loadView('invoice.print-invoice-receipt', compact('invoice', 'invoice_items', 'invoice_statuses', 'logs', 'payments', 'terms', 'transactions'))->setOptions(['defaultFont' => 'sans-serif']);
         $pdf->save(public_path() . '/invoice-receipt.pdf');
 
         $mail_data = (object)[];

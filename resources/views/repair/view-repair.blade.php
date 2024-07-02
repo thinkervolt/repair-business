@@ -5,6 +5,13 @@
 
 @section('page-content')
     <div class="container-fluid">
+        <div id="repair-alert" class="alert  alert-dismissible fade d-none">
+            <li id="repair-alert-message"></li>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">{{ __('repair-business.repair') }} #{{ $repair->id }}</h1>
 

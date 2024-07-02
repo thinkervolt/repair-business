@@ -1,3 +1,4 @@
 @component('mail::message')
-Here you go {{$mail_data->invoice->customer_name}}, We attached to this E-mail your Requested Invoice.
+{{ __('repair-business.email_repair-markdown-beginning') }} {{$mail_data->invoice->customer_name}}, {{ __('repair-business.email_repair-markdown-end') }}
 @endcomponent
+

@@ -1,12 +1,11 @@
 <html>
-
 <head>
     <style>
         @font-face {
             font-family: 'Nunito';
             font-style: normal;
             font-weight: 400;
-            src: url({{ asset('/vendor/google-fonts/nunito/Nunito-Regular.ttf')}}) format('truetype');
+            src: url({{ asset('/vendor/google-fonts/nunito/Nunito-Regular.ttf') }}) format('truetype');
         }
     </style>
 </head>
@@ -31,11 +30,8 @@
         display: block;
         width: 100%;
         margin: 0;
-        padding: 0;
+        padding-top: 25px;
     }
-
-
-
 
     .data-block {
         padding-left: 30px;
@@ -70,8 +66,6 @@
         margin: 0;
         padding: 0;
         font-size: 18px;
-
-
     }
 
     .center {
@@ -105,7 +99,8 @@
 
     <div class="print-area-container">
         <div class="data-block">
-            <p class="big-data-line center">INVOICE RECEIPT</p>
+            <p class="big-data-line center">{{ __('repair-business.invoice') }} #{{ $invoice->id }}</p>
+            <p class="data-line center">{{ date_format($invoice->created_at, 'M d, Y') }}</p>
         </div>
         <div class="data-block">
 
@@ -114,13 +109,9 @@
             <p class="data-line left">{{ $invoice->company_email }}</p>
             <p class="data-line left">{{ $invoice->company_address }}</p>
         </div>
-        <div class="data-block">
-            <p class="big-data-line center">INVOICE #{{ $invoice->id }}</p>
-            <p class="data-line center">{{ date_format($invoice->created_at, 'M d, Y') }}</p>
-        </div>
 
         <div class="data-block">
-            <p class="big-data-line">CUSTOMER</p>
+            <p class="big-data-line">{{ __('repair-business.customer') }}</p>
             <p class="data-line">{{ $invoice->customer_company }}</p>
             <p class="data-line">{{ $invoice->customer_name }}</p>
             <p class="data-line">{{ preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $invoice->customer_phone) }}
@@ -198,7 +189,7 @@
                 <tr>
                     <td></td>
                     <td colspan="2">
-                        <p class="data-line right">Subtotal</p>
+                        <p class="data-line right">{{ __('repair-business.subtotal') }}</p>
                     </td>
                     <td>
                         <p class="data-line right">${{ number_format((float) $invoice->subtotal, 2, '.', ',') }}</p>
@@ -208,7 +199,7 @@
                 <tr>
                     <td></td>
                     <td colspan="2">
-                        <p class="data-line right">TAX (
+                        <p class="data-line right">{{ __('repair-business.tax') }} (
                             {{ number_format((float) $invoice->tax_porcentage, 2, '.', ',') }}%)</p>
                     </td>
                     <td>
@@ -218,7 +209,7 @@
                 <tr>
 
                     <td colspan="2">
-                        <p class="big-data-line right">Total</p>
+                        <p class="big-data-line right">{{ __('repair-business.total') }}</p>
                     </td>
                     <td colspan="2">
                         <p class="big-data-line right">${{ number_format((float) $invoice->total, 2, '.', ',') }}</p>
@@ -231,21 +222,16 @@
                         <tr>
                             <td></td>
                             <td colspan="2">
-                                <p class="data-line right">Payment</p>
+                                <p class="data-line right">{{ __('repair-business.payment') }}</p>
                                 <p class="small-data-line right">{{ $payment->method }}</p>
                                 <p class="small-data-line right">{{ date_format($payment->created_at, 'M d, Y h:iA') }}
                                 </p>
 
                             </td>
                             <td>
-
-
                                 <p class="data-line right">${{ number_format((float) $payment->amount, 2, '.', ',') }}
                                 </p>
                             </td>
-
-
-
                         </tr>
                     @endforeach
 
@@ -253,28 +239,22 @@
                 <tr>
                     <td></td>
                     <td colspan="2">
-                        <p class="data-line right">Balance</p>
+                        <p class="data-line right">{{ __('repair-business.balance') }}</p>
                     </td>
-
                     <td>
                         <p class="data-line right">${{ number_format((float) $invoice->balance, 2, '.', ',') }}</p>
                     </td>
-
-
                 </tr>
-
-
-
             </table>
         </div>
-
-
-
-
-
         <div class="data-block">
             <div class="barcode">
-                @php echo DNS1D::getBarcodeSVG('INV'.$invoice->id, 'C39',2,50,'black' ,false); @endphp
+
+                @if (Route::is('print-invoice'))
+                    @php echo DNS2D::getBarcodeSVG(route('view-invoice',$invoice->id), 'QRCODE',4,4) @endphp
+                @else
+                    <img src="data:image/png;base64, {!! base64_encode(DNS2D::getBarcodeSVG(route('view-invoice', $invoice->id), 'QRCODE', 4, 4)) !!} ">
+                @endif
             </div>
         </div>
 
@@ -282,15 +262,11 @@
             <p class="small-data-line justify">{{ $terms }}</p>
 
         </div>
-
-
-
-
-
-        <script>
-            window.print();
-        </script>
-
+        @if (Route::is('print-invoice'))
+            <script>
+                window.print();
+            </script>
+        @endif
 </body>
 
 </html>

@@ -1,14 +1,12 @@
 @extends('layouts.admin')
 @section('page')
-    Invoices
+{{ __('repair-business.invoices') }}
 @endsection
 
 @section('search')
     <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" method="post"
         action="{{ route('search-invoice') }}">
         @csrf
-
-
         <div class="input-group">
             <input type="text" class="form-control bg-light border-0 small" id="search" name="search"
                 value="@if (isset($search)) {{ $search }} @endif" aria-label="Search"
@@ -46,50 +44,29 @@
 @endsection
 
 @section('page-content')
-
-
-    <!-- Begin Page Content -->
     <div class="container-fluid">
-        @if (session()->has('error'))
-            <div class="alert {{ session()->get('alert') }} alert-dismissible fade show">
-                <li>{{ session()->get('error') }}</li>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
-        <!-- Page Heading -->
+    
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Invoices</h1>
-
+            {{ __('repair-business.invoices') }}
         </div>
-
-
-
-        <!-- Content Row -->
         <div class="row">
-
             <div class="col">
-
-                <!-- INDEX -->
-
                 @if (!$invoices->isEmpty())
                     <div class="table-responsive">
 
                         <table class="table table-sm mt-3 table-hover ">
                             <thead>
                                 <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">CUSTOMER</th>
-                                    <th scope="col">DESCRIPTION</th>
-                                    <th scope="col">STATUS</th>
-                                    <th scope="col">BALANCE</th>
+                                    <th scope="col">{{ __('repair-business.table_id') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_customer') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_description') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_status') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_balance') }}</th>
                                     <th scope="col"></th>
                                     <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
-
                                 @foreach ($invoices as $invoice)
                                     <tr>
                                         <td>
@@ -127,7 +104,7 @@
 
                                         <td><a class="btn btn-primary btn-block btn-sm"
                                                 href="{{ route('view-invoice', $invoice) }}"><i
-                                                    class="fas fa-binoculars"></i> View</a></td>
+                                                    class="fas fa-binoculars"></i> {{ __('repair-business.button_view') }}</a></td>
                                     </tr>
                                 @endforeach
 

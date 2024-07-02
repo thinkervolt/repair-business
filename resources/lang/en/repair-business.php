@@ -15,6 +15,10 @@ return [
     'button_invoice' => 'Invoice',
     'button_customer' => 'Customer',
     'button_add-product' => 'Add Product',
+    'button_repair' => 'Repair',
+    'button_product' => 'Product',
+    'button_print' => 'Print',
+    'button_email' => 'E-mail',
 
     /* title */
     'settings' => 'Settings',
@@ -25,6 +29,7 @@ return [
     'view-customer' => 'View Customer',
     'repair' => 'Repair',
     'repairs' => 'Repairs',
+    'invoice' => 'Invoice',
     'invoices' => 'Invoices',
     'create-repair' => 'Create Repair',
     'assigned' => 'Assigned',
@@ -36,6 +41,8 @@ return [
     'drop-off-receipt' => 'DROP-OFF RECEIPT',
     'repair-settings' => 'Repair Settings',
     'priority_and_status' => 'Priority & Status',
+    'payment' => 'Payment',
+    'invoice_settings' => 'Invoice Settings',
     
     /* table */
     'table_id' => 'ID',
@@ -78,6 +85,7 @@ return [
     'input_priority' => 'Priority',
     'input_estimate' => 'Estimate',
     'input_description' => 'Description',
+    'input_sub-description' => 'Sub-Description',
     'input_group' => 'Group',
     'input_job' => 'Job',
     'input_comment' => 'Comment',
@@ -90,6 +98,17 @@ return [
     'input_info' => 'Info',
     'input_light' => 'Light',
     'input_white' => 'White',
+    'input_tax' => 'Tax',
+    'input_unit-cost' => 'Unit Cost',
+    'input_quantity' => 'Quantity',
+    'input_amount' => 'Amount',
+    'input_method' => 'Method',
+    'input_reference' => 'Reference',
+    'input_cash' => 'Cash',
+    'input_card' => 'Card',
+    'input_check' => 'Check',
+    'input_other' => 'Other',
+
 
 
     /* messages */
@@ -105,6 +124,12 @@ return [
     'jobs' => 'Jobs',
     'comment' => 'Comment',
     'estimate' => 'Estimate',
+    'to'=>'To',
+    'from' => 'From',
+    'subtotal' => 'Subtotal',
+    'tax' => 'Tax',
+    'total' => 'Total',
+    'balance' => 'Balance',
     
 
     /* months */
@@ -123,6 +148,9 @@ return [
 
     /* email */
     'email_receipt-subject' => 'Your Requested Receipt',
+    'email_invoice-subject' => 'Your Requested Invoice',
     'email_repair-markdown-beginning'=> 'Here you go',
     'email_repair-markdown-end'=> ', We attached to this E-mail your Requested Drop-off Receipt.',
+    'email_invoice-markdown-beginning'=> 'Here you go',
+    'email_invoice-markdown-end'=> ', We attached to this E-mail your Requested Invoice Copy.',
 ];
