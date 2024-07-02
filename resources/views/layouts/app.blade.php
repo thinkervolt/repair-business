@@ -8,8 +8,17 @@
     <title>{{ config('app.name', 'REPAIR-BUSINESS') }}</title>
     <link rel="shortcut icon" href="{{ asset('vendor/fontawesome-free/favicon.ico') }}">
     <script src="{{ asset('js/app.js') }}" defer></script>
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+
+    <style>
+        @font-face {
+            font-family: 'Nunito';
+            font-style: normal;
+            font-weight: 400;
+            src: url({{ asset('/vendor/google-fonts/nunito/Nunito-Regular.ttf')}}) format('truetype');
+        }
+    </style>
+    
+
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 

@@ -10,15 +10,32 @@ return [
     'button_add-to-invoice' => 'Add to Invoice',
     'button_create-repair'=> 'Create Repair',
     'button_add-to-invoice'=> 'Add to Invoice',
+    'button_mail-receipt' => 'Mail Receipt',
+    'button_receipt' => 'Receipt',
+    'button_invoice' => 'Invoice',
+    'button_customer' => 'Customer',
+    'button_add-product' => 'Add Product',
 
     /* title */
     'settings' => 'Settings',
     'dashboard' => 'Dashboard',
     'create-customer' => 'Create Customer',
+    'customer' => 'Customer',
     'customers' => 'Customers',
     'view-customer' => 'View Customer',
+    'repair' => 'Repair',
     'repairs' => 'Repairs',
     'invoices' => 'Invoices',
+    'create-repair' => 'Create Repair',
+    'assigned' => 'Assigned',
+    'information' => 'Information',
+    'priority' => 'Priority',
+    'status' => 'Status',
+    'jobs_and_comments' => 'Jobs & Comments',
+    'parts' => 'Parts',
+    'drop-off-receipt' => 'DROP-OFF RECEIPT',
+    'repair-settings' => 'Repair Settings',
+    'priority_and_status' => 'Priority & Status',
     
     /* table */
     'table_id' => 'ID',
@@ -34,8 +51,17 @@ return [
     'table_priority' => 'PRIORITY',
     'table_status' => 'STATUS',
     'table_balance' => 'BALANCE',
+    'table_customer' => 'CUSTOMER',
+    'table_item' => 'ITEM',
+    'table_description' => 'DESCRIPTION',
+    'table_unit-cost' => 'UNIT COST',
+    'table_quantity' => 'QTY',
+    'table_total' => 'TOTAL',
+    'table_date' => 'DATE',
+    'table_color' => 'COLOR',
 
     /* inputs */
+    'input_name' => 'Name',
     'input_first-name' => 'First Name',
     'input_last-name' => 'Last Name',
     'input_phone' => 'Phone',
@@ -45,6 +71,26 @@ return [
     'input_state' => 'State',
     'input_zip' => 'ZIP',
     'input_company' => 'Company',
+    'input_repair-target' => 'What are we Fixing?',
+    'input_repair-request' => 'What is the Problem?',
+    'input_assigned' => 'Assigned',
+    'input_status' => 'Status',
+    'input_priority' => 'Priority',
+    'input_estimate' => 'Estimate',
+    'input_description' => 'Description',
+    'input_group' => 'Group',
+    'input_job' => 'Job',
+    'input_comment' => 'Comment',
+    'input_color' => 'Color',
+    'input_primary' => 'Primary',
+    'input_secondary' => 'Secondary',
+    'input_success' => 'Success',
+    'input_danger' => 'Danger',
+    'input_warning' => 'Warning',
+    'input_info' => 'Info',
+    'input_light' => 'Light',
+    'input_white' => 'White',
+
 
     /* messages */
     'no-information-to-show' => 'Nothing has been found!',
@@ -55,6 +101,11 @@ return [
     /* general */
     'earnings' => 'Earnings',
     'today' => 'Today',
+    'job' => 'Job',
+    'jobs' => 'Jobs',
+    'comment' => 'Comment',
+    'estimate' => 'Estimate',
+    
 
     /* months */
     'january' => 'January',
@@ -69,4 +120,9 @@ return [
     'october' => 'October',
     'november' => 'November',
     'december' => 'December',
+
+    /* email */
+    'email_receipt-subject' => 'Your Requested Receipt',
+    'email_repair-markdown-beginning'=> 'Here you go',
+    'email_repair-markdown-end'=> ', We attached to this E-mail your Requested Drop-off Receipt.',
 ];

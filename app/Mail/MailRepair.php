@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use \Illuminate\Support\Facades\Lang;
 
 class MailRepair extends Mailable
 {
@@ -30,6 +31,6 @@ class MailRepair extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.repair')->subject('repair-by-mail')->attach(public_path().'/repair-receipt.pdf');
+        return $this->markdown('emails.repair')->subject(Lang::get('repair-business.email_receipt-subject'))->attach(public_path().'/repair-receipt.pdf');
     }
 }

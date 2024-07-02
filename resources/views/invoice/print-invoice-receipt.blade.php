@@ -1,7 +1,14 @@
 <html>
 
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@1,800&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Nunito';
+            font-style: normal;
+            font-weight: 400;
+            src: url({{ asset('/vendor/google-fonts/nunito/Nunito-Regular.ttf')}}) format('truetype');
+        }
+    </style>
 </head>
 <style>
     @media print {

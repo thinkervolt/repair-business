@@ -1,7 +1,14 @@
 <html>
 
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@1,800&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Nunito';
+            font-style: normal;
+            font-weight: 400;
+            src: url({{ asset('/vendor/google-fonts/nunito/Nunito-Regular.ttf') }}) format('truetype');
+        }
+    </style>
 </head>
 <style>
     @media print {
@@ -26,19 +33,15 @@
         margin-left: 0;
         margin-right: 0;
         margin-bottom: 0;
-        margin-top: 20px;
-        padding: 0;
+        margin-top: 0;
+        padding-top: 25px;
     }
-
-
-
 
     .data-block {
         padding-left: 30px;
         padding-right: 30px;
         padding-bottom: 15px;
     }
-
 
     .small-data-line {
         text-align: left;
@@ -66,8 +69,6 @@
         margin: 0;
         padding: 0;
         font-size: 18px;
-
-
     }
 
     .center {
@@ -79,44 +80,30 @@
     }
 
     .justify {
-
         text-align: justify;
-
     }
 
     .barcode {
-
         text-align: center;
         padding-top: 5px;
     }
 </style>
 
 <body>
-
     <div class="print-area-container">
-
         <div class="data-block">
-            <p class="big-data-line center">DROP-OFF RECEIPT</p>
-
-
-
+            <p class="big-data-line center">{{ __('repair-business.drop-off-receipt') }}</p>
         </div>
-
         <div class="data-block">
             <p class="data-line left">{{ $company_profile->name ?? '' }}</p>
             <p class="data-line left">
                 {{ preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $company_profile->phone) }}</p>
             <p class="data-line left">{{ $company_profile->email }}</p>
             <p class="data-line left">{{ $company_profile->address }}</p>
-
         </div>
-
-
-
     </div>
-
     <div class="data-block">
-        <p class="big-data-line center">REPAIR #{{ $repair->id }}</p>
+        <p class="big-data-line center">{{ __('repair-business.repair') }} #{{ $repair->id }}</p>
 
 
 
@@ -125,7 +112,7 @@
 
     <div class="data-block">
         @if (isset($repair->customer_data))
-            <p class="big-data-line">CUSTOMER</p>
+            <p class="big-data-line">{{ __('repair-business.customer') }}</p>
             <p class="data-line">{{ $repair->customer_data->company }}</p>
             <p class="data-line">{{ $repair->customer_data->first_name }} {{ $repair->customer_data->last_name }}</p>
             <p class="data-line">
@@ -137,23 +124,20 @@
     </div>
 
     <div class="data-block">
-        <p class="big-data-line">REPAIR</p>
+        <p class="big-data-line">{{ __('repair-business.repair') }}</p>
         <p class="data-line">{{ $repair->target }}</p>
         <p class="data-line">{{ $repair->request }}</p>
     </div>
 
     <div class="data-block">
         @if (isset($repair->estimate))
-            <p class="big-data-line right">Estimate ${{ number_format((float) $repair->estimate, 2, '.', '') }}</p>
+            <p class="big-data-line right">{{ __('repair-business.estimate') }}
+                ${{ number_format((float) $repair->estimate, 2, '.', '') }}</p>
         @endif
     </div>
-
-
-
-
     @if (!$jobs->isEmpty())
         <div class="data-block">
-            <p class="big-data-line">JOBS</p>
+            <p class="big-data-line">{{ __('repair-business.jobs') }}</p>
             @foreach ($jobs as $job)
                 <p class="data-line">{{ $job->data }}</p>
                 <p class="data-line">{{ date_format($job->created_at, 'M d, Y') }}</p>
@@ -161,25 +145,24 @@
         </div>
     @endif
     </div>
-
     <div class="data-block">
-
         <div class="barcode">
-            @php echo DNS1D::getBarcodeSVG('REP'.$repair->id, 'C39',2,50,'black' ,false); @endphp
+            @if (Route::is('print-repair'))
+                @php echo DNS2D::getBarcodeSVG(route('view-repair',$repair->id), 'QRCODE',4,4) @endphp
+            @else
+                <img src="data:image/png;base64, {!! base64_encode(DNS2D::getBarcodeSVG(route('view-repair', $repair->id), 'QRCODE', 4, 4)) !!} ">
+            @endif
         </div>
-
-
     </div>
-
     <div class="data-block">
-
         <p class="small-data-line justify">{{ $company_profile->terms }}</p>
-
     </div>
-    <script>
-        window.print();
-    </script>
 
+    @if (Route::is('print-repair'))
+        <script>
+            window.print();
+        </script>
+    @endif
 </body>
 
 </html>

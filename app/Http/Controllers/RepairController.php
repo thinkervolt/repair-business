@@ -264,7 +264,7 @@ class RepairController extends Controller
 
 
 
-        $pdf = Pdf::loadView('repair.mail-repair', compact('repair', 'users', 'statuses', 'priorities', 'logs', 'comments', 'jobs', 'company_profile'))->setOptions(['defaultFont' => 'sans-serif']);
+        $pdf = Pdf::loadView('repair.print-repair', compact('repair', 'users', 'statuses', 'priorities', 'logs', 'comments', 'jobs', 'company_profile'))->setOptions(['defaultFont' => 'sans-serif']);
         $pdf->save(public_path() . '/repair-receipt.pdf');
 
         $mail_data = (object)[];
@@ -290,7 +290,7 @@ class RepairController extends Controller
                     if (File::exists(public_path() . '/repair-receipt.pdf')) {
                         File::delete(public_path() . '/repair-receipt.pdf');
                     }
-                    return back()->with('error', 'Something went Wrong.')->with('alert', 'alert-danger');
+                    return back()->with('error', 'Something went Wrong.'.$ex)->with('alert', 'alert-danger');
                 }
             } else {
                 if (File::exists(public_path() . '/repair-receipt.pdf')) {

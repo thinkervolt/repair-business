@@ -1,3 +1,4 @@
 @component('mail::message')
-Here you go {{$mail_data->repair->customer_data->first_name}}, We attached to this E-mail your Requested Drop-off Receipt.
+{{ __('repair-business.email_repair-markdown-beginning') }} {{$mail_data->repair->customer_data->first_name}} {{ __('repair-business.email_repair-markdown-end') }}
 @endcomponent
+ 
