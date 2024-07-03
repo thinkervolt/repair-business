@@ -81,20 +81,10 @@
     <div class="topbar-divider d-none d-sm-block"></div>
     <hr class="sidebar-divider">
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePayments"
-            aria-expanded="true" aria-controls="collapsePayments">
+        <a class="nav-link collapsed" href="{{ route('index-payment') }}" >
             <i class="fas fa-money-bill-alt"></i>
             <span>Payments</span>
         </a>
-        <div id="collapsePayments" class="collapse" aria-labelledby="collapsePayments"
-            data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-
-                <a class="collapse-item" href="{{ route('new-payment') }}">Create Payment</a>
-
-                <a class="collapse-item" href="{{ route('index-payment') }}">Payments</a>
-            </div>
-        </div>
     </li>
     <hr class="sidebar-divider">
     <li class="nav-item">

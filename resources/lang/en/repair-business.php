@@ -21,6 +21,8 @@ return [
     'button_email' => 'E-mail',
     'button_restock' => 'Restock',
     'button_save' => 'Save',
+    'button_view-invoice' => 'View Invoice',
+    'button_report' => 'Report',
 
     /* title */
     'settings' => 'Settings',
@@ -44,6 +46,7 @@ return [
     'repair-settings' => 'Repair Settings',
     'priority_and_status' => 'Priority & Status',
     'payment' => 'Payment',
+    'payments' => 'Payments',
     'invoice_settings' => 'Invoice Settings',
     'inventory-products' => 'Inventory Products',
     'product' => 'Product',
@@ -52,6 +55,8 @@ return [
     'transaction' => 'Transaction',
     'transactions' => 'Transactions',
     'categories' => 'Categories',
+    'create-payment' => 'Create Payment',
+    'create-report' => 'Create Report',
     
     /* table */
     'table_id' => 'ID',
@@ -85,6 +90,9 @@ return [
     'table_repair' => 'REPAIR',
     'table_product' => 'PRODUCT',
     'table_supplier' => 'SUPPLIER',
+    'table_amount' => 'AMOUNT',
+    'table_method' => 'METHOD',
+    'table_reference' => 'REFERENCE',
 
     /* inputs */
     'input_name' => 'Name',
@@ -137,10 +145,13 @@ return [
     'input_email-alert' => 'E-mail Alert',
     'input_product' => 'Product',
     'input_invoice' => 'Invoice',
+    'input_invoices' => 'Invoices',
     'input_repair' => 'Repair',
+    'input_repairs' => 'Repairs',
     'input_transaction' => 'Transaction',
-    'input_purchase' => 'PURCHASE',
-    'input_sell' => 'SELL',
+    'input_purchase' => 'Purchase',
+    'input_sell' => 'Sell',
+    'input_payments' => 'Payments',
 
     /* messages */
     'no-information-to-show' => 'Nothing has been found!',
