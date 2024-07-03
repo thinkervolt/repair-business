@@ -23,6 +23,7 @@ return [
     'button_save' => 'Save',
     'button_view-invoice' => 'View Invoice',
     'button_report' => 'Report',
+    'button_insert' => 'Insert',
 
     /* title */
     'settings' => 'Settings',
@@ -57,6 +58,9 @@ return [
     'categories' => 'Categories',
     'create-payment' => 'Create Payment',
     'create-report' => 'Create Report',
+    'report' => 'Report',
+    'create-register-report' => 'Create Register Report',
+    'register-report' => 'Register Report',
     
     /* table */
     'table_id' => 'ID',
@@ -93,6 +97,7 @@ return [
     'table_amount' => 'AMOUNT',
     'table_method' => 'METHOD',
     'table_reference' => 'REFERENCE',
+    'table_items' => 'ITEMS',
 
     /* inputs */
     'input_name' => 'Name',
@@ -152,6 +157,9 @@ return [
     'input_purchase' => 'Purchase',
     'input_sell' => 'Sell',
     'input_payments' => 'Payments',
+    'input_date' => 'Date',
+    'input_cash-register-total' => 'Register Total',
+    'input_credit-debit-total' => 'Credit/Debit Total',
 
     /* messages */
     'no-information-to-show' => 'Nothing has been found!',
@@ -159,6 +167,7 @@ return [
     'unpaid-invoices' => 'Unpaid Invoices',
     'earnings-overview' => 'Earnings Overview',
     'optional-information' => 'Following Information is Optional',
+    'register-report-message' => 'This is a community requested report, it allows you to add payments at the end of the day, of transactions that no are in the system.',
     
    
 
@@ -177,6 +186,19 @@ return [
     'balance' => 'Balance',
     'yes' => 'Yes',
     'no' => 'No',
+    'unpaid-amount' => 'Unpaid Amount',
+    'cash' => 'Cash',
+    'card' => 'Card',
+    'check' => 'Check',
+    'other' => 'Other',
+    'date' => 'Date',
+    'total-cash-regiter' => 'TOTAL CASH REGISTER',
+    'total-cash-invoices' => 'TOTAL CASH INVOICES',
+    'no-invoice-cash-transactions' => 'NOT-INVOICED CASH TRANSACTIONS',
+    'total-card-register' => 'TOTAL CARD REGISTER',
+    'total-card-invoices' => 'TOTAL CARD INVOICES',
+    'no-invoice-card-transaction' => 'NOT-INVOICED CARD TRANSACTIONS',
+
     
 
     /* months */
