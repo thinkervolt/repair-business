@@ -79,7 +79,7 @@
                                         <p class="small">{{ $item->sub_description }}</p>
                                     </td>
                                     <td class="text-right">
-                                        {{ $item->unit_cost }}
+                                        {{ number_format((float)$item->unit_cost, 2, '.', ',') }}
                                     </td>
                                     <td class="text-center">
                                         {{ $item->quantity }}
@@ -101,7 +101,7 @@
                                         <p>{{ $transaction->product->name }}</p>
                                     </td>
                                     <td class="text-right">
-                                        {{ $transaction->selling_price }}
+                                        {{ number_format((float)$transaction->selling_price, 2, '.', ',') }} 
                                     </td>
                                     <td class="text-center">
                                         {{ $transaction->quantity }}

@@ -1,45 +1,20 @@
 @extends('layouts.admin')
 @section('page')
-    Categories
+{{ __('repair-business.categories') }}
 @endsection
 
-
-
-
 @section('page-content')
-
-
-    <!-- Begin Page Content -->
     <div class="container-fluid">
-        @if (session()->has('error'))
-            <div class="alert {{ session()->get('alert') }} alert-dismissible fade show">
-                <li>{{ session()->get('error') }}</li>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
-        <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Inventory - Categories</h1>
-
+            <h1 class="h3 mb-0 text-gray-800">{{ __('repair-business.categories') }}</h1>
         </div>
-
-
-
-        <!-- Content Row -->
         <div class="row">
-
             <div class="col">
-
-
-                <!-- FORM -->
                 <form action="{{ route('inventory-create-category') }}" method="POST">
                     @csrf
-
                     <div class="form-group row m-0">
-                        <label for="name" class="col-sm-2 col-form-label">Name</label>
-                        <div class="col-sm-10">
+                        <label for="name" class="col-sm-4 col-form-label">{{ __('repair-business.input_name') }}</label>
+                        <div class="col-sm-8">
                             <input type="text" class="form-control form-control-sm @error('name') is-invalid @enderror"
                                 id="name" value="{{ old('name') }}" name="name" placeholder="">
                             @error('name')
@@ -51,25 +26,21 @@
                     </div>
 
                     <div class="form-group row m-0">
-                        <div class="col-sm-2"> </div>
-                        <div class="col-sm-10">
-                            <button type="submit" class="btn btn-block btn-primary mt-3 mb-2 btn-sm"><i
-                                    class="fa fa-save"></i> Create</button>
+                        <div class="col-sm-4"> </div>
+                        <div class="col-sm-8">
+                            <button type="submit" class="btn  btn-primary mt-3 mb-2 btn-sm"><i
+                                    class="fa fa-save"></i> {{ __('repair-business.button_create') }} </button>
                         </div>
                     </div>
                 </form>
-                <!-- END FORM -->
-
-                <!-- INDEX -->
-
                 @if (!$inventory_categories->isEmpty())
                     <div class="table-responsive">
 
                         <table class="table table-sm mt-3 table-hover ">
                             <thead>
                                 <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">NAME</th>
+                                    <th scope="col">{{ __('repair-business.table_id') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_name') }}</th>
                                     <th scope="col"></th>
                                     <th scope="col"></th>
                                 </tr>
@@ -82,22 +53,22 @@
                                             method="POST">
                                             @csrf
                                             @method('PUT')
-                                            <td>
+                                            <td >
                                                 <p class="m-0 p-0">{{ $inventory_category->id }}</p>
                                             </td>
                                             <td><input type="text" name="name" class="form-control form-control-sm"
                                                     value= "{{ $inventory_category->name }}"></td>
-                                            <td><button type="submit" class="btn btn-warning btn-block btn-sm"><i
-                                                        class="fas fa-edit"></i> Update</button></td>
+                                            <td class="text-right"><button type="submit" class="btn btn-warning  btn-sm"><i
+                                                        class="fas fa-edit"></i> {{ __('repair-business.button_update') }}</button></td>
                                         </form>
-                                        <td>
+                                        <td class="text-right">
                                             <form action="{{ route('inventory-delete-category', $inventory_category) }}"
                                                 method="POST">
                                                 @csrf
                                                 @method('DELETE')
 
-                                                <button type="submit" class="btn btn-danger btn-block btn-sm"><i
-                                                        class="fas fa-trash"></i> Delete</button>
+                                                <button type="submit" class="btn btn-danger  btn-sm"><i
+                                                        class="fas fa-trash"></i> {{ __('repair-business.button_delete') }}</button>
                                             </form>
                                         </td>
 
@@ -113,17 +84,7 @@
                         {{ __('repair-business.no-information-to-show') }}
                     </div>
                 @endif
-
-                <!-- END INDEX -->
-
-
             </div>
-
         </div>
-
-
-
     </div>
-    <!-- /.container-fluid -->
-
 @endsection

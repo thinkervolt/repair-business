@@ -19,6 +19,8 @@ return [
     'button_product' => 'Product',
     'button_print' => 'Print',
     'button_email' => 'E-mail',
+    'button_restock' => 'Restock',
+    'button_save' => 'Save',
 
     /* title */
     'settings' => 'Settings',
@@ -43,6 +45,13 @@ return [
     'priority_and_status' => 'Priority & Status',
     'payment' => 'Payment',
     'invoice_settings' => 'Invoice Settings',
+    'inventory-products' => 'Inventory Products',
+    'product' => 'Product',
+    'stock' => 'Stock',
+    'restock' => 'Restock',
+    'transaction' => 'Transaction',
+    'transactions' => 'Transactions',
+    'categories' => 'Categories',
     
     /* table */
     'table_id' => 'ID',
@@ -66,6 +75,16 @@ return [
     'table_total' => 'TOTAL',
     'table_date' => 'DATE',
     'table_color' => 'COLOR',
+    'table_barcode' => 'BARCODE',
+    'table_category' => 'CATEGORY',
+    'table_stock' => 'STOCK',
+    'table_transaction' => 'TRANSACTION',
+    'table_purchase-price' => 'PURCHASE PRICE',
+    'table_selling-price' => 'SELLING PRICE',
+    'table_invoice' => 'INVOICE',
+    'table_repair' => 'REPAIR',
+    'table_product' => 'PRODUCT',
+    'table_supplier' => 'SUPPLIER',
 
     /* inputs */
     'input_name' => 'Name',
@@ -108,14 +127,29 @@ return [
     'input_card' => 'Card',
     'input_check' => 'Check',
     'input_other' => 'Other',
-
-
+    'input_category' => 'Category',
+    'input_barcode' => 'Barcode',
+    'input_purchase-price' => 'Purchase Price',
+    'input_selling-price' => 'Selling Price',
+    'input_supplier' => 'Supplier',
+    'input_minimum-stock' => 'Minimum Stock',
+    'input_maximum-stock' => 'Maximum Stock',
+    'input_email-alert' => 'E-mail Alert',
+    'input_product' => 'Product',
+    'input_invoice' => 'Invoice',
+    'input_repair' => 'Repair',
+    'input_transaction' => 'Transaction',
+    'input_purchase' => 'PURCHASE',
+    'input_sell' => 'SELL',
 
     /* messages */
     'no-information-to-show' => 'Nothing has been found!',
     'repairs-not-invoiced' => 'Repairs not Invoiced',
     'unpaid-invoices' => 'Unpaid Invoices',
     'earnings-overview' => 'Earnings Overview',
+    'optional-information' => 'Following Information is Optional',
+    
+   
 
     /* general */
     'earnings' => 'Earnings',
@@ -130,6 +164,8 @@ return [
     'tax' => 'Tax',
     'total' => 'Total',
     'balance' => 'Balance',
+    'yes' => 'Yes',
+    'no' => 'No',
     
 
     /* months */
