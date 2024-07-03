@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('page')
-    Trash
+{{ __('repair-business.trash') }}
 @endsection
 
 @section('search')
@@ -47,40 +47,23 @@
 
 @section('page-content')
 
-
-    <!-- Begin Page Content -->
     <div class="container-fluid">
-        @if (session()->has('error'))
-            <div class="alert {{ session()->get('alert') }} alert-dismissible fade show">
-                <li>{{ session()->get('error') }}</li>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
-        <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Trash</h1>
-
+            <h1 class="h3 mb-0 text-gray-800">{{ __('repair-business.trash') }}</h1>
         </div>
 
-        <!-- Content Row -->
         <div class="row">
-
             <div class="col">
-
-                <!-- INDEX -->
-
                 @if (!$customers->isEmpty() or !$repairs->isEmpty() or !$invoices->isEmpty())
                     <div class="table-responsive">
 
                         <table class="table table-sm mt-3 table-hover ">
                             <thead>
                                 <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">ITEM</th>
-                                    <th scope="col">DATA</th>
-                                    <th scope="col">DELETED</th>
+                                    <th scope="col">{{ __('repair-business.table_id') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_item') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_data') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_deleted') }}</th>
                                     <th scope="col"></th>
                                     <th scope="col"></th>
                                 </tr>
@@ -90,7 +73,7 @@
                                     @foreach ($customers as $customer)
                                         <tr>
                                             <td>{{ $customer->id }}</td>
-                                            <td>CUSTOMER</td>
+                                            <td>{{ __('repair-business.table_customer') }}</td>
                                             <td>
                                                 [{{ $customer->first_name }} {{ $customer->last_name }}]
                                                 [{{ preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $customer->phone) }}]
@@ -103,7 +86,7 @@
                                                     @method('PUT')
                                                     <button type="submit"
                                                         class="btn btn-block btn-primary mt-1 mb-2 btn-sm"><i
-                                                            class="fas fa-trash-restore"></i> Restore</button>
+                                                            class="fas fa-trash-restore"></i> {{ __('repair-business.button_restore') }}</button>
                                                 </form>
                                             </td>
                                             <td>
@@ -112,7 +95,7 @@
                                                     @method('DELETE')
                                                     <button type="submit"
                                                         class="btn btn-block btn-danger mt-1 mb-2 btn-sm"><i
-                                                            class="fas fa-trash"></i> Destroy</button>
+                                                            class="fas fa-trash"></i> {{ __('repair-business.button_destroy') }}</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -123,7 +106,7 @@
                                     @foreach ($repairs as $repair)
                                         <tr>
                                             <td>{{ $repair->id }}</td>
-                                            <td>REPAIR</td>
+                                            <td>{{ __('repair-business.table_repair') }}</td>
                                             <td>
                                                 [{{ $repair->target }}]
                                                 [{{ $repair->request }}]
@@ -148,7 +131,7 @@
                                                     @method('PUT')
                                                     <button type="submit"
                                                         class="btn btn-block btn-primary mt-1 mb-2 btn-sm"><i
-                                                            class="fas fa-trash-restore"></i> Restore</button>
+                                                            class="fas fa-trash-restore"></i> {{ __('repair-business.button_restore') }}</button>
                                                 </form>
                                             </td>
                                             <td>
@@ -157,7 +140,7 @@
                                                     @method('DELETE')
                                                     <button type="submit"
                                                         class="btn btn-block btn-danger mt-1 mb-2 btn-sm"><i
-                                                            class="fas fa-trash"></i> Destroy</button>
+                                                            class="fas fa-trash"></i> {{ __('repair-business.button_destroy') }}</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -168,10 +151,10 @@
                                     @foreach ($invoices as $invoice)
                                         <tr>
                                             <td>{{ $invoice->id }}</td>
-                                            <td>INVOICE</td>
+                                            <td>{{ __('repair-business.table_invoice') }}</td>
                                             <td>
-                                                [TOTAL: {{ $invoice->total }}]
-                                                [BALANCE: {{ $invoice->balance }}]
+                                                [{{ __('repair-business.table_total') }}: {{ $invoice->total }}]
+                                                [{{ __('repair-business.table_balance') }}: {{ $invoice->balance }}]
                                                 [{{ $invoice->customer_name }} {{ $invoice->customer_email }}
                                                 {{ preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $invoice->customer_phone) }}]
                                             </td>
@@ -182,7 +165,7 @@
                                                     @method('PUT')
                                                     <button type="submit"
                                                         class="btn btn-block btn-primary mt-1 mb-2 btn-sm"><i
-                                                            class="fas fa-trash-restore"></i> Restore</button>
+                                                            class="fas fa-trash-restore"></i> {{ __('repair-business.button_restore') }}</button>
                                                 </form>
                                             </td>
                                             <td>
@@ -191,7 +174,7 @@
                                                     @method('DELETE')
                                                     <button type="submit"
                                                         class="btn btn-block btn-danger mt-1 mb-2 btn-sm"><i
-                                                            class="fas fa-trash"></i> Destroy</button>
+                                                            class="fas fa-trash"></i> {{ __('repair-business.button_destroy') }}</button>
                                                 </form>
                                             </td>
                                         </tr>

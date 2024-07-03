@@ -24,6 +24,8 @@ return [
     'button_view-invoice' => 'View Invoice',
     'button_report' => 'Report',
     'button_insert' => 'Insert',
+    'button_restore' => 'Restore',
+    'button_destroy' => 'Destroy',
 
     /* title */
     'settings' => 'Settings',
@@ -61,6 +63,8 @@ return [
     'report' => 'Report',
     'create-register-report' => 'Create Register Report',
     'register-report' => 'Register Report',
+    'settings' => 'Settings',
+    'trash' => 'Trash',
     
     /* table */
     'table_id' => 'ID',
@@ -98,6 +102,8 @@ return [
     'table_method' => 'METHOD',
     'table_reference' => 'REFERENCE',
     'table_items' => 'ITEMS',
+    'table_data' => 'DATA',
+    'table_deleted' => 'DELETED',
 
     /* inputs */
     'input_name' => 'Name',
