@@ -34,8 +34,6 @@
     @include('layouts.components.scripts')
 
     @yield('scripts')
-
-
     @if (Route::current()->getName() == 'view-invoice')
         @include('components.invoice-barcode')
     @elseif(Route::current()->getName() == 'view-repair')
@@ -43,16 +41,6 @@
     @else
         @include('components.barcode')
     @endif
-
-
-    @if (Route::current()->getName() == 'view-invoice')
-        @include('components.invoice-barcode')
-    @elseif(Route::current()->getName() == 'view-repair')
-        @include('components.repair-barcode')
-    @else
-        @include('components.barcode')
-    @endif
-
 
 </body>
 

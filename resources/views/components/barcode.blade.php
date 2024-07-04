@@ -27,13 +27,10 @@
 
 
         /* SYMBOL LS1208 BARCODE SCANNER (Slash Removal)*/ 
-            /* barcode =  barcode_input.replace(/\\/g, ''); */
-
+        barcode =  barcode_input.replace(/\\/g, '');
         /* NETUM NT-1228BL BARCODE SCANNER (Enter Removal)*/
-
-            barcode = barcode_input.replace('Enter','');
-
-        // console.log(barcode);
+        barcode = barcode_input.replace('Enter','');
+        console.log(barcode);
 
 
         var postData = "text";

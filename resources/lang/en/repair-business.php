@@ -120,6 +120,7 @@ return [
     'link_customer-sign-up' => 'Customer Sign-Up',
     'link_login' => 'Login',
     'link_home' => 'Home',
+    'link_management' => 'Management',
 
 
     /* title */

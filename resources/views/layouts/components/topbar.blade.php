@@ -91,20 +91,8 @@
                     <i class="fas fa-address-card fa-sm fa-fw mr-2 text-gray-400"></i>
 
                     {{ __('repair-business.link_profile') }}
-                    Profile
                 </a>
-                <a class="dropdown-item" href="{{ route('index-log') }}">
-                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                    {{ __('repair-business.link_activity-log') }}
-                </a>
-                <a class="dropdown-item" href="{{ route('register') }}">
-                    <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                    {{ __('repair-business.link_create-user') }}
-                </a>
-                <a class="dropdown-item" href="{{ route('users') }}">
-                    <i class="fas fa-users fa-sm fa-fw mr-2 text-gray-400"></i>
-                    {{ __('repair-business.link_manage-users') }}
-                </a>
+
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="{{ route('logout') }}"
                     onclick="event.preventDefault();  document.getElementById('logout-form').submit();">

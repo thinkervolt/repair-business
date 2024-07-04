@@ -22,8 +22,10 @@
         <div id="collapseCustomers" class="collapse" aria-labelledby="collapseCustomers"
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{ route('create-customer') }}">{{ __('repair-business.link_create-customer') }}</a>
-                <a class="collapse-item" href="{{ route('index-customer') }}">{{ __('repair-business.link_customers') }}</a>
+                <a class="collapse-item"
+                    href="{{ route('create-customer') }}">{{ __('repair-business.link_create-customer') }}</a>
+                <a class="collapse-item"
+                    href="{{ route('index-customer') }}">{{ __('repair-business.link_customers') }}</a>
             </div>
         </div>
     </li>
@@ -36,9 +38,12 @@
         </a>
         <div id="collapseRepairs" class="collapse" aria-labelledby="collapseRepairs" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{ route('create-repair') }}">{{ __('repair-business.link_create-repair') }}</a>
-                <a class="collapse-item" href="{{ route('index-repair') }}">{{ __('repair-business.link_repairs') }}</a>
-                <a class="collapse-item" href="{{ route('setting-repair') }}">{{ __('repair-business.link_settings') }}</a>
+                <a class="collapse-item"
+                    href="{{ route('create-repair') }}">{{ __('repair-business.link_create-repair') }}</a>
+                <a class="collapse-item"
+                    href="{{ route('index-repair') }}">{{ __('repair-business.link_repairs') }}</a>
+                <a class="collapse-item"
+                    href="{{ route('setting-repair') }}">{{ __('repair-business.link_settings') }}</a>
             </div>
         </div>
     </li>
@@ -56,8 +61,10 @@
                     <a href="#" class="collapse-item"
                         onclick="document.getElementById('create-invoice').submit();">{{ __('repair-business.link_create-invoice') }}</a>
                 </form>
-                <a class="collapse-item" href="{{ route('index-invoice') }}">{{ __('repair-business.link_invoices') }}</a>
-                <a class="collapse-item" href="{{ route('setting-invoice') }}">{{ __('repair-business.link_settings') }}</a>
+                <a class="collapse-item"
+                    href="{{ route('index-invoice') }}">{{ __('repair-business.link_invoices') }}</a>
+                <a class="collapse-item"
+                    href="{{ route('setting-invoice') }}">{{ __('repair-business.link_settings') }}</a>
             </div>
         </div>
     </li>
@@ -71,45 +78,37 @@
         <div id="collapseInventory" class="collapse" aria-labelledby="collapseInventory"
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{ route('inventory-index-product') }}">{{ __('repair-business.link_products') }}</a>
-                <a class="collapse-item" href="{{ route('inventory-index-transaction') }}">{{ __('repair-business.link_transactions') }}</a>
-                <a class="collapse-item" href="{{ route('inventory-index-category') }}">{{ __('repair-business.link_categories') }}</a>
+                <a class="collapse-item"
+                    href="{{ route('inventory-index-product') }}">{{ __('repair-business.link_products') }}</a>
+                <a class="collapse-item"
+                    href="{{ route('inventory-index-transaction') }}">{{ __('repair-business.link_transactions') }}</a>
+                <a class="collapse-item"
+                    href="{{ route('inventory-index-category') }}">{{ __('repair-business.link_categories') }}</a>
             </div>
         </div>
     </li>
-    <div class="topbar-divider d-none d-sm-block"></div>
+ 
+    @if (Auth::user()->role == 'admin')
     <hr class="sidebar-divider">
     <li class="nav-item">
-        <a class="nav-link collapsed" href="{{ route('index-payment') }}" >
-            <i class="fas fa-money-bill-alt"></i>
-            <span>{{ __('repair-business.link_payments') }}</span>
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseManagement"
+            aria-expanded="true" aria-controls="collapseManagement">
+            <i class="fas fa-sliders-h"></i>
+            <span>{{ __('repair-business.link_management') }}</span>
         </a>
-    </li>
-    <hr class="sidebar-divider">
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReports"
-            aria-expanded="true" aria-controls="collapseReports">
-            <i class="far fa-file-alt"></i>
-            <span>{{ __('repair-business.link_reports') }}</span>
-        </a>
-        <div id="collapseReports" class="collapse" aria-labelledby="collapseReports"
+        <div id="collapseManagement" class="collapse" aria-labelledby="collapseManagement"
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('create-report') }}">{{ __('repair-business.link_create-report') }}</a>
                 <a class="collapse-item" href="{{ route('create-register-report') }}">{{ __('repair-business.link_register-report') }}</a>
+                <a class="collapse-item" href="{{ route('index-payment') }}">{{ __('repair-business.link_payments') }}</a>
+                <a class="collapse-item" href="{{ route('index-setting') }}">{{ __('repair-business.link_settings') }}</a>
+                <a class="collapse-item" href="{{ route('register') }}">{{ __('repair-business.link_create-user') }}</a>
+                <a class="collapse-item" href="{{ route('users') }}">{{ __('repair-business.link_manage-users') }}</a>
+                <a class="collapse-item" href="{{ route('index-log') }}">{{ __('repair-business.link_activity-log') }}</a>
+                <a class="collapse-item" href="{{ route('index-trash') }}">{{ __('repair-business.link_trash') }}</a>
             </div>
     </li>
-    <hr class="sidebar-divider">
-    <li class="nav-item">
-        <a class="nav-link" href="{{ route('index-setting') }}">
-            <i class="fas fa-sliders-h"></i>
-            <span>{{ __('repair-business.link_settings') }}</span></a>
-    </li>
-    <hr class="sidebar-divider">
-    <li class="nav-item">
-        <a class="nav-link" href="{{ route('index-trash') }}">
-            <i class="fas fa-fw fa-trash-alt"></i>
-            <span>{{ __('repair-business.link_trash') }}</span></a>
-    </li>
+    @endif
     <hr class="sidebar-divider d-none d-md-block">
 </ul>
