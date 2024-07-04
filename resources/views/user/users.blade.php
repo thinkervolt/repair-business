@@ -1,45 +1,25 @@
 @extends('layouts.admin')
 @section('page')
-    Users
+{{ __('repair-business.users') }}
 @endsection
 @section('page-content')
 
-
-    <!-- Begin Page Content -->
     <div class="container-fluid">
-        @if (session()->has('error'))
-            <div class="alert {{ session()->get('alert') }} alert-dismissible fade show">
-                <li>{{ session()->get('error') }}</li>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
-        <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Users</h1>
-
+            <h1 class="h3 mb-0 text-gray-800">{{ __('repair-business.users') }}</h1>
         </div>
-
-
-
-        <!-- Content Row -->
         <div class="row">
-
             <div class="col">
-
-                <!-- INDEX -->
-
                 @if (!$users->isEmpty())
                     <div class="table-responsive">
 
                         <table class="table table-sm mt-3 table-hover ">
                             <thead>
                                 <tr>
-                                    <th scope="col">NAME</th>
-                                    <th scope="col">E-MAIL</th>
-                                    <th scope="col">ROLE</th>
-                                    <th scope="col">PASSWORD</th>
+                                    <th scope="col">{{ __('repair-business.table_name') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_email') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_role') }}</th>
+                                    <th scope="col">{{ __('repair-business.table_password') }}</th>
                                     <th scope="col"></th>
                                 </tr>
                             </thead>
@@ -59,9 +39,9 @@
 
                                                 <select name="role" class="form-control form-control-sm" required>
                                                     <option @if ($user->role == 'user') selected @endif
-                                                        value="user">user</option>
+                                                        value="user">{{ __('repair-business.user') }}</option>
                                                     <option @if ($user->role == 'admin') selected @endif
-                                                        value="admin">admin</option>
+                                                        value="admin">{{ __('repair-business.admin') }}</option>
                                                 </select>
                                             </td>
                                             <td>
@@ -70,13 +50,13 @@
                                             </td>
                                             <td>
                                                 <button type="submit" class="btn btn-warning   btn-sm"><i
-                                                        class="fas fa-edit"></i> Update</button>
+                                                        class="fas fa-edit"></i> {{ __('repair-business.button_update') }}</button>
                                     </form>
                                     <form class="d-inline" method="POST" action="{{ route('delete-user', $user) }}">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger   btn-sm"><i class="fas fa-trash"></i>
-                                            Delete</button>
+                                            {{ __('repair-business.button_delete') }}</button>
                                     </form>
                                     </td>
                                     </tr>

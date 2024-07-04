@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App;
 use Auth;
-
 use Illuminate\Http\Request;
+use \Illuminate\Support\Facades\Lang;
+
 
 class InventoryController extends Controller
 {
@@ -33,7 +33,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return back()->with('error', 'Inventory Category has been Created.')->with('alert', 'alert-success');
+        return back()->with('error', Lang::get('repair-business.error_inventory-category-has-been-created') )->with('alert', 'alert-success');
     }
 
     public function inventory_update_category(request $request, $id)
@@ -53,7 +53,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return back()->with('error', 'Inventory Category has been Updated.')->with('alert', 'alert-success');
+        return back()->with('error', Lang::get('repair-business.error_inventory-category-has-been-updated') )->with('alert', 'alert-success');
     }
 
     public function inventory_delete_category($id)
@@ -70,7 +70,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return back()->with('error', 'Inventory Category has been Deleted.')->with('alert', 'alert-danger');
+        return back()->with('error',Lang::get('repair-business.error_inventory-category-has-been-deleted'))->with('alert', 'alert-danger');
     }
 
 
@@ -145,7 +145,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return back()->with('error', 'Inventory Product and Transaction have been Created.')->with('alert', 'alert-success');
+        return back()->with('error',Lang::get('repair-business.error_inventory-product-and-transaction-has-been-created'))->with('alert', 'alert-success');
     }
 
     public function inventory_view_product($id)
@@ -189,7 +189,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return back()->with('error', 'Inventory Product has been Updated.')->with('alert', 'alert-warning');
+        return back()->with('error',Lang::get('repair-business.error_inventory-product-has-been-updated')  )->with('alert', 'alert-warning');
     }
 
     public function inventory_delete_product($id)
@@ -207,7 +207,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('inventory-index-product')->with('error', 'Product and Transactions have been Deleted.')->with('alert', 'alert-danger');
+        return redirect()->route('inventory-index-product')->with('error',Lang::get('repair-business.error_product-and-transactions-have-been-deleted'))->with('alert', 'alert-danger');
     }
 
     public function inventory_index_transaction(request $request)
@@ -260,7 +260,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return back()->with('error', 'Inventory Transaction has been Updated.')->with('alert', 'alert-warning');
+        return back()->with('error', Lang::get('repair-business.error_inventory-transaction-has-been-updated') )->with('alert', 'alert-warning');
     }
 
     public function inventory_delete_transaction($id)
@@ -276,7 +276,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('inventory-index-transaction')->with('error', 'Transactions has been Deleted.')->with('alert', 'alert-danger');
+        return redirect()->route('inventory-index-transaction')->with('error',Lang::get('repair-business.error_transaction-has-been-deleted'))->with('alert', 'alert-danger');
     }
 
     public function inventory_restock_transaction($id)
@@ -307,7 +307,7 @@ class InventoryController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('inventory-view-product', $id)->with('error', 'Transactions has been Created.')->with('alert', 'alert-success');
+        return redirect()->route('inventory-view-product', $id)->with('error',Lang::get('repair-business.error_transaction-has-been-created') )->with('alert', 'alert-success');
     }
 
     public function inventory_sell_transaction($task, $id, $product_id)
@@ -363,10 +363,10 @@ class InventoryController extends Controller
                 $log->user = Auth::user()->id;
                 $log->save();
 
-                return redirect()->route('view-invoice', $id)->with('error', 'Transactions has been Created.')->with('alert', 'alert-success');
+                return redirect()->route('view-invoice', $id)->with('error', Lang::get('repair-business.error_transaction-has-been-created'))->with('alert', 'alert-success');
             } else {
 
-                return redirect()->route('view-invoice', $id)->with('error', 'Product is out of Stock')->with('alert', 'alert-danger');
+                return redirect()->route('view-invoice', $id)->with('error', Lang::get('repair-business.error_product-is-out-of-stock'))->with('alert', 'alert-danger');
             }
         }
 
@@ -405,10 +405,10 @@ class InventoryController extends Controller
                 $log->user = Auth::user()->id;
                 $log->save();
 
-                return redirect()->route('view-repair', $id)->with('error', 'Transactions has been Created.')->with('alert', 'alert-success');
+                return redirect()->route('view-repair', $id)->with('error', Lang::get('repair-business.transaction-has-been-created'))->with('alert', 'alert-success');
             } else {
 
-                return redirect()->route('view-repair', $id)->with('error', 'Product is out of Stock')->with('alert', 'alert-danger');
+                return redirect()->route('view-repair', $id)->with('error', Lang::get('repair-business.error_product-is-out-of-stock'))->with('alert', 'alert-danger');
             }
         }
     }
@@ -443,7 +443,7 @@ class InventoryController extends Controller
             $log->user = Auth::user()->id;
             $log->save();
 
-            return redirect()->route('view-invoice', $id)->with('error', 'Transactions has been Deleted.')->with('alert', 'alert-danger');
+            return redirect()->route('view-invoice', $id)->with('error',Lang::get('repair-business.error_transaction-has-been-deleted'))->with('alert', 'alert-danger');
         }
 
         if ($task == 'repair') {
@@ -458,7 +458,7 @@ class InventoryController extends Controller
             $log->user = Auth::user()->id;
             $log->save();
 
-            return redirect()->route('view-repair', $id)->with('error', 'Transactions has been Deleted.')->with('alert', 'alert-danger');
+            return redirect()->route('view-repair', $id)->with('error',Lang::get('repair-business.error_transaction-has-been-deleted'))->with('alert', 'alert-danger');
         }
     }
 
@@ -571,10 +571,10 @@ class InventoryController extends Controller
             //END NEW PAYMENT
 
 
-            return redirect()->route('view-invoice', $invoice->id)->with('error', 'Quick Transactions has been Created.')->with('alert', 'alert-success');
+            return redirect()->route('view-invoice', $invoice->id)->with('error',Lang::get('repair-business.transaction-has-been-created'))->with('alert', 'alert-success');
         } else {
 
-            return back()->with('error', 'Product is out of Stock')->with('alert', 'alert-danger');
+            return back()->with('error', Lang::get('repair-business.error_product-is-out-of-stock'))->with('alert', 'alert-danger');
         }
     }
 }

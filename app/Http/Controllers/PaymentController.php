@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App;
 use Auth;
+use \Illuminate\Support\Facades\Lang;
 
 class PaymentController extends Controller
 {
@@ -103,7 +104,7 @@ class PaymentController extends Controller
             
 
         }
-        return back()->with('error','Payment has been Created')->with('alert', 'alert-success');
+        return back()->with('error',Lang::get('repair-business.error_payment-has-been-created')  )->with('alert', 'alert-success');
     }
 
 
@@ -121,7 +122,7 @@ class PaymentController extends Controller
             $log->save();
             $payment->delete();
 
-            return redirect()->route('index-payment')->with('error','Payment has been Deleted.')->with('alert', 'alert-danger');
+            return redirect()->route('index-payment')->with('error',Lang::get('repair-business.error_payment-has-been-deleted'))->with('alert', 'alert-danger');
 
 
         }else{
@@ -152,7 +153,7 @@ class PaymentController extends Controller
         $invoice->balance = ((float)$items_sum + (($items_sum / 100) *  (float)$invoice->tax_porcentage)) - $payments_sum;
         $invoice->save();
 
-        return back()->with('error','Payment has been Deleted')->with('alert', 'alert-danger');
+        return back()->with('error',Lang::get('repair-business.error_payment-has-been-deleted'))->with('alert', 'alert-danger');
         }
 
 
@@ -188,7 +189,7 @@ class PaymentController extends Controller
         $payment->ref = $request->ref;
         $payment->save();
 
-        return back()->with('error','Payment has been Updated.')->with('alert', 'alert-warning');
+        return back()->with('error',Lang::get('repair-business.error_payment-has-been-updated'))->with('alert', 'alert-warning');
     }
 
 

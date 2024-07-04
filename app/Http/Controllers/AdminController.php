@@ -1,27 +1,16 @@
 <?php
-
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
 use App;
 class AdminController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+    
     public function __construct()
     {
         $this->middleware('auth');
  
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
+    
     public function index()
     {
 
@@ -29,8 +18,6 @@ class AdminController extends Controller
         $month = date('m');
         $year = date('Y');
         $lyear = date('Y', strtotime('last year'));
-
-
 
         $current_year_income = array( 
             'jan' => App\Payment::whereYear('created_at', $year)->whereMonth('created_at', '01' )->sum('amount'),

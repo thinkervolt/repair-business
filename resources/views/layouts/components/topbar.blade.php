@@ -41,7 +41,7 @@
             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="alertsDropdown">
                 <h6 class="dropdown-header bg-secondary border-secondary">
-                    Notifications
+                    {{ __('repair-business.notifications') }} 
                 </h6>
 
                 @if (!empty($notifications_count))
@@ -70,7 +70,7 @@
                         </div>
                         <div>
                             <div class="small text-gray-500"> </div>
-                            <span class="font-weight-bold"> There is no Notifications</span>
+                            <span class="font-weight-bold"> {{ __('repair-business.no-notifications') }} </span>
                         </div>
                     </div>
 
@@ -89,19 +89,21 @@
                 <a class="dropdown-item" href="{{ route('profile') }}">
 
                     <i class="fas fa-address-card fa-sm fa-fw mr-2 text-gray-400"></i>
+
+                    {{ __('repair-business.link_profile') }}
                     Profile
                 </a>
                 <a class="dropdown-item" href="{{ route('index-log') }}">
                     <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Activity Log
+                    {{ __('repair-business.link_activity-log') }}
                 </a>
                 <a class="dropdown-item" href="{{ route('register') }}">
                     <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Create User
+                    {{ __('repair-business.link_create-user') }}
                 </a>
                 <a class="dropdown-item" href="{{ route('users') }}">
                     <i class="fas fa-users fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Manage Users
+                    {{ __('repair-business.link_manage-users') }}
                 </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="{{ route('logout') }}"

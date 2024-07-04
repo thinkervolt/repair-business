@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App;
 use Auth;
+use \Illuminate\Support\Facades\Lang;
 
 class ReportController extends Controller
 {
@@ -101,7 +102,7 @@ class ReportController extends Controller
         }
 
             
-        return redirect()->route('index-payment')->with('error','Repair has been Created.')->with('error','Payments have been Created')->with('alert', 'alert-success');
+        return redirect()->route('index-payment')->with('error',Lang::get('repair-business.error_payments-have-been-created'))->with('alert', 'alert-success');
 
         
 

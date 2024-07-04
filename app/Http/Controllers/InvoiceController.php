@@ -10,25 +10,15 @@ use Illuminate\Support\Facades\Mail;
 use Exception;
 use Illuminate\Support\Facades\File;
 use App\Mail\MailInvoice;
+use \Illuminate\Support\Facades\Lang;
 
 class InvoiceController extends Controller
 {
-    /* Create a new controller instance.
-    *
-    * @return void
-    */
+    
     public function __construct()
     {
         $this->middleware('auth');
     }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-
-
 
     public function index_invoice(request $request, $task = null)
     {
@@ -187,7 +177,7 @@ class InvoiceController extends Controller
             $log->save();
         }
 
-        return redirect()->route('view-invoice', $invoice->id)->with('error', 'Invoice has been Created.')->with('alert', 'alert-success');
+        return redirect()->route('view-invoice', $invoice->id)->with('error',Lang::get('repair-business.error_invoice-has-been-created'))->with('alert', 'alert-success');
     }
 
     public function update_invoice(request $request, $id)
@@ -282,7 +272,7 @@ class InvoiceController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return back()->with('error', 'Invoice has been Updated.')->with('alert', 'alert-warning');
+        return back()->with('error',Lang::get('repair-business.error_invoice-has-been-updated') )->with('alert', 'alert-warning');
     }
 
 
@@ -299,7 +289,7 @@ class InvoiceController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('index-invoice')->with('error', 'Invoice has been Deleted.')->with('alert', 'alert-danger');
+        return redirect()->route('index-invoice')->with('error',Lang::get('repair-business.error_invoice-has-been-deleted'))->with('alert', 'alert-danger');
     }
 
     public function restore_invoice($id)
@@ -315,7 +305,7 @@ class InvoiceController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('view-invoice', $id)->with('error', 'Invoice has been Restored.')->with('alert', 'alert-success');
+        return redirect()->route('view-invoice', $id)->with('error',Lang::get('repair-business.error_invoice-has-been-restored'))->with('alert', 'alert-success');
     }
 
     public function destroy_invoice($id)
@@ -335,7 +325,7 @@ class InvoiceController extends Controller
         $logs = App\Log::where('table', 'invoices')->where('ref', $id);
         $logs->delete();
 
-        return back()->with('error', 'Invoice has been Destroyed.')->with('alert', 'alert-danger');
+        return back()->with('error', Lang::get('repair-business.error_invoice-has-been-destroyed') )->with('alert', 'alert-danger');
     }
 
     public function print_invoice($id, $task)
@@ -411,18 +401,18 @@ class InvoiceController extends Controller
                 $log->user = Auth::user()->id;
                 $log->save();
 
-                return back()->with('error', 'Email has been Sent.')->with('alert', 'alert-success');
+                return back()->with('error',Lang::get('repair-business.error_email-has-been-sent') )->with('alert', 'alert-success');
             } catch (Exception $ex) {
                 if (File::exists(public_path() . '/invoice-receipt.pdf')) {
                     File::delete(public_path() . '/invoice-receipt.pdf');
                 }
-                return back()->with('error', 'Something went Wrong.')->with('alert', 'alert-danger');
+                return back()->with('error',Lang::get('repair-business.error_something-went-wrong')  )->with('alert', 'alert-danger');
             }
         } else {
             if (File::exists(public_path() . '/invoice-receipt.pdf')) {
                 File::delete(public_path() . '/invoice-receipt.pdf');
             }
-            return back()->with('error', 'Missing Customer E-mail Address.')->with('alert', 'alert-danger');
+            return back()->with('error',Lang::get('repair-business.error_missing-customer-email-address' ))->with('alert', 'alert-danger');
         }
     }
 
@@ -451,7 +441,7 @@ class InvoiceController extends Controller
         $log->save();
 
 
-        return redirect()->route('view-invoice', $id)->with('error', 'Invoice has been Updated.')->with('alert', 'alert-warning');
+        return redirect()->route('view-invoice', $id)->with('error',Lang::get('repair-business.error_invoice-has-been-updated' ))->with('alert', 'alert-warning');
     }
 
 
@@ -488,7 +478,7 @@ class InvoiceController extends Controller
         $log->save();
 
 
-        return back()->with('error', 'Setting Invoice has been Created.')->with('alert', 'alert-success');
+        return back()->with('error', Lang::get('repair-business.error_setting-has-been-created' ) )->with('alert', 'alert-success');
     }
 
     public function update_setting_invoice(request $request, $id)
@@ -517,7 +507,7 @@ class InvoiceController extends Controller
 
 
 
-        return back()->with('error', 'Setting Invoice has been Updated.')->with('alert', 'alert-warning');
+        return back()->with('error', Lang::get('repair-business.error_setting-has-been-update' ) )->with('alert', 'alert-warning');
     }
 
     public function delete_setting_invoice($id)
@@ -534,7 +524,7 @@ class InvoiceController extends Controller
         $log->save();
 
 
-        return back()->with('error', 'Setting Invoice has been Deleted.')->with('alert', 'alert-danger');
+        return back()->with('error', Lang::get('repair-business.error_setting-has-been-deleted' ) )->with('alert', 'alert-danger');
     }
 
     /* END SETTINGS */
@@ -600,7 +590,7 @@ class InvoiceController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('view-invoice', $invoice)->with('error', 'Item Invoice has been Created.')->with('alert', 'alert-success');
+        return redirect()->route('view-invoice', $invoice)->with('error',Lang::get('repair-business.error_item-has-been-created' )  )->with('alert', 'alert-success');
     }
 
     public function create_item_invoice(request $request, $id)
@@ -659,7 +649,7 @@ class InvoiceController extends Controller
         $log->save();
 
 
-        return back()->with('error', 'Item Invoice has been Created.')->with('alert', 'alert-success');
+        return back()->with('error', Lang::get('repair-business.error_item-has-been-created' ))->with('alert', 'alert-success');
     }
 
 
@@ -737,7 +727,7 @@ class InvoiceController extends Controller
         $log->save();
 
 
-        return back()->with('error', 'Item Invoice has been Created.')->with('alert', 'alert-success');
+        return back()->with('error', Lang::get('repair-business.error_item-has-been-created' ))->with('alert', 'alert-success');
     }
 
 
@@ -777,7 +767,7 @@ class InvoiceController extends Controller
         $invoice->save();
 
 
-        return back()->with('error', 'Invoice Item has been Deleted.')->with('alert', 'alert-danger');
+        return back()->with('error', Lang::get('repair-business.error_item-has-been-deleted' ) )->with('alert', 'alert-danger');
     }
 
 

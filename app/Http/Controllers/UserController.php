@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use App;
 use Illuminate\Support\Facades\Hash;
+use \Illuminate\Support\Facades\Lang;
 
 
 class UserController extends Controller
@@ -42,7 +43,7 @@ class UserController extends Controller
 
         if(!\Hash::check($request->current_password, auth()->user()->password)){
 
-            return back()->with('error','Current Password does not Match.')->with('alert', 'alert-danger');
+            return back()->with('error',Lang::get('repair-business.error_current-password-does-not-match') )->with('alert', 'alert-danger');
         }else{
 
             if($request->password == $request->password_confirmation){
@@ -56,7 +57,7 @@ class UserController extends Controller
 
             }else{
 
-                return back()->with('error','New Password does not Match.')->with('alert', 'alert-warning');
+                return back()->with('error',Lang::get('repair-business.error_new-password-does-not-match') )->with('alert', 'alert-warning');
             }
 
          
@@ -90,7 +91,7 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->save();
 
-        return back()->with('error','User has been Updated.')->with('alert', 'alert-warning');
+        return back()->with('error',Lang::get('repair-business.error_user-has-been-updated') )->with('alert', 'alert-warning');
 
     }
 
@@ -100,7 +101,7 @@ class UserController extends Controller
 
         $user->delete();
 
-        return back()->with('error','User has been Deleted.')->with('alert', 'alert-danger');
+        return back()->with('error',Lang::get('repair-business.error_user-has-been-deleted') )->with('alert', 'alert-danger');
 
     }
 

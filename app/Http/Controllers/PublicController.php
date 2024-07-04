@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App;
+use \Illuminate\Support\Facades\Lang;
 
 class PublicController extends Controller
 {
@@ -48,16 +49,16 @@ class PublicController extends Controller
         $customer->zip = $request->zip;
         $customer->active = 'yes';
 
-        $customer->save();
+        $customer->save(); 
 
         $notification = new App\Notification;
-        $notification->message = 'New Customer Signed-Up';
+        $notification->message = Lang::get('repair-business.new-customer-signed-up') ;
         $notification->ref = $customer->id;
         $notification->route = 'view-customer';
         $notification->save();
 
 
 
-        return back()->with('error', 'You have been Signed-Up')->with('alert', 'alert-success');
+        return back()->with('error', Lang::get('repair-business.error_you-have-been-signed-up') )->with('alert', 'alert-success');
     }
 }

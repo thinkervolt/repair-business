@@ -5,24 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App;
 use Auth;
+use \Illuminate\Support\Facades\Lang;
 
 class CustomerController extends Controller
 {
-        /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+   
     public function __construct()
     {
         $this->middleware('auth');
     }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
 
     public function index_customer(request $request,$task = null, $id = null)
     {
@@ -78,9 +69,9 @@ class CustomerController extends Controller
         $log->data = 'Customer has been Created';
         $log->ref = $customer->id;
         $log->user = Auth::user()->id;
-        $log->save();
+        $log->save(); 
 
-        return redirect()->route('view-customer',$customer->id)->with('error','Customer has been Created.')->with('alert', 'alert-success');
+        return redirect()->route('view-customer',$customer->id)->with('error',Lang::get('repair-business.error_customer-has-been-created'))->with('alert', 'alert-success');
     }
 
     public function view_customer($id)
@@ -130,7 +121,7 @@ class CustomerController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return back()->with('error','Customer has been Updated.')->with('alert', 'alert-warning');
+        return back()->with('error',Lang::get('repair-business.error_customer-has-been-updated') )->with('alert', 'alert-warning');
     }
 
     public function delete_customer($id)
@@ -146,7 +137,7 @@ class CustomerController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('index-customer')->with('error','Customer has been Deleted.')->with('alert', 'alert-danger');
+        return redirect()->route('index-customer')->with('error',Lang::get('repair-business.error_customer-has-been-deleted') )->with('alert', 'alert-danger');
     }
 
     public function restore_customer($id)
@@ -161,8 +152,7 @@ class CustomerController extends Controller
         $log->ref = $customer->id;
         $log->user = Auth::user()->id;
         $log->save();
-
-        return redirect()->route('view-customer',$customer->id)->with('error','Customer has been Restored.')->with('alert', 'alert-success');
+        return redirect()->route('view-customer',$customer->id)->with('error',Lang::get('repair-business.error_customer-has-been-restored'))->with('alert', 'alert-success');
     }
 
     public function destroy_customer($id)
@@ -172,12 +162,7 @@ class CustomerController extends Controller
 
         $logs = App\Log::where('table','customers')->where('ref',$id);
         $logs->delete();
-
-
-
-
-
-        return back()->with('error','Customer has been Destroyed.')->with('alert', 'alert-danger');
+        return back()->with('error',Lang::get('repair-business.error_customer-has-been-destroyed'))->with('alert', 'alert-danger');
     }
 
 

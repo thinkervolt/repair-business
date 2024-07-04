@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use \Illuminate\Support\Facades\Lang;
 
 class AdminMiddleware
 {
@@ -16,7 +17,7 @@ class AdminMiddleware
     public function handle($request, Closure $next)
     {
         if ($request->user()->role !== "admin") {
-            return redirect()->route('dashboard')->with('error','You need to be Administrator to perform this Action.')->with('alert', 'alert-danger');
+            return redirect()->route('dashboard')->with('error',Lang::get('repair-business.error_admin-only-access')  )->with('alert', 'alert-danger');
         }
 
 

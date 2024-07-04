@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Laravel') }} - {{ __('repair-business.home') }}</title>
     <link rel="shortcut icon" href="{{ asset('vendor/fontawesome-free/favicon.ico') }}">
 
     <style>
@@ -89,18 +89,16 @@
 <body>
     <div class="flex-center position-ref full-height">
         <div class="top-right links">
-            <a href="{{ route('customer-signup') }}">Customer Sign-up</a>
+            <a href="{{ route('customer-signup') }}">{{ __('repair-business.link_customer-sign-up') }}</a>
             @if (Route::has('login'))
                 @auth
-                    <a href="{{ url('/home') }}">Home</a>
+                    <a href="{{ url('/home') }}">{{ __('repair-business.link_home') }}</a>
                 @else
-                    <a href="{{ route('login') }}">Login</a>
+                    <a href="{{ route('login') }}">{{ __('repair-business.link_login') }}</a>
                 @endauth
             @endif
 
         </div>
-
-
         <div class="content">
             <div class=" m-b-md ">
                 <p class="title">{{ config('app.name', 'REPAIR-HERO') }}</p>

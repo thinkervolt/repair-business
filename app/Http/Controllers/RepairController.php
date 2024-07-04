@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
 use Exception;
 use Illuminate\Support\Facades\File;
+use \Illuminate\Support\Facades\Lang;
 
 class RepairController extends Controller
 {
@@ -98,7 +99,7 @@ class RepairController extends Controller
         $log->save();
 
 
-        return redirect()->route('view-repair', $repair->id)->with('error', 'Repair has been Created.')->with('alert', 'alert-success');
+        return redirect()->route('view-repair', $repair->id)->with('error',Lang::get('repair-business.error_repair-has-been-created'))->with('alert', 'alert-success');
     }
 
     public function view_repair($id)
@@ -171,7 +172,7 @@ class RepairController extends Controller
         $log->save();
 
 
-        return redirect()->route('view-repair', $repair->id)->with('error', 'Repair has been Updated.')->with('alert', 'alert-warning');
+        return redirect()->route('view-repair', $repair->id)->with('error',Lang::get('repair-business.error_repair-has-been-updated') )->with('alert', 'alert-warning');
     }
 
     public function delete_repair($id)
@@ -187,7 +188,7 @@ class RepairController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('index-repair')->with('error', 'Repair has been Deleted.')->with('alert', 'alert-danger');
+        return redirect()->route('index-repair')->with('error',Lang::get('repair-business.error_repair-has-been-deleted'))->with('alert', 'alert-danger');
     }
 
     public function restore_repair($id)
@@ -203,7 +204,7 @@ class RepairController extends Controller
         $log->user = Auth::user()->id;
         $log->save();
 
-        return redirect()->route('view-repair', $repair->id)->with('error', 'Repair has been Restored.')->with('alert', 'alert-success');
+        return redirect()->route('view-repair', $repair->id)->with('error',Lang::get('repair-business.error_repair-has-been-restored'))->with('alert', 'alert-success');
     }
 
     public function destroy_repair($id)
@@ -217,7 +218,7 @@ class RepairController extends Controller
         $logs = App\Log::where('table', 'repairs')->where('ref', $id);
         $logs->delete();
 
-        return back()->with('error', 'Repair has been Destroyed.')->with('alert', 'alert-danger');
+        return back()->with('error', Lang::get('repair-business.error_repair-has-been-destroyed') )->with('alert', 'alert-danger');
     }
 
     public function print_repair($id)
@@ -285,24 +286,24 @@ class RepairController extends Controller
                     $log->user = Auth::user()->id;
                     $log->save();
 
-                    return back()->with('error', 'Email has been Sent.')->with('alert', 'alert-success');
+                    return back()->with('error',Lang::get('repair-business.error_email-has-been-sent') )->with('alert', 'alert-success');
                 } catch (Exception $ex) {
                     if (File::exists(public_path() . '/repair-receipt.pdf')) {
                         File::delete(public_path() . '/repair-receipt.pdf');
                     }
-                    return back()->with('error', 'Something went Wrong.'.$ex)->with('alert', 'alert-danger');
+                    return back()->with('error', Lang::get('repair-business.error_something-went-wrong'))->with('alert', 'alert-danger');
                 }
             } else {
                 if (File::exists(public_path() . '/repair-receipt.pdf')) {
                     File::delete(public_path() . '/repair-receipt.pdf');
                 }
-                return back()->with('error', 'Missing Customer E-mail Address.')->with('alert', 'alert-danger');
+                return back()->with('error', Lang::get('repair-business.error_missing-customer-email-address'))->with('alert', 'alert-danger');
             }
         } else {
             if (File::exists(public_path() . '/repair-receipt.pdf')) {
                 File::delete(public_path() . '/repair-receipt.pdf');
             }
-            return back()->with('error', 'Missing Customer Information.')->with('alert', 'alert-danger');
+            return back()->with('error', Lang::get('repair-business.error_missing-customer-information'))->with('alert', 'alert-danger');
         }
     }
 
@@ -327,7 +328,7 @@ class RepairController extends Controller
 
 
 
-        return redirect()->route('view-repair', $repair)->with('error', 'Repair has been Updated.')->with('alert', 'alert-warning');
+        return redirect()->route('view-repair', $repair)->with('error',Lang::get('repair-business.error_repair-has-been-updated') )->with('alert', 'alert-warning');
     }
 
 
@@ -363,7 +364,7 @@ class RepairController extends Controller
         $log->save();
 
 
-        return back()->with('error', 'Setting Repair has been Created.')->with('alert', 'alert-success');
+        return back()->with('error', Lang::get('repair-business.error_setting-has-been-created'))->with('alert', 'alert-success');
     }
 
     public function update_setting_repair(request $request, $id)
@@ -389,7 +390,7 @@ class RepairController extends Controller
         $log->save();
 
 
-        return back()->with('error', 'Setting Repair has been Updated.')->with('alert', 'alert-warning');
+        return back()->with('error', Lang::get('repair-business.error_setting-has-been-updated') )->with('alert', 'alert-warning');
     }
 
     public function delete_setting_repair($id)
@@ -406,7 +407,7 @@ class RepairController extends Controller
         $log->save();
 
 
-        return back()->with('error', 'Setting Repair has been Deleted.')->with('alert', 'alert-danger');
+        return back()->with('error',Lang::get('repair-business.error_setting-has-been-deleted') )->with('alert', 'alert-danger');
     }
 
     /* END SETTINGS */
@@ -438,7 +439,7 @@ class RepairController extends Controller
         $log->save();
 
 
-        return back()->with('error', 'Item Repair has been Created.')->with('alert', 'alert-success');
+        return back()->with('error', Lang::get('repair-business.error_item-has-been-created'))->with('alert', 'alert-success');
     }
 
 
@@ -457,7 +458,7 @@ class RepairController extends Controller
         $repair_item->delete();
 
 
-        return back()->with('error', 'Repair Item has been Deleted.')->with('alert', 'alert-danger');
+        return back()->with('error', Lang::get('repair-business.error_item-has-been-deleted'))->with('alert', 'alert-danger');
     }
 
 
