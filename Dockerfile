@@ -12,4 +12,4 @@ COPY cloud-run-files/.env.cloud-run /var/www/.env
 
 RUN chmod 777 -R /var/www/storage/ && \
     chown -R www-data:www-data /var/www/ && \
-    a2enmod rewrite
+    a2enmod rewrite 
