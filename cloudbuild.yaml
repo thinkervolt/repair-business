@@ -1,4 +1,4 @@
-steps:
+gsteps:
   # Step 1: Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/repair-business', '.']
@@ -12,7 +12,7 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'repair-business'
+      - 'repair-business-app'
       - '--image'
       - 'gcr.io/$PROJECT_ID/repair-business'
       - '--platform'
