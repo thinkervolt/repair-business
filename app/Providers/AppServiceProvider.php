@@ -14,7 +14,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        if (env('PROXY_SCHEMA') === 'https') {
+            $this->app['request']->server->set('HTTPS', true);
+        }else{
+            $this->app['request']->server->set('HTTP', true);
+        }
     }
 
     /**
