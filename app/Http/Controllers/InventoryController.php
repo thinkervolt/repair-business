@@ -310,10 +310,19 @@ class InventoryController extends Controller
         return redirect()->route('inventory-view-product', $id)->with('error',Lang::get('repair-business.error_transaction-has-been-created') )->with('alert', 'alert-success');
     }
 
-    public function inventory_sell_transaction($task, $id, $product_id)
+    public function inventory_sell_transaction(request $request, $task, $id, $product_id)
     {
 
         if ($task == 'invoice') {
+
+            if(isset($request->quantity)){
+
+                $quantity = $request->quantity;
+            }else{
+                $quantity = 1;
+            }
+
+
 
             $product = App\InventoryProduct::findOrFail($product_id);
             $invoice = App\Invoice::findOrFail($id);
@@ -322,13 +331,13 @@ class InventoryController extends Controller
             $sells = App\InventoryTransaction::where('product_id', $product->id)->where('transaction', 'sell')->sum('quantity');
             $stock = $purchases - $sells;
 
-            if ($stock > 0) {
+            if ($stock >= $quantity) {
 
                 $check_transaction = App\InventoryTransaction::where('product_id', $product_id)->where('invoice_id', $id)->first();
 
                 if ($check_transaction) {
                     $inventory_transaction = $check_transaction;
-                    $inventory_transaction->quantity = $inventory_transaction->quantity + 1;
+                    $inventory_transaction->quantity = $inventory_transaction->quantity + $quantity;
                     $inventory_transaction->save();
                 } else {
 
@@ -337,7 +346,7 @@ class InventoryController extends Controller
                     $inventory_transaction->invoice_id = $id;
                     $inventory_transaction->transaction = 'sell';
                     $inventory_transaction->selling_price = $product->selling_price;
-                    $inventory_transaction->quantity = 1;
+                    $inventory_transaction->quantity = $quantity;
                     $inventory_transaction->save();
                 }
 

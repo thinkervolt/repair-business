@@ -45,7 +45,7 @@
 @endsection
 @section('page-content')
     <div class="container-fluid">
-  
+
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">{{ __('repair-business.inventory-products') }}</h1>
         </div>
@@ -55,7 +55,8 @@
                     <form action="{{ route('inventory-create-product') }}" method="POST">
                         @csrf
                         <div class="form-group row m-0">
-                            <label for="category" class="col-sm-4 col-form-label">{{ __('repair-business.input_category') }}</label>
+                            <label for="category"
+                                class="col-sm-4 col-form-label">{{ __('repair-business.input_category') }}</label>
                             <div class="col-sm-8">
                                 <select name="category"
                                     class="form-control form-control-sm @error('category') is-invalid @enderror">
@@ -73,7 +74,8 @@
                             </div>
                         </div>
                         <div class="form-group row m-0">
-                            <label for="name" class="col-sm-4 col-form-label">{{ __('repair-business.input_name') }}</label>
+                            <label for="name"
+                                class="col-sm-4 col-form-label">{{ __('repair-business.input_name') }}</label>
                             <div class="col-sm-8">
                                 <input type="text"
                                     class="form-control form-control-sm @error('name') is-invalid @enderror" id="name"
@@ -86,7 +88,8 @@
                             </div>
                         </div>
                         <div class="form-group row m-0">
-                            <label for="barcode" class="col-sm-4 col-form-label">{{ __('repair-business.input_barcode') }}</label>
+                            <label for="barcode"
+                                class="col-sm-4 col-form-label">{{ __('repair-business.input_barcode') }}</label>
                             <div class="col-sm-8">
                                 <input type="text"
                                     class="form-control form-control-sm @error('barcode') is-invalid @enderror"
@@ -101,7 +104,8 @@
                             </div>
                         </div>
                         <div class="form-group row m-0">
-                            <label for="purchase_price" class="col-sm-4 col-form-label">{{ __('repair-business.input_purchase-price') }}</label>
+                            <label for="purchase_price"
+                                class="col-sm-4 col-form-label">{{ __('repair-business.input_purchase-price') }}</label>
                             <div class="col-sm-8">
                                 <input type="text"
                                     class="form-control form-control-sm @error('purchase_price') is-invalid @enderror"
@@ -115,7 +119,8 @@
                             </div>
                         </div>
                         <div class="form-group row m-0">
-                            <label for="selling_price" class="col-sm-4 col-form-label">{{ __('repair-business.input_selling-price') }}</label>
+                            <label for="selling_price"
+                                class="col-sm-4 col-form-label">{{ __('repair-business.input_selling-price') }}</label>
                             <div class="col-sm-8">
                                 <input type="text"
                                     class="form-control form-control-sm @error('selling_price') is-invalid @enderror"
@@ -129,7 +134,8 @@
                             </div>
                         </div>
                         <div class="form-group row m-0">
-                            <label for="quantity" class="col-sm-4 col-form-label">{{ __('repair-business.input_quantity') }}</label>
+                            <label for="quantity"
+                                class="col-sm-4 col-form-label">{{ __('repair-business.input_quantity') }}</label>
                             <div class="col-sm-8">
                                 <input type="text"
                                     class="form-control form-control-sm @error('quantity') is-invalid @enderror"
@@ -142,9 +148,11 @@
                             </div>
                         </div>
                         <hr>
-                        <p class="small text-muted font-italic ml-2 p-0">{{ __('repair-business.optional-information') }}</p>
+                        <p class="small text-muted font-italic ml-2 p-0">{{ __('repair-business.optional-information') }}
+                        </p>
                         <div class="form-group row m-0">
-                            <label for="supplier" class="col-sm-4 col-form-label">{{ __('repair-business.input_supplier') }}</label>
+                            <label for="supplier"
+                                class="col-sm-4 col-form-label">{{ __('repair-business.input_supplier') }}</label>
                             <div class="col-sm-8">
                                 <input type="text"
                                     class="form-control form-control-sm @error('supplier') is-invalid @enderror"
@@ -157,7 +165,8 @@
                             </div>
                         </div>
                         <div class="form-group row m-0">
-                            <label for="min_stock" class="col-sm-4 col-form-label">{{ __('repair-business.input_minimum-stock') }}</label>
+                            <label for="min_stock"
+                                class="col-sm-4 col-form-label">{{ __('repair-business.input_minimum-stock') }}</label>
                             <div class="col-sm-8">
                                 <input type="number"
                                     class="form-control form-control-sm @error('min_stock') is-invalid @enderror"
@@ -170,7 +179,8 @@
                             </div>
                         </div>
                         <div class="form-group row m-0">
-                            <label for="max_stock" class="col-sm-4 col-form-label">{{ __('repair-business.input_maximum-stock') }}</label>
+                            <label for="max_stock"
+                                class="col-sm-4 col-form-label">{{ __('repair-business.input_maximum-stock') }}</label>
                             <div class="col-sm-8">
                                 <input type="number"
                                     class="form-control form-control-sm @error('max_stock') is-invalid @enderror"
@@ -183,7 +193,8 @@
                             </div>
                         </div>
                         <div class="form-group row m-0">
-                            <label for="email_alert" class="col-sm-4 col-form-label">{{ __('repair-business.input_email-alert') }}</label>
+                            <label for="email_alert"
+                                class="col-sm-4 col-form-label">{{ __('repair-business.input_email-alert') }}</label>
                             <div class="col-sm-8">
                                 <select class="form-control form-control-sm @error('email_alert') is-invalid @enderror"
                                     name="email_alert">
@@ -237,7 +248,8 @@
 
                                         <td class="text-right">
                                             <a href="{{ route('inventory-view-product', $product) }}"
-                                                class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> {{ __('repair-business.button_view') }}</a>
+                                                class="btn btn-primary btn-sm"><i class="fas fa-eye"></i>
+                                                {{ __('repair-business.button_view') }}</a>
                                         </td>
                                         @if ($task == 'invoice')
                                             <td class="text-right">
@@ -247,8 +259,20 @@
                                                     @csrf
                                                     @method('POST')
 
-                                                    <button type="submit" class="btn btn-primary  btn-sm"><i
-                                                            class="fas fa-plus"></i> {{ __('repair-business.button_add-to-invoice') }}</a>
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" style="max-width:50px;" class="form-control form-control-sm d-inline text-right"
+                                                        id="quantity" name="quantity" value="1" placeholder="">
+                                                        <div class="input-group-append">
+                                                
+                                                                <button type="submit" class="btn btn-primary  btn-sm d-inline"><i
+                                                                    class="fas fa-plus"></i>
+                                                                {{ __('repair-business.button_add-to-invoice') }}</button>
+                                                        </div>
+                                                    </div>
+
+                                                    
+
+                                                
                                                 </form>
                                             </td>
                                         @endif
@@ -261,7 +285,8 @@
                                                     @method('POST')
 
                                                     <button type="submit" class="btn btn-primary  btn-sm"><i
-                                                            class="fas fa-plus"></i> {{ __('repair-business.button_add-to-repair') }}</a>
+                                                            class="fas fa-plus"></i>
+                                                        {{ __('repair-business.button_add-to-repair') }}</a>
                                                 </form>
                                             </td>
                                         @endif
