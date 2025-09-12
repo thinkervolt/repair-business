@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        'App\Console\Commands\DataBasePlan'
+        
     ];
 
     /**
@@ -23,8 +23,7 @@ class Kernel extends ConsoleKernel
      * @return void
      */
     protected function schedule(Schedule $schedule)
-    {
-        $schedule->command('database:plan')->daily();
+    { 
     }
 
     /**
