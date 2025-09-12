@@ -12,7 +12,7 @@
 - Laravel 7
 - PHP7 - PHP8
 - MYSQL
-- Docker Compose
+- Docker
 - Boostrap 4 
 - Thermal Printer Drop-off Receipt and Invoice
 - E-mail Invoice/Drop-off Repair Receipt
