@@ -13,7 +13,6 @@
 - PHP7 - PHP8
 - MYSQL
 - Docker Compose
-- Daily Database Backup Scheduling `php artisan database:plan`
 - Boostrap 4 
 - Thermal Printer Drop-off Receipt and Invoice
 - E-mail Invoice/Drop-off Repair Receipt
@@ -23,6 +22,3 @@ Perform operations easily with Docker. Preconfigured Docker Compose eases setup 
 
 ![DASHBOARD](github-media/dashboard.png)
 
-### Easy and Quick Development
-Folder `dev` has all files to run `docker compose up -d`, it will create a container that you can open at `localhost:5050` and use the application with
-user:`administrator` and password:`password`.
