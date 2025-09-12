@@ -17,8 +17,5 @@
 - Thermal Printer Drop-off Receipt and Invoice
 - E-mail Invoice/Drop-off Repair Receipt
 
-### Docker
-Perform operations easily with Docker. Preconfigured Docker Compose eases setup with one-time commands for migrations and database seed.
-
 ![DASHBOARD](github-media/dashboard.png)
 
