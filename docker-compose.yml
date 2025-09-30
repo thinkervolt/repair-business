@@ -3,7 +3,7 @@ services:
         build: .
         restart: always
         tty: true
-        container_name: ${SERVICE_NAME:-repair-business-app}
+        container_name: ${SERVICE_NAME:-repair-business-app-development}
         ports:
             - "${SERVICE_PORT:-8000}:80"
         env_file:
