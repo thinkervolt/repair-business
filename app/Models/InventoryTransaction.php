@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -8,6 +8,6 @@ class InventoryTransaction extends Model
 {
     public function product()
     {
-        return $this->hasOne('App\InventoryProduct','id','product_id');
+        return $this->hasOne('App\Models\InventoryProduct','id','product_id');
     }
 }

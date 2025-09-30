@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App;
 use Auth;
 
+use App\Models\Log;
+use App\Models\User;
+
 
 class LogController extends Controller
 {
@@ -30,9 +33,9 @@ class LogController extends Controller
    public function index_log(request $request)
    {
 
-    $users = App\User::select('id')->where('name','LIKE', '%' . $request->search . '%');
+    $users = User::select('id')->where('name','LIKE', '%' . $request->search . '%');
 
-    $logs = App\Log::where('data', 'LIKE', '%' . $request->search . '%')->orwherein('user',$users)->orderby('created_at','DESC')->paginate('50');
+    $logs = Log::where('data', 'LIKE', '%' . $request->search . '%')->orwherein('user',$users)->orderby('created_at','DESC')->paginate('50');
        return view('log.index-log',compact('logs'));
        
    }

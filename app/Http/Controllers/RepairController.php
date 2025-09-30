@@ -12,6 +12,17 @@ use Exception;
 use Illuminate\Support\Facades\File;
 use \Illuminate\Support\Facades\Lang;
 
+use App\Models\Customer;
+use App\Models\InventoryTransaction;
+use App\Models\InvoiceItem;
+use App\Models\Invoice;
+use App\Models\Log;
+use App\Models\RepairItem;
+use App\Models\RepairSetting;
+use App\Models\Repair;
+use App\Models\Setting;
+use App\Models\User;
+
 class RepairController extends Controller
 {
     /**
@@ -35,11 +46,11 @@ class RepairController extends Controller
 
         if ($task == 'no-invoice') {
 
-            $repair_items = App\InvoiceItem::select('ref')->where('group', 'repair');
-            $repairs = App\Repair::wherenotin('id', $repair_items)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);
+            $repair_items = InvoiceItem::select('ref')->where('group', 'repair');
+            $repairs = Repair::wherenotin('id', $repair_items)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);
         } else {
 
-            $search_customer = App\Customer::select('id')->where('last_name', 'LIKE', '%' . $request->search . '%')
+            $search_customer = Customer::select('id')->where('last_name', 'LIKE', '%' . $request->search . '%')
                 ->orwhere('first_name', 'LIKE', '%' . $request->search . '%')
                 ->orwhere('id', 'LIKE', '%' . $request->search . '%')
                 ->orwhere('phone', 'LIKE', '%' . $request->search . '%')
@@ -47,10 +58,10 @@ class RepairController extends Controller
                 ->orwhere('company', 'LIKE', '%' . $request->search . '%');
 
 
-            $search = App\Repair::select('id')->where('target', 'LIKE', '%' . $request->search . '%')
+            $search = Repair::select('id')->where('target', 'LIKE', '%' . $request->search . '%')
                 ->orwhere('request', 'LIKE', '%' . $request->search . '%')->orwhere('id', 'LIKE', '%' . $request->search . '%')->orwhereIn('customer', $search_customer);
 
-            $repairs = App\Repair::whereIn('id', $search)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);
+            $repairs = Repair::whereIn('id', $search)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);
         }
 
         return view('repair.index-repair', compact('repairs'))->with('search', $request->search)->with('task', $task)->with('id', $id);
@@ -62,7 +73,7 @@ class RepairController extends Controller
         if ($id == null) {
             $customer = null;
         } else {
-            $customer = App\Customer::findOrFail($id);
+            $customer = Customer::findOrFail($id);
         }
 
         return view('repair.create-repair', compact('customer'));
@@ -76,7 +87,7 @@ class RepairController extends Controller
             'data_request' => 'required|min:2|max:250',
         ]);
 
-        $repair = new App\Repair;
+        $repair = new Repair;
         if ($id == null) {
             $repair->customer = null;
         } else {
@@ -91,7 +102,7 @@ class RepairController extends Controller
 
 
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'repairs';
         $log->data = 'Repair has been Created ' . '[target] ' . $request->target . ' [request] ' . $request->data_request;
         $log->ref = $repair->id;
@@ -104,17 +115,17 @@ class RepairController extends Controller
 
     public function view_repair($id)
     {
-        $repair = App\Repair::findOrFail($id);
-        $users = App\User::where('active', 'yes')->get();
-        $statuses = App\RepairSetting::where('group', 'status')->get();
-        $priorities = App\RepairSetting::where('group', 'priority')->get();
-        $logs =  App\Log::where('table', 'repairs')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
-        $comments = App\RepairItem::where('group', 'comment')->where('repair', $id)->get();
-        $jobs = App\RepairItem::where('group', 'job')->where('repair', $id)->get();
-        $transactions = App\InventoryTransaction::where('repair_id', $id)->get();
+        $repair = Repair::findOrFail($id);
+        $users = User::where('active', 'yes')->get();
+        $statuses = RepairSetting::where('group', 'status')->get();
+        $priorities = RepairSetting::where('group', 'priority')->get();
+        $logs =  Log::where('table', 'repairs')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
+        $comments = RepairItem::where('group', 'comment')->where('repair', $id)->get();
+        $jobs = RepairItem::where('group', 'job')->where('repair', $id)->get();
+        $transactions = InventoryTransaction::where('repair_id', $id)->get();
 
-        $invoice_items = App\InvoiceItem::select('invoice')->where('ref', $id);
-        $invoices = App\Invoice::wherein('id', $invoice_items)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);
+        $invoice_items = InvoiceItem::select('invoice')->where('ref', $id);
+        $invoices = Invoice::wherein('id', $invoice_items)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);
 
         return view('repair.view-repair', compact('repair', 'users', 'statuses', 'priorities', 'logs', 'comments', 'jobs', 'invoices', 'transactions'));
     }
@@ -132,7 +143,7 @@ class RepairController extends Controller
             'estimate' => 'nullable|numeric|between:0,99999.99',
         ]);
 
-        $repair = App\Repair::findOrFail($id);
+        $repair = Repair::findOrFail($id);
 
         $repair_log_update = '';
 
@@ -164,7 +175,7 @@ class RepairController extends Controller
         $repair->save();
 
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'repairs';
         $log->data = 'Repair has been Updated ' . $repair_log_update;
         $log->ref = $repair->id;
@@ -177,11 +188,11 @@ class RepairController extends Controller
 
     public function delete_repair($id)
     {
-        $repair = App\Repair::findOrFail($id);
+        $repair = Repair::findOrFail($id);
         $repair->active = 'no';
         $repair->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'repairs';
         $log->data = 'Repair has been Deleted';
         $log->ref = $id;
@@ -193,11 +204,11 @@ class RepairController extends Controller
 
     public function restore_repair($id)
     {
-        $repair = App\Repair::findOrFail($id);
+        $repair = Repair::findOrFail($id);
         $repair->active = 'yes';
         $repair->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'repairs';
         $log->data = 'Repair has been Restored';
         $log->ref = $repair->id;
@@ -209,13 +220,13 @@ class RepairController extends Controller
 
     public function destroy_repair($id)
     {
-        $repair = App\Repair::findOrFail($id);
+        $repair = Repair::findOrFail($id);
         $repair->delete();
 
-        $repair_items = App\RepairItem::where('repair', $id);
+        $repair_items = RepairItem::where('repair', $id);
         $repair_items->delete();
 
-        $logs = App\Log::where('table', 'repairs')->where('ref', $id);
+        $logs = Log::where('table', 'repairs')->where('ref', $id);
         $logs->delete();
 
         return back()->with('error', Lang::get('repair-business.error_repair-has-been-destroyed') )->with('alert', 'alert-danger');
@@ -223,16 +234,16 @@ class RepairController extends Controller
 
     public function print_repair($id)
     {
-        $repair = App\Repair::findOrFail($id);
-        $users = App\User::where('active', 'yes')->get();
-        $statuses = App\RepairSetting::where('group', 'status')->get();
-        $priorities = App\RepairSetting::where('group', 'priority')->get();
-        $logs =  App\Log::where('table', 'repairs')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
-        $comments = App\RepairItem::where('group', 'comment')->where('repair', $id)->get();
-        $jobs = App\RepairItem::where('group', 'job')->where('repair', $id)->get();
+        $repair = Repair::findOrFail($id);
+        $users = User::where('active', 'yes')->get();
+        $statuses = RepairSetting::where('group', 'status')->get();
+        $priorities = RepairSetting::where('group', 'priority')->get();
+        $logs =  Log::where('table', 'repairs')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
+        $comments = RepairItem::where('group', 'comment')->where('repair', $id)->get();
+        $jobs = RepairItem::where('group', 'job')->where('repair', $id)->get();
 
         /* business-profile */
-        $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+        $business_profile_settings = Setting::where('group', 'business_profile')->get();
         $company_profile = (object)[];
         foreach ($business_profile_settings as $setting) {
             $company_profile->{$setting->name} = $setting->data;
@@ -249,15 +260,15 @@ class RepairController extends Controller
             File::delete(public_path() . '/repair-receipt.pdf');
         }
 
-        $repair = App\Repair::findOrFail($id);
-        $users = App\User::where('active', 'yes')->get();
-        $statuses = App\RepairSetting::where('group', 'status')->get();
-        $priorities = App\RepairSetting::where('group', 'priority')->get();
-        $logs =  App\Log::where('table', 'repairs')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
-        $comments = App\RepairItem::where('group', 'comment')->where('repair', $id)->get();
-        $jobs = App\RepairItem::where('group', 'job')->where('repair', $id)->get();
+        $repair = Repair::findOrFail($id);
+        $users = User::where('active', 'yes')->get();
+        $statuses = RepairSetting::where('group', 'status')->get();
+        $priorities = RepairSetting::where('group', 'priority')->get();
+        $logs =  Log::where('table', 'repairs')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
+        $comments = RepairItem::where('group', 'comment')->where('repair', $id)->get();
+        $jobs = RepairItem::where('group', 'job')->where('repair', $id)->get();
         /* business-profile */
-        $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+        $business_profile_settings = Setting::where('group', 'business_profile')->get();
         $company_profile = (object)[];
         foreach ($business_profile_settings as $setting) {
             $company_profile->{$setting->name} = $setting->data;
@@ -279,7 +290,7 @@ class RepairController extends Controller
                         File::delete(public_path() . '/repair-receipt.pdf');
                     }
 
-                    $log = new App\Log;
+                    $log = new Log;
                     $log->table = 'repairs';
                     $log->data = 'Email has been Sent';
                     $log->ref = $repair->id;
@@ -312,9 +323,9 @@ class RepairController extends Controller
     {
 
 
-        $repair = App\Repair::findOrFail($id);
+        $repair = Repair::findOrFail($id);
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'repairs';
         $log->data = 'Repair has been Updated [customer][FROM]' . $repair->customer . '[TO]' . $customer;
         $log->ref = $id;
@@ -336,7 +347,7 @@ class RepairController extends Controller
 
     public function setting_repair()
     {
-        $priority_status = App\RepairSetting::where('group', 'priority')->orWhere('group', 'status')->orderBy('group')->get();
+        $priority_status = RepairSetting::where('group', 'priority')->orWhere('group', 'status')->orderBy('group')->get();
         return view('repair.setting-repair', compact('priority_status'));
     }
 
@@ -350,13 +361,13 @@ class RepairController extends Controller
             'color' => 'required|alpha|min:2|max:50',
         ]);
 
-        $repair_setting = new App\RepairSetting;
+        $repair_setting = new RepairSetting;
         $repair_setting->name = $request->name;
         $repair_setting->group = $request->group;
         $repair_setting->color = $request->color;
         $repair_setting->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'repair_settings';
         $log->data = 'Repair Setting has been Created';
         $log->ref = $repair_setting->id;
@@ -376,13 +387,13 @@ class RepairController extends Controller
             'color' => 'required|alpha|min:2|max:50',
         ]);
 
-        $repair_setting = App\RepairSetting::findOrFail($id);
+        $repair_setting = RepairSetting::findOrFail($id);
         $repair_setting->name = $request->name;
         $repair_setting->group = $request->group;
         $repair_setting->color = $request->color;
         $repair_setting->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'repair_settings';
         $log->data = 'Repair Setting has been Updated';
         $log->ref = $id;
@@ -396,10 +407,10 @@ class RepairController extends Controller
     public function delete_setting_repair($id)
     {
 
-        $repair_setting = App\RepairSetting::findOrFail($id);
+        $repair_setting = RepairSetting::findOrFail($id);
         $repair_setting->delete();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'repair_settings';
         $log->data = 'Repair Setting has been Deleted';
         $log->ref = $id;
@@ -423,7 +434,7 @@ class RepairController extends Controller
             'group' => 'required|alpha|min:2|max:50',
         ]);
 
-        $repair_item = new App\RepairItem;
+        $repair_item = new RepairItem;
         $repair_item->data = $request->data;
         $repair_item->repair = $id;
         $repair_item->group = $request->group;
@@ -431,7 +442,7 @@ class RepairController extends Controller
 
         $repair_item->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'repairs';
         $log->data = 'Repair Item has been Created [' . $request->data . ']';
         $log->ref = $id;
@@ -446,9 +457,9 @@ class RepairController extends Controller
     public function delete_item_repair($id)
     {
 
-        $repair_item = App\RepairItem::findOrFail($id);
+        $repair_item = RepairItem::findOrFail($id);
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'repairs';
         $log->data = 'Repair Item has been Deleted [' . $repair_item->data . ']';
         $log->ref = $repair_item->repair;

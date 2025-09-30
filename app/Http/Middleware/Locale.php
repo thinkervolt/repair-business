@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\View;
+use App\Models\Setting;
 
 class Locale
 {
@@ -17,7 +18,7 @@ class Locale
     public function handle($request, Closure $next)
     {
 
-        $locale = \App\Setting::where('group', 'language')->first();
+        $locale = Setting::where('group', 'language')->first();
 
         if ($locale) {
             $locale =  $locale->data;

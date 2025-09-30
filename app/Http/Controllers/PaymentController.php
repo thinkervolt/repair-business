@@ -7,6 +7,12 @@ use App;
 use Auth;
 use \Illuminate\Support\Facades\Lang;
 
+use App\Models\InventoryTransaction;
+use App\Models\InvoiceItem;
+use App\Models\Invoice;
+use App\Models\Log;
+use App\Models\Payment;
+
 class PaymentController extends Controller
 {
               /**
@@ -27,13 +33,13 @@ class PaymentController extends Controller
 
     public function index_payment(request $request)
     {
-        $search = App\Payment::select('id')->where('id', 'LIKE', '%' . $request->search . '%')
+        $search = Payment::select('id')->where('id', 'LIKE', '%' . $request->search . '%')
         ->orwhere('invoice', 'LIKE', '%' . $request->search . '%')
         ->orwhere('amount', 'LIKE', '%' . $request->search . '%')
         ->orwhere('method', 'LIKE', '%' . $request->search . '%')
         ->orwhere('ref', 'LIKE', '%' . $request->search . '%');
 
-        $payments = App\Payment::whereIn('id',$search)->where('active','yes')->orderBy('created_at','DESC')->paginate(25); 
+        $payments = Payment::whereIn('id',$search)->where('active','yes')->orderBy('created_at','DESC')->paginate(25); 
 
         return view('payment.index-payment',compact('payments'))->with('search',$request->search);
     }
@@ -53,23 +59,23 @@ class PaymentController extends Controller
         ]); 
 
         if($id === null){
-            $payment =  new App\Payment;
+            $payment =  new Payment;
             $payment->amount = $request->amount;
             $payment->method = $request->method;
             $payment->ref = $request->ref;
             $payment->active = 'yes';
             $payment->save();
 
-            $log = new App\Log; 
+            $log = new Log; 
             $log->table = 'invoices';
             $log->data = 'Payment has been Created [$'.$request->amount.']['.$request->method.']['.$request->ref.']';
             $log->ref = $payment->id;
             $log->user = Auth::user()->id;
             $log->save();
         }else{
-            $invoice = App\Invoice::findOrFail($id);
+            $invoice = Invoice::findOrFail($id);
 
-            $payment =  new App\Payment;
+            $payment =  new Payment;
             $payment->amount = $request->amount;
             $payment->method = $request->method;
             $payment->ref = $request->ref;
@@ -79,13 +85,13 @@ class PaymentController extends Controller
 
             
             $transactions_sum = 0;
-            $transactions = App\InventoryTransaction::where('invoice_id',$invoice->id)->get();
+            $transactions = InventoryTransaction::where('invoice_id',$invoice->id)->get();
             foreach($transactions as $transaction){
                 $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
             }
 
-            $items_sum = App\InvoiceItem::where('invoice',$invoice->id)->sum('total') + $transactions_sum;
-            $payments_sum = App\Payment::where('invoice',$invoice->id)->sum('amount');
+            $items_sum = InvoiceItem::where('invoice',$invoice->id)->sum('total') + $transactions_sum;
+            $payments_sum = Payment::where('invoice',$invoice->id)->sum('amount');
 
             $invoice->subtotal = (float)$items_sum;
             $invoice->tax = (float)($items_sum / 100) *  (float)$invoice->tax_porcentage;
@@ -94,7 +100,7 @@ class PaymentController extends Controller
             $invoice->save();
             
 
-            $log = new App\Log; 
+            $log = new Log; 
             $log->table = 'invoices';
             $log->data = 'Payment has been Created [$'.$request->amount.']['.$request->method.']['.$request->ref.']';
             $log->ref = $id;
@@ -110,11 +116,11 @@ class PaymentController extends Controller
 
     public function delete_payment($id)
     {
-        $payment = App\Payment::findOrFail($id);
+        $payment = Payment::findOrFail($id);
 
         if($payment->invoice === null){
 
-            $log = new App\Log; 
+            $log = new Log; 
             $log->table = 'payments';
             $log->data = 'Payment has been Deleted [$'.$payment->amount.']['.$payment->method.']['.$payment->ref.']' ;
             $log->ref = $payment->id;
@@ -126,9 +132,9 @@ class PaymentController extends Controller
 
 
         }else{
-        $invoice = App\Invoice::findOrFail($payment->invoice);
+        $invoice = Invoice::findOrFail($payment->invoice);
 
-        $log = new App\Log; 
+        $log = new Log; 
         $log->table = 'invoices';
         $log->data = 'Payment has been Deleted [$'.$payment->amount.']['.$payment->method.']['.$payment->ref.']' ;
         $log->ref = $invoice->id;
@@ -139,13 +145,13 @@ class PaymentController extends Controller
         
   
         $transactions_sum = 0;
-        $transactions = App\InventoryTransaction::where('invoice_id',$invoice->id)->get();
+        $transactions = InventoryTransaction::where('invoice_id',$invoice->id)->get();
         foreach($transactions as $transaction){
             $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
         }
 
-        $items_sum = App\InvoiceItem::where('invoice',$invoice->id)->sum('total') + $transactions_sum;
-        $payments_sum = App\Payment::where('invoice',$invoice->id)->sum('amount');
+        $items_sum = InvoiceItem::where('invoice',$invoice->id)->sum('total') + $transactions_sum;
+        $payments_sum = Payment::where('invoice',$invoice->id)->sum('amount');
 
         $invoice->subtotal = (float)$items_sum;
         $invoice->tax = (float)($items_sum / 100) *  (float)$invoice->tax_porcentage;
@@ -161,13 +167,13 @@ class PaymentController extends Controller
 
     public function view_payment($id)
     {
-        $payment = App\Payment::findOrFail($id);
+        $payment = Payment::findOrFail($id);
         return view('payment.view-payment',compact('payment'));
     }
 
     public function update_payment(request $request, $id)
     {
-        $payment = App\Payment::findOrFail($id);
+        $payment = Payment::findOrFail($id);
 
         $validatedData = $request->validate([
             'amount' => 'required|numeric|between:-99999.99,99999.99',
@@ -177,7 +183,7 @@ class PaymentController extends Controller
 
 
 
-        $log = new App\Log; 
+        $log = new Log; 
         $log->table = 'payments';
         $log->data = 'Payment has been Updated [FROM]'.$payment->amount.'[TO]'.$request->amount.'[FROM]'.$payment->method.'[TO]'.$request->method.'[FROM]'.$payment->ref.'[TO]'.$request->ref;
         $log->ref = $payment->id;

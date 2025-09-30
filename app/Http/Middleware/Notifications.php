@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\View;
 
+use App\Models\Notification;
+
 class Notifications
 {
     /**
@@ -16,8 +18,8 @@ class Notifications
      */
     public function handle($request, Closure $next)
     {
-        $notifications = \App\Notification::take(3)->get(); 
-        $notifications_count = \App\Notification::count(); 
+        $notifications = Notification::take(3)->get(); 
+        $notifications_count = Notification::count(); 
         View::share('notifications', $notifications);
         View::share('notifications_count', $notifications_count);
         return $next($request);

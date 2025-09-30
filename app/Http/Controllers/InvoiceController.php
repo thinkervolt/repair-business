@@ -12,6 +12,17 @@ use Illuminate\Support\Facades\File;
 use App\Mail\MailInvoice;
 use \Illuminate\Support\Facades\Lang;
 
+use App\Models\Customer;
+use App\Models\InventoryTransaction;
+use App\Models\InvoiceItem;
+use App\Models\InvoiceSetting;
+use App\Models\Invoice;
+use App\Models\Log;
+use App\Models\Payment;
+use App\Models\RepairItem;
+use App\Models\Repair;
+use App\Models\Setting;
+
 class InvoiceController extends Controller
 {
     
@@ -25,20 +36,20 @@ class InvoiceController extends Controller
 
 
         if ($task == 'unpaid') {
-            $invoices = App\Invoice::where('balance', '>', 0)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);
+            $invoices = Invoice::where('balance', '>', 0)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);
         } else {
 
 
-            $search_priority = App\InvoiceSetting::select('id')->where('name', 'LIKE', '%' . $request->search . '%');
+            $search_priority = InvoiceSetting::select('id')->where('name', 'LIKE', '%' . $request->search . '%');
 
-            $search = App\Invoice::select('id')->where('customer_name', 'LIKE', '%' . $request->search . '%')
+            $search = Invoice::select('id')->where('customer_name', 'LIKE', '%' . $request->search . '%')
                 ->orwhere('customer_email', 'LIKE', '%' . $request->search . '%')
                 ->orwhere('customer_phone', 'LIKE', '%' . $request->search . '%')
                 ->orwhere('customer_company', 'LIKE', '%' . $request->search . '%')
                 ->orwhere('id', 'LIKE', '%' . $request->search . '%')
                 ->orwherein('status', $search_priority);
 
-            $invoices = App\Invoice::whereIn('id', $search)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);
+            $invoices = Invoice::whereIn('id', $search)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);
         }
 
         return view('invoice.index-invoice', compact('invoices'))->with('search', $request->search);
@@ -47,12 +58,12 @@ class InvoiceController extends Controller
     public function view_invoice($id)
     {
 
-        $invoice = App\Invoice::findOrFail($id);
-        $invoice_items = App\InvoiceItem::where('invoice', $id)->get();
-        $invoice_statuses = App\InvoiceSetting::where('group', 'status')->get();
-        $logs =  App\Log::where('table', 'invoices')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
-        $payments = App\Payment::where('invoice', $id)->where('active', 'yes')->get();
-        $transactions = App\InventoryTransaction::where('invoice_id', $id)->get();
+        $invoice = Invoice::findOrFail($id);
+        $invoice_items = InvoiceItem::where('invoice', $id)->get();
+        $invoice_statuses = InvoiceSetting::where('group', 'status')->get();
+        $logs =  Log::where('table', 'invoices')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
+        $payments = Payment::where('invoice', $id)->where('active', 'yes')->get();
+        $transactions = InventoryTransaction::where('invoice_id', $id)->get();
         return view('invoice.view-invoice', compact('invoice', 'invoice_items', 'invoice_statuses', 'logs', 'payments', 'transactions'));
     }
 
@@ -62,20 +73,20 @@ class InvoiceController extends Controller
 
         if ($task == 'view_repair') {
 
-            $repair = App\Repair::findOrFail($id);
+            $repair = Repair::findOrFail($id);
 
             /* business-profile */
-            $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+            $business_profile_settings = Setting::where('group', 'business_profile')->get();
             $company_profile = (object)[];
             foreach ($business_profile_settings as $setting) {
                 $company_profile->{$setting->name} = $setting->data;
             }
 
 
-            $invoice_tax_string = App\Setting::where('name', 'invoice_tax')->where('group', 'tax')->firstOrFail();
+            $invoice_tax_string = Setting::where('name', 'invoice_tax')->where('group', 'tax')->firstOrFail();
             $invoice_tax = (float)$invoice_tax_string->data;
 
-            $jobs = App\RepairItem::where('repair', $id)->where('group', 'job')->get();
+            $jobs = RepairItem::where('repair', $id)->where('group', 'job')->get();
             $job_data = 'JOBS: ';
             if ($jobs) {
                 foreach ($jobs as $job) {
@@ -83,7 +94,7 @@ class InvoiceController extends Controller
                 }
             }
 
-            $invoice = new App\Invoice;
+            $invoice = new Invoice;
 
             if (isset($repair->customer)) {
 
@@ -105,7 +116,7 @@ class InvoiceController extends Controller
             $invoice->save();
 
 
-            $invoice_item = new App\InvoiceItem;
+            $invoice_item = new InvoiceItem;
             $invoice_item->invoice = $invoice->id;
             $invoice_item->name = 'REPAIR #' . $repair->id;
             $invoice_item->description = $repair->request . ' ' . $repair->target;
@@ -130,7 +141,7 @@ class InvoiceController extends Controller
 
 
 
-            $log = new App\Log;
+            $log = new Log;
             $log->table = 'invoices';
             $log->data = 'Invoice has been Created';
             $log->ref = $invoice->id;
@@ -141,7 +152,7 @@ class InvoiceController extends Controller
         if ($task == 'empty') {
 
             /* business-profile */
-            $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+            $business_profile_settings = Setting::where('group', 'business_profile')->get();
             $company_profile = (object)[];
             foreach ($business_profile_settings as $setting) {
                 $company_profile->{$setting->name} = $setting->data;
@@ -151,10 +162,10 @@ class InvoiceController extends Controller
 
 
 
-            $invoice_tax_string = App\Setting::where('name', 'invoice_tax')->where('group', 'tax')->firstOrFail();
+            $invoice_tax_string = Setting::where('name', 'invoice_tax')->where('group', 'tax')->firstOrFail();
             $invoice_tax = (float)$invoice_tax_string->data;
 
-            $invoice = new App\Invoice;
+            $invoice = new Invoice;
             $invoice->company_name = $company_profile->name;
             $invoice->company_phone = preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $company_profile->phone);
             $invoice->company_email = $company_profile->email;
@@ -169,7 +180,7 @@ class InvoiceController extends Controller
             $invoice->save();
 
 
-            $log = new App\Log;
+            $log = new Log;
             $log->table = 'invoices';
             $log->data = 'Invoice has been Created';
             $log->ref = $invoice->id;
@@ -184,13 +195,13 @@ class InvoiceController extends Controller
     {
 
 
-        $invoice = App\Invoice::findOrFail($id);
-        $items_sum = App\InvoiceItem::where('invoice', $id)->sum('total');
-        $payments_sum = App\Payment::where('invoice', $id)->sum('amount');
+        $invoice = Invoice::findOrFail($id);
+        $items_sum = InvoiceItem::where('invoice', $id)->sum('total');
+        $payments_sum = Payment::where('invoice', $id)->sum('amount');
 
         $transactions_sum =  0;
 
-        $transactions = App\InventoryTransaction::where('invoice_id', $id)->get();
+        $transactions = InventoryTransaction::where('invoice_id', $id)->get();
 
         foreach($transactions as $transaction){
 
@@ -265,7 +276,7 @@ class InvoiceController extends Controller
         $invoice->balance = ((float)$invoice_items + (($invoice_items / 100) *  (float)$request->tax_porcentage)) - $payments_sum;
         $invoice->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'invoices';
         $log->data = 'Invoice has been Updated' . $invoice_log_update;
         $log->ref = $id;
@@ -278,11 +289,11 @@ class InvoiceController extends Controller
 
     public function delete_invoice($id)
     {
-        $invoice = App\Invoice::findOrFail($id);
+        $invoice = Invoice::findOrFail($id);
         $invoice->active = 'no';
         $invoice->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'invoices';
         $log->data = 'Invoice has been Deleted';
         $log->ref = $id;
@@ -294,11 +305,11 @@ class InvoiceController extends Controller
 
     public function restore_invoice($id)
     {
-        $invoice = App\Invoice::findOrFail($id);
+        $invoice = Invoice::findOrFail($id);
         $invoice->active = 'yes';
         $invoice->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'invoices';
         $log->data = 'Invoice has been Restored';
         $log->ref = $id;
@@ -310,19 +321,19 @@ class InvoiceController extends Controller
 
     public function destroy_invoice($id)
     {
-        $invoice = App\Invoice::findOrFail($id);
+        $invoice = Invoice::findOrFail($id);
         $invoice->delete();
 
-        $invoice_items = App\InvoiceItem::where('invoice', $id);
+        $invoice_items = InvoiceItem::where('invoice', $id);
         $invoice_items->delete();
 
-        $payments = App\Payment::where('invoice', $id);
+        $payments = Payment::where('invoice', $id);
         $payments->delete();
 
-        $payments = App\InventoryTransaction::where('invoice_id', $id);
+        $payments = InventoryTransaction::where('invoice_id', $id);
         $payments->delete();
 
-        $logs = App\Log::where('table', 'invoices')->where('ref', $id);
+        $logs = Log::where('table', 'invoices')->where('ref', $id);
         $logs->delete();
 
         return back()->with('error', Lang::get('repair-business.error_invoice-has-been-destroyed') )->with('alert', 'alert-danger');
@@ -331,15 +342,15 @@ class InvoiceController extends Controller
     public function print_invoice($id, $task)
     {
 
-        $invoice = App\Invoice::findOrFail($id);
-        $invoice_items = App\InvoiceItem::where('invoice', $id)->get();
-        $transactions = App\InventoryTransaction::where('invoice_id', $id)->get();
-        $invoice_statuses = App\InvoiceSetting::where('group', 'status')->get();
-        $logs =  App\Log::where('table', 'invoices')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
-        $payments = App\Payment::where('invoice', $id)->where('active', 'yes')->get();
+        $invoice = Invoice::findOrFail($id);
+        $invoice_items = InvoiceItem::where('invoice', $id)->get();
+        $transactions = InventoryTransaction::where('invoice_id', $id)->get();
+        $invoice_statuses = InvoiceSetting::where('group', 'status')->get();
+        $logs =  Log::where('table', 'invoices')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
+        $payments = Payment::where('invoice', $id)->where('active', 'yes')->get();
 
         /* business-profile */
-        $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+        $business_profile_settings = Setting::where('group', 'business_profile')->get();
         $company_profile = (object)[];
         foreach ($business_profile_settings as $setting) {
             $company_profile->{$setting->name} = $setting->data;
@@ -362,15 +373,15 @@ class InvoiceController extends Controller
             File::delete(public_path() . '/invoice-receipt.pdf');
         }
 
-        $invoice = App\Invoice::findOrFail($id);
-        $invoice_items = App\InvoiceItem::where('invoice', $id)->get();
-        $transactions = App\InventoryTransaction::where('invoice_id', $id)->get();
-        $invoice_statuses = App\InvoiceSetting::where('group', 'status')->get();
-        $logs =  App\Log::where('table', 'invoices')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
-        $payments = App\Payment::where('invoice', $id)->where('active', 'yes')->get();
+        $invoice = Invoice::findOrFail($id);
+        $invoice_items = InvoiceItem::where('invoice', $id)->get();
+        $transactions = InventoryTransaction::where('invoice_id', $id)->get();
+        $invoice_statuses = InvoiceSetting::where('group', 'status')->get();
+        $logs =  Log::where('table', 'invoices')->where('ref', $id)->orderBy('created_at', 'DESC')->paginate('25');
+        $payments = Payment::where('invoice', $id)->where('active', 'yes')->get();
 
         /* business-profile */
-        $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+        $business_profile_settings = Setting::where('group', 'business_profile')->get();
         $company_profile = (object)[];
         foreach ($business_profile_settings as $setting) {
             $company_profile->{$setting->name} = $setting->data;
@@ -394,7 +405,7 @@ class InvoiceController extends Controller
                     File::delete(public_path() . '/invoice-receipt.pdf');
                 }
 
-                $log = new App\Log;
+                $log = new Log;
                 $log->table = 'invoices';
                 $log->data = 'Email has been Sent';
                 $log->ref = $invoice->id;
@@ -421,8 +432,8 @@ class InvoiceController extends Controller
     {
 
 
-        $invoice = App\Invoice::findOrFail($id);
-        $customer_data = App\Customer::findOrFail($customer);
+        $invoice = Invoice::findOrFail($id);
+        $customer_data = Customer::findOrFail($customer);
 
         $invoice->customer_id = $customer_data->id;
         $invoice->customer_name = $customer_data->first_name . ' ' . $customer_data->last_name;
@@ -433,7 +444,7 @@ class InvoiceController extends Controller
 
         $invoice->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'invoices';
         $log->data = 'Invoice has been Updated [customer][FROM]' . $invoice->customer_id . '[TO]' . $customer;
         $log->ref = $id;
@@ -450,7 +461,7 @@ class InvoiceController extends Controller
 
     public function setting_invoice()
     {
-        $statuses = App\InvoiceSetting::where('group', 'status')->orderBy('group')->get();
+        $statuses = InvoiceSetting::where('group', 'status')->orderBy('group')->get();
         return view('invoice.setting-invoice', compact('statuses'));
     }
 
@@ -464,13 +475,13 @@ class InvoiceController extends Controller
             'color' => 'required|alpha|min:2|max:50',
         ]);
 
-        $invoice_setting = new App\InvoiceSetting;
+        $invoice_setting = new InvoiceSetting;
         $invoice_setting->name = $request->name;
         $invoice_setting->group = $request->group;
         $invoice_setting->color = $request->color;
         $invoice_setting->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'invoice_settings';
         $log->data = 'Invoice Setting has been Created';
         $log->ref = $invoice_setting->id;
@@ -490,13 +501,13 @@ class InvoiceController extends Controller
             'color' => 'required|alpha|min:2|max:50',
         ]);
 
-        $invoice_setting = App\InvoiceSetting::findOrFail($id);
+        $invoice_setting = InvoiceSetting::findOrFail($id);
         $invoice_setting->name = $request->name;
         $invoice_setting->group = $request->group;
         $invoice_setting->color = $request->color;
         $invoice_setting->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'invoice_settings';
         $log->data = 'Invoice Setting has been Updated';
         $log->ref = $id;
@@ -513,10 +524,10 @@ class InvoiceController extends Controller
     public function delete_setting_invoice($id)
     {
 
-        $invoice_setting = App\InvoiceSetting::findOrFail($id);
+        $invoice_setting = InvoiceSetting::findOrFail($id);
         $invoice_setting->delete();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'invoice_settings';
         $log->data = 'Invoice Setting has been Deleted';
         $log->ref = $id;
@@ -535,10 +546,10 @@ class InvoiceController extends Controller
 
     public function create_item_repair_invoice($repair, $invoice)
     {
-        $invoice_data = App\Invoice::findOrFail($invoice);
-        $repair = App\Repair::findOrFail($repair);
+        $invoice_data = Invoice::findOrFail($invoice);
+        $repair = Repair::findOrFail($repair);
 
-        $jobs = App\RepairItem::where('repair', $repair->id)->where('group', 'job')->get();
+        $jobs = RepairItem::where('repair', $repair->id)->where('group', 'job')->get();
         $job_data = 'JOBS: ';
         if ($jobs) {
             foreach ($jobs as $job) {
@@ -546,7 +557,7 @@ class InvoiceController extends Controller
             }
         }
 
-        $invoice_item = new App\InvoiceItem;
+        $invoice_item = new InvoiceItem;
         $invoice_item->invoice = $invoice;
         $invoice_item->name = 'REPAIR #' . $repair->id;
         $invoice_item->description = $repair->request . ' ' . $repair->target;
@@ -565,14 +576,14 @@ class InvoiceController extends Controller
 
 
         $transactions_sum = 0;
-        $transactions = App\InventoryTransaction::where('invoice_id', $invoice)->get();
+        $transactions = InventoryTransaction::where('invoice_id', $invoice)->get();
         foreach ($transactions as $transaction) {
             $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
         }
 
 
-        $items_sum = App\InvoiceItem::where('invoice', $invoice)->sum('total') + $transactions_sum;
-        $payments_sum = App\Payment::where('invoice', $invoice)->sum('amount');
+        $items_sum = InvoiceItem::where('invoice', $invoice)->sum('total') + $transactions_sum;
+        $payments_sum = Payment::where('invoice', $invoice)->sum('amount');
 
 
 
@@ -583,7 +594,7 @@ class InvoiceController extends Controller
         $invoice_data->save();
 
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'invoices';
         $log->data = 'Invoice Item has been Created';
         $log->ref = $invoice;
@@ -605,7 +616,7 @@ class InvoiceController extends Controller
         ]);
 
 
-        $invoice_item = new App\InvoiceItem;
+        $invoice_item = new InvoiceItem;
 
         $invoice_item->invoice = $id;
         $invoice_item->name = $request->name;
@@ -619,18 +630,18 @@ class InvoiceController extends Controller
 
 
 
-        $invoice = App\Invoice::findOrFail($id);
+        $invoice = Invoice::findOrFail($id);
 
         $transactions_sum = 0;
-        $transactions = App\InventoryTransaction::where('invoice_id', $id)->get();
+        $transactions = InventoryTransaction::where('invoice_id', $id)->get();
         foreach ($transactions as $transaction) {
             $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
         }
 
 
-        $items_sum = App\InvoiceItem::where('invoice', $id)->sum('total') + $transactions_sum;
+        $items_sum = InvoiceItem::where('invoice', $id)->sum('total') + $transactions_sum;
 
-        $payments_sum = App\Payment::where('invoice', $id)->sum('amount');
+        $payments_sum = Payment::where('invoice', $id)->sum('amount');
 
 
 
@@ -641,7 +652,7 @@ class InvoiceController extends Controller
         $invoice->save();
 
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'invoices';
         $log->data = 'Invoice Item has been Created';
         $log->ref = $id;
@@ -666,7 +677,7 @@ class InvoiceController extends Controller
 
 
 
-        $invoice_item = App\InvoiceItem::findOrFail($id);
+        $invoice_item = InvoiceItem::findOrFail($id);
 
         $invoice_item_log_update = '';
 
@@ -699,16 +710,16 @@ class InvoiceController extends Controller
 
 
 
-        $invoice = App\Invoice::findOrFail($invoice_item->invoice);
+        $invoice = Invoice::findOrFail($invoice_item->invoice);
 
         $transactions_sum = 0;
-        $transactions = App\InventoryTransaction::where('invoice_id', $invoice->id)->get();
+        $transactions = InventoryTransaction::where('invoice_id', $invoice->id)->get();
         foreach ($transactions as $transaction) {
             $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
         }
 
-        $items_sum = App\InvoiceItem::where('invoice', $invoice->id)->sum('total') + $transactions_sum;
-        $payments_sum = App\Payment::where('invoice', $invoice->id)->sum('amount');
+        $items_sum = InvoiceItem::where('invoice', $invoice->id)->sum('total') + $transactions_sum;
+        $payments_sum = Payment::where('invoice', $invoice->id)->sum('amount');
 
 
 
@@ -719,7 +730,7 @@ class InvoiceController extends Controller
         $invoice->save();
 
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'invoices';
         $log->data = 'Invoice Item has been Updated' . $invoice_item_log_update;
         $log->ref = $invoice_item->invoice;
@@ -734,9 +745,9 @@ class InvoiceController extends Controller
     public function delete_item_invoice($id)
     {
 
-        $invoice_item = App\InvoiceItem::findOrFail($id);
+        $invoice_item = InvoiceItem::findOrFail($id);
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'invoices';
         $log->data = 'Invoice Item has been Deleted [' . $invoice_item->name . '][' . $invoice_item->description . '][' . $invoice_item->sub_description . '][' . $invoice_item->unit_cost . '][' . $invoice_item->quantity . '][' . $invoice_item->total . ']';
         $log->ref = $invoice_item->invoice;
@@ -747,10 +758,10 @@ class InvoiceController extends Controller
         $invoice_item->delete();
 
 
-        $invoice = App\Invoice::findOrFail($invoice_item->invoice);
+        $invoice = Invoice::findOrFail($invoice_item->invoice);
 
         $transactions_sum = 0;
-        $transactions = App\InventoryTransaction::where('invoice_id', $invoice->id)->get();
+        $transactions = InventoryTransaction::where('invoice_id', $invoice->id)->get();
         foreach ($transactions as $transaction) {
             $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
         }
@@ -758,8 +769,8 @@ class InvoiceController extends Controller
 
 
 
-        $items_sum = App\InvoiceItem::where('invoice', $invoice->id)->sum('total') + $transactions_sum;
-        $payments_sum = App\Payment::where('invoice', $invoice->id)->sum('amount');
+        $items_sum = InvoiceItem::where('invoice', $invoice->id)->sum('total') + $transactions_sum;
+        $payments_sum = Payment::where('invoice', $invoice->id)->sum('amount');
         $invoice->subtotal = (float)$items_sum;
         $invoice->tax = (float)($items_sum / 100) *  (float)$invoice->tax_porcentage;
         $invoice->total = (float)$items_sum + (($items_sum / 100) *  (float)$invoice->tax_porcentage);

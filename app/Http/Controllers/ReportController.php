@@ -7,6 +7,11 @@ use App;
 use Auth;
 use \Illuminate\Support\Facades\Lang;
 
+use App\Models\Invoice;
+use App\Models\Log;
+use App\Models\Payment;
+use App\Models\Repair;
+
 class ReportController extends Controller
 {
              /**
@@ -45,16 +50,16 @@ class ReportController extends Controller
         $cash_register = $request->cash;
         $card_register = $request->card;
 
-        $payments = App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->get();
+        $payments = Payment::where('active','yes')->whereDate('created_at','=',$request->date)->get();
 
         $payment_data = array(
             'date' => $request->date,
-            'count' => App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->count(),
-            'total' => App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->sum('amount'), 
-            'total_cash' => App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->where('method','cash')->sum('amount'),
-            'total_card' => App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->where('method','card')->sum('amount'),
-            'total_check' => App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->where('method','check')->sum('amount'),
-            'total_other' => App\Payment::where('active','yes')->whereDate('created_at','=',$request->date)->where('method','other')->sum('amount'), 
+            'count' => Payment::where('active','yes')->whereDate('created_at','=',$request->date)->count(),
+            'total' => Payment::where('active','yes')->whereDate('created_at','=',$request->date)->sum('amount'), 
+            'total_cash' => Payment::where('active','yes')->whereDate('created_at','=',$request->date)->where('method','cash')->sum('amount'),
+            'total_card' => Payment::where('active','yes')->whereDate('created_at','=',$request->date)->where('method','card')->sum('amount'),
+            'total_check' => Payment::where('active','yes')->whereDate('created_at','=',$request->date)->where('method','check')->sum('amount'),
+            'total_other' => Payment::where('active','yes')->whereDate('created_at','=',$request->date)->where('method','other')->sum('amount'), 
             'cash_register' => $cash_register,
             'card_register' => $card_register,
             );
@@ -68,7 +73,7 @@ class ReportController extends Controller
     {
 
         if($request->cash != 0 ){
-            $cash_payment =  new App\Payment;
+            $cash_payment =  new Payment;
             $cash_payment->amount = $request->cash;
             $cash_payment->method = 'cash';
             $cash_payment->ref = 'NON-INVOICED-CASH-TRANSACTIONS-'.$request->date;
@@ -76,7 +81,7 @@ class ReportController extends Controller
             $cash_payment->created_at = $request->date.' 00:00:00';
             $cash_payment->save();
 
-            $log = new App\Log; 
+            $log = new Log; 
             $log->table = 'invoices';
             $log->data = 'Payment has been Created [$'.$request->cash.'][cash][NON-INVOICED-CASH-TRANSACTIONS-'.$request->date.']';
             $log->ref = $cash_payment->id;
@@ -85,7 +90,7 @@ class ReportController extends Controller
         }
 
         if($request->card != 0){
-            $card_payment =  new App\Payment;
+            $card_payment =  new Payment;
             $card_payment->amount = $request->card;
             $card_payment->method = 'card';
             $card_payment->ref = 'NON-INVOICED-CARD-TRANSACTIONS-'.$request->date;
@@ -93,7 +98,7 @@ class ReportController extends Controller
             $card_payment->created_at = $request->date.' 00:00:00';
             $card_payment->save();
 
-            $log = new App\Log; 
+            $log = new Log; 
             $log->table = 'invoices';
             $log->data = 'Payment has been Created [$'.$request->card.'][cash][NON-INVOICED-CARD-TRANSACTIONS-'.$request->date.']';
             $log->ref = $card_payment->id;
@@ -122,11 +127,11 @@ class ReportController extends Controller
 
         if($request->invoices == 'on'){
 
-            $invoices = App\Invoice::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->get();
+            $invoices = Invoice::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->get();
             $invoice_data = array(
-            'total' => App\Invoice::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->sum('total'),
-            'balance' => App\Invoice::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->sum('balance'),
-            'count' => App\Invoice::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->count(),
+            'total' => Invoice::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->sum('total'),
+            'balance' => Invoice::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->sum('balance'),
+            'count' => Invoice::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->count(),
             );
         }else{
 
@@ -136,9 +141,9 @@ class ReportController extends Controller
 
         if($request->repairs == 'on'){
 
-            $repairs = App\Repair::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->get();
+            $repairs = Repair::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->get();
             $repair_data = array(
-                'count' => App\Repair::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->count(),
+                'count' => Repair::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->count(),
             );
 
         }else{
@@ -148,14 +153,14 @@ class ReportController extends Controller
         }
 
         if($request->payments == 'on'){
-            $payments = App\Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->get(); 
+            $payments = Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->get(); 
             $payment_data = array(
-                'count' => App\Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->count(),
-                'total' => App\Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->sum('amount'), 
-                'total_cash' => App\Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->where('method','cash')->sum('amount'),
-                'total_card' => App\Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->where('method','card')->sum('amount'),
-                'total_check' => App\Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->where('method','check')->sum('amount'),
-                'total_other' => App\Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->where('method','other')->sum('amount'), 
+                'count' => Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->count(),
+                'total' => Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->sum('amount'), 
+                'total_cash' => Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->where('method','cash')->sum('amount'),
+                'total_card' => Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->where('method','card')->sum('amount'),
+                'total_check' => Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->where('method','check')->sum('amount'),
+                'total_other' => Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->where('method','other')->sum('amount'), 
             );
 
         }else{
@@ -186,30 +191,30 @@ class ReportController extends Controller
             'to' => $report_to,
         );
 
-        $invoices = App\Invoice::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->get();
+        $invoices = Invoice::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->get();
 
         $invoice_data = array(
-        'total' => App\Invoice::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->sum('total'),
-        'balance' => App\Invoice::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->sum('balance'),
-        'count' => App\Invoice::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->count(),
+        'total' => Invoice::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->sum('total'),
+        'balance' => Invoice::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->sum('balance'),
+        'count' => Invoice::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->count(),
         );
         $repair_data = array(
-            'count' => App\Repair::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->count(),
+            'count' => Repair::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->count(),
         );
         $payment_data = array(
-            'count' => App\Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->count(), 
-            'total' => App\Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->sum('amount'), 
-            'total_cash' => App\Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->where('method','cash')->sum('amount'),
-            'total_card' => App\Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->where('method','card')->sum('amount'),
-            'total_check' => App\Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->where('method','check')->sum('amount'),
-            'total_other' => App\Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->where('method','other')->sum('amount'), 
+            'count' => Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->count(), 
+            'total' => Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->sum('amount'), 
+            'total_cash' => Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->where('method','cash')->sum('amount'),
+            'total_card' => Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->where('method','card')->sum('amount'),
+            'total_check' => Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->where('method','check')->sum('amount'),
+            'total_other' => Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->where('method','other')->sum('amount'), 
         );
 
 
 
 
-        $repairs = App\Repair::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->get();
-        $payments = App\Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->get(); 
+        $repairs = Repair::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->get();
+        $payments = Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->get(); 
 
         return view('report.print-report',compact('invoices','invoice_data','repairs','repair_data','payments','payment_data','report_data'));
         

@@ -7,6 +7,11 @@ use App;
 use Auth;
 use \Illuminate\Support\Facades\Lang;
 
+use App\Models\Customer;
+use App\Models\Invoice;
+use App\Models\Log;
+use App\Models\Repair;
+
 class CustomerController extends Controller
 {
    
@@ -17,14 +22,14 @@ class CustomerController extends Controller
 
     public function index_customer(request $request,$task = null, $id = null)
     {
-        $search = App\Customer::select('id')->where('last_name', 'LIKE', '%' . $request->search . '%')
+        $search = Customer::select('id')->where('last_name', 'LIKE', '%' . $request->search . '%')
         ->orwhere('first_name', 'LIKE', '%' . $request->search . '%')
         ->orwhere('id', 'LIKE', '%' . $request->search . '%')
         ->orwhere('phone', 'LIKE', '%' . $request->search . '%')
         ->orwhere('email', 'LIKE', '%' . $request->search . '%')
         ->orwhere('company', 'LIKE', '%' . $request->search . '%');
 
-        $customers = App\Customer::whereIn('id',$search)->where('active','yes')->orderBy('created_at','DESC')->paginate(25); 
+        $customers = Customer::whereIn('id',$search)->where('active','yes')->orderBy('created_at','DESC')->paginate(25); 
 
         return view('customer.index-customer',compact('customers'))->with('search',$request->search)->with('task',$task)->with('id',$id);
     }
@@ -50,7 +55,7 @@ class CustomerController extends Controller
 
         ]);
 
-        $customer = new App\Customer;
+        $customer = new Customer;
         $customer->first_name = $request->first_name;
         $customer->last_name = $request->last_name;
         $customer->phone = $request->phone;
@@ -64,7 +69,7 @@ class CustomerController extends Controller
 
         $customer->save();
 
-        $log = new App\Log; 
+        $log = new Log; 
         $log->table = 'customers';
         $log->data = 'Customer has been Created';
         $log->ref = $customer->id;
@@ -76,9 +81,9 @@ class CustomerController extends Controller
 
     public function view_customer($id)
     {
-        $customer = App\Customer::findOrFail($id);
-        $repairs = App\Repair::where('customer',$id)->where('active','yes')->orderBy('created_at','DESC')->paginate(25); 
-        $invoices = App\Invoice::where('customer_id',$id)->where('active','yes')->orderBy('created_at','DESC')->paginate(25); 
+        $customer = Customer::findOrFail($id);
+        $repairs = Repair::where('customer',$id)->where('active','yes')->orderBy('created_at','DESC')->paginate(25); 
+        $invoices = Invoice::where('customer_id',$id)->where('active','yes')->orderBy('created_at','DESC')->paginate(25); 
 
 
         return view('customer.view-customer',compact('customer','repairs','invoices'));
@@ -86,7 +91,7 @@ class CustomerController extends Controller
 
     public function update_customer(request $request, $id)
     {
-        $customer = App\Customer::findOrFail($id);
+        $customer = Customer::findOrFail($id);
 
         $validatedData = $request->validate([
 
@@ -114,7 +119,7 @@ class CustomerController extends Controller
         $customer->company = $request->company;
         $customer ->save();
 
-        $log = new App\Log; 
+        $log = new Log; 
         $log->table = 'customers';
         $log->data = 'Customer has been Updated';
         $log->ref = $customer->id;
@@ -126,11 +131,11 @@ class CustomerController extends Controller
 
     public function delete_customer($id)
     {
-        $customer = App\Customer::findOrFail($id);
+        $customer = Customer::findOrFail($id);
         $customer->active = 'no';
         $customer ->save();
 
-        $log = new App\Log; 
+        $log = new Log; 
         $log->table = 'customers';
         $log->data = 'Customer has been Deleted';
         $log->ref = $customer->id;
@@ -142,11 +147,11 @@ class CustomerController extends Controller
 
     public function restore_customer($id)
     {
-        $customer = App\Customer::findOrFail($id);
+        $customer = Customer::findOrFail($id);
         $customer->active = 'yes';
         $customer ->save();
 
-        $log = new App\Log; 
+        $log = new Log; 
         $log->table = 'users';
         $log->data = 'Customer has been Restored';
         $log->ref = $customer->id;
@@ -157,10 +162,10 @@ class CustomerController extends Controller
 
     public function destroy_customer($id)
     {
-        $customer = App\Customer::findOrFail($id);
+        $customer = Customer::findOrFail($id);
         $customer ->delete();
 
-        $logs = App\Log::where('table','customers')->where('ref',$id);
+        $logs = Log::where('table','customers')->where('ref',$id);
         $logs->delete();
         return back()->with('error',Lang::get('repair-business.error_customer-has-been-destroyed'))->with('alert', 'alert-danger');
     }

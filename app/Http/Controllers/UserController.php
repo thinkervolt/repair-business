@@ -8,6 +8,8 @@ use App;
 use Illuminate\Support\Facades\Hash;
 use \Illuminate\Support\Facades\Lang;
 
+use App\Models\User;
+
 
 class UserController extends Controller
 {
@@ -28,7 +30,7 @@ class UserController extends Controller
      */
     public function profile()
     {
-        $user = App\User::select('name','email','role')->where('id', auth()->user()->id)->first();
+        $user = User::select('name','email','role')->where('id', auth()->user()->id)->first();
         return view('user.profile',compact('user'));
     }
 
@@ -48,7 +50,7 @@ class UserController extends Controller
 
             if($request->password == $request->password_confirmation){
 
-                $user = App\User::findOrFail(auth()->user()->id);
+                $user = User::findOrFail(auth()->user()->id);
                 $user->password = Hash::make($request->password);
                 $user->save();
 
@@ -68,14 +70,14 @@ class UserController extends Controller
 
     public function users()
     {
-        $users = App\User::select('id','name','email','role')->where('active','yes')->where('id','!=',auth()->user()->id)->get();
+        $users = User::select('id','name','email','role')->where('active','yes')->where('id','!=',auth()->user()->id)->get();
         return view('user.users',compact('users'));
     }
 
     
     public function update_user(request $request, $id)
     {
-        $user = App\User::findOrFail($id);
+        $user = User::findOrFail($id);
 
         $validatedData = $request->validate([
             'email' => 'required|email|unique:users,email,'.$user->id,
@@ -97,7 +99,7 @@ class UserController extends Controller
 
     public function delete_user($id)
     {
-        $user = App\User::findOrFail($id);
+        $user = User::findOrFail($id);
 
         $user->delete();
 

@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use App;
 use \Illuminate\Support\Facades\Lang;
 
+use App\Models\Customer;
+use App\Models\Notification;
+use App\Models\Setting;
+
 class PublicController extends Controller
 {
     public function welcome()
@@ -16,7 +20,7 @@ class PublicController extends Controller
     {
 
         /* business-profile */
-        $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+        $business_profile_settings = Setting::where('group', 'business_profile')->get();
         $company_profile = (object)[];
         foreach ($business_profile_settings as $setting) {
             $company_profile->{$setting->name} = $setting->data;
@@ -38,7 +42,7 @@ class PublicController extends Controller
             'zip' => 'nullable|numeric|digits_between:5,5',
         ]);
 
-        $customer = new App\Customer;
+        $customer = new Customer;
         $customer->first_name = $request->first_name;
         $customer->last_name = $request->last_name;
         $customer->phone = $request->phone;
@@ -51,7 +55,7 @@ class PublicController extends Controller
 
         $customer->save(); 
 
-        $notification = new App\Notification;
+        $notification = new Notification;
         $notification->message = Lang::get('repair-business.new-customer-signed-up') ;
         $notification->ref = $customer->id;
         $notification->route = 'view-customer';

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App;
+
+use App\Models\Notification;
+
 class NotificationController extends Controller
 {
             /* Create a new controller instance.
@@ -24,7 +27,7 @@ class NotificationController extends Controller
 
     public function notification($id)
     {
-        $notification = App\Notification::findOrFail($id);
+        $notification = Notification::findOrFail($id);
         $notification->delete();
 
 

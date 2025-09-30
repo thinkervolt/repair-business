@@ -6,13 +6,23 @@ use Auth;
 use Illuminate\Http\Request;
 use \Illuminate\Support\Facades\Lang;
 
+use App\Models\InventoryCategory;
+use App\Models\InventoryProduct;
+use App\Models\InventoryTransaction;
+use App\Models\InvoiceItem;
+use App\Models\Invoice;
+use App\Models\Log;
+use App\Models\Payment;
+use App\Models\Repair;
+use App\Models\Setting;
+
 
 class InventoryController extends Controller
 {
     public function inventory_index_category()
     {
 
-        $inventory_categories = App\InventoryCategory::orderBy('created_at', 'DESC')->paginate(25);
+        $inventory_categories = InventoryCategory::orderBy('created_at', 'DESC')->paginate(25);
         return view('inventory.index-category', compact('inventory_categories'));
     }
 
@@ -22,11 +32,11 @@ class InventoryController extends Controller
             'name' => 'required|min:2|max:50',
         ]);
 
-        $inventory_category = new App\InventoryCategory();
+        $inventory_category = new InventoryCategory();
         $inventory_category->name = $request->name;
         $inventory_category->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'inventory_categories';
         $log->data = 'Inventory Category has been Created';
         $log->ref = $inventory_category->id;
@@ -42,11 +52,11 @@ class InventoryController extends Controller
             'name' => 'required|min:2|max:50',
         ]);
 
-        $inventory_category =  App\InventoryCategory::findOrFail($id);
+        $inventory_category =  InventoryCategory::findOrFail($id);
         $inventory_category->name = $request->name;
         $inventory_category->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'inventory_categories';
         $log->data = 'Inventory Category has been Updated';
         $log->ref = $inventory_category->id;
@@ -60,10 +70,10 @@ class InventoryController extends Controller
     {
 
 
-        $inventory_category =  App\InventoryCategory::findOrFail($id);
+        $inventory_category =  InventoryCategory::findOrFail($id);
         $inventory_category->delete();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'inventory_categories';
         $log->data = 'Inventory Category has been Deleted';
         $log->ref = $inventory_category->id;
@@ -81,16 +91,16 @@ class InventoryController extends Controller
 
         $barcode = $request->search;
 
-        $category_search = App\InventoryCategory::select('id')->where('name', 'LIKE', '%' . $request->search . '%');
+        $category_search = InventoryCategory::select('id')->where('name', 'LIKE', '%' . $request->search . '%');
 
-        $search = App\InventoryProduct::select('id')->where('name', 'LIKE', '%' . $request->search . '%')
+        $search = InventoryProduct::select('id')->where('name', 'LIKE', '%' . $request->search . '%')
             ->orwhere('barcode', 'LIKE', '%' . $barcode  . '%')
             ->orwherein('category_id', $category_search);
 
-        $inventory_products = App\InventoryProduct::whereIn('id', $search)->orderBy('created_at', 'DESC')->paginate(25);
+        $inventory_products = InventoryProduct::whereIn('id', $search)->orderBy('created_at', 'DESC')->paginate(25);
 
 
-        $inventory_categories = App\InventoryCategory::orderBy('name', 'ASC')->get();
+        $inventory_categories = InventoryCategory::orderBy('name', 'ASC')->get();
         return view('inventory.index-product', compact('inventory_products', 'inventory_categories'))->with('search', $request->search)->with('task', $task)->with('id', $id);
     }
 
@@ -111,7 +121,7 @@ class InventoryController extends Controller
             'email_alert' => 'required|alpha|min:2|max:3',
         ]);
 
-        $inventory_product = new App\InventoryProduct();
+        $inventory_product = new InventoryProduct();
         $inventory_product->name = $request->name;
         $inventory_product->category_id = $request->category;
         $inventory_product->barcode = $request->barcode;
@@ -123,7 +133,7 @@ class InventoryController extends Controller
         $inventory_product->save();
 
 
-        $inventory_transaction = new App\InventoryTransaction();
+        $inventory_transaction = new InventoryTransaction();
         $inventory_transaction->transaction = 'purchase';
         $inventory_transaction->product_id = $inventory_product->id;
         $inventory_transaction->purchase_price = $request->purchase_price;
@@ -131,14 +141,14 @@ class InventoryController extends Controller
         $inventory_transaction->save();
 
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'inventory_transactions';
         $log->data = 'Inventory Transaction has been Created';
         $log->ref = $inventory_transaction->id;
         $log->user = Auth::user()->id;
         $log->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'inventory_products';
         $log->data = 'Inventory Product has been Created';
         $log->ref = $inventory_product->id;
@@ -150,15 +160,15 @@ class InventoryController extends Controller
 
     public function inventory_view_product($id)
     {
-        $product = App\InventoryProduct::findOrFail($id);
-        $inventory_categories = App\InventoryCategory::orderBy('name', 'ASC')->get();
-        $transactions = App\InventoryTransaction::where('product_id', $product->id)->orderBy('created_at', 'DESC')->paginate(25);
+        $product = InventoryProduct::findOrFail($id);
+        $inventory_categories = InventoryCategory::orderBy('name', 'ASC')->get();
+        $transactions = InventoryTransaction::where('product_id', $product->id)->orderBy('created_at', 'DESC')->paginate(25);
         return view('inventory.view-product', compact('product', 'inventory_categories', 'transactions'));
     }
 
     public function inventory_update_product(request $request, $id)
     {
-        $inventory_product = App\InventoryProduct::findOrFail($id);
+        $inventory_product = InventoryProduct::findOrFail($id);
 
         $request->validate([
             'category' => 'required|numeric',
@@ -182,7 +192,7 @@ class InventoryController extends Controller
         $inventory_product->selling_price = $request->selling_price;
         $inventory_product->save();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'inventory_products';
         $log->data = 'Inventory Product has been Updated';
         $log->ref = $inventory_product->id;
@@ -194,13 +204,13 @@ class InventoryController extends Controller
 
     public function inventory_delete_product($id)
     {
-        $product = App\InventoryProduct::findOrFail($id);
-        $transactions = App\InventoryTransaction::where('product_id', $product->id);
+        $product = InventoryProduct::findOrFail($id);
+        $transactions = InventoryTransaction::where('product_id', $product->id);
 
         $product->delete();
         $transactions->delete();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'inventory_products';
         $log->data = 'Inventory Product and Transactions have been Deleted';
         $log->ref = $product->id;
@@ -214,25 +224,25 @@ class InventoryController extends Controller
     {
 
 
-        $product_search = App\InventoryProduct::select('id')
+        $product_search = InventoryProduct::select('id')
             ->where('name', 'LIKE', '%' . $request->search . '%')
             ->orwhere('supplier', 'LIKE', '%' . $request->search . '%');
 
-        $search = App\InventoryTransaction::select('id')->where('transaction', 'LIKE', '%' . $request->search . '%')
+        $search = InventoryTransaction::select('id')->where('transaction', 'LIKE', '%' . $request->search . '%')
             ->orwhere('invoice_id', 'LIKE', '%' . $request->search . '%')
             ->orwherein('product_id', $product_search);
 
 
 
 
-        $transactions = App\InventoryTransaction::whereIn('id', $search)->orderBy('created_at', 'DESC')->paginate(25);
+        $transactions = InventoryTransaction::whereIn('id', $search)->orderBy('created_at', 'DESC')->paginate(25);
 
         return view('inventory.index-transaction', compact('transactions'))->with('search', $request->search);
     }
 
     public function inventory_view_transaction($id)
     {
-        $transaction = App\InventoryTransaction::findOrFail($id);
+        $transaction = InventoryTransaction::findOrFail($id);
         return view('inventory.view-transaction', compact('transaction'));
     }
 
@@ -245,7 +255,7 @@ class InventoryController extends Controller
             'transaction' => 'required',
         ]);
 
-        $inventory_transaction = App\InventoryTransaction::findOrFail($id);
+        $inventory_transaction = InventoryTransaction::findOrFail($id);
         $inventory_transaction->transaction = $request->transaction;
         $inventory_transaction->purchase_price = $request->purchase_price;
         $inventory_transaction->selling_price = $request->selling_price;
@@ -253,7 +263,7 @@ class InventoryController extends Controller
         $inventory_transaction->save();
 
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'inventory_transactions';
         $log->data = 'Inventory Transaction has been Updated';
         $log->ref = $inventory_transaction->id;
@@ -265,11 +275,11 @@ class InventoryController extends Controller
 
     public function inventory_delete_transaction($id)
     {
-        $transaction = App\InventoryTransaction::findOrFail($id);
+        $transaction = InventoryTransaction::findOrFail($id);
 
         $transaction->delete();
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'inventory_transactions';
         $log->data = 'Inventory ransactions has been Deleted';
         $log->ref = $transaction->id;
@@ -281,7 +291,7 @@ class InventoryController extends Controller
 
     public function inventory_restock_transaction($id)
     {
-        $product = App\InventoryProduct::findOrFail($id);
+        $product = InventoryProduct::findOrFail($id);
         return view('inventory.restock-transaction', compact('product'));
     }
 
@@ -292,7 +302,7 @@ class InventoryController extends Controller
             'quantity' => 'required|numeric|between:1,99999',
         ]);
 
-        $inventory_transaction = new App\InventoryTransaction();
+        $inventory_transaction = new InventoryTransaction();
         $inventory_transaction->product_id = $id;
         $inventory_transaction->transaction = 'purchase';
         $inventory_transaction->purchase_price = $request->purchase_price;
@@ -300,7 +310,7 @@ class InventoryController extends Controller
         $inventory_transaction->save();
 
 
-        $log = new App\Log;
+        $log = new Log;
         $log->table = 'inventory_transactions';
         $log->data = 'Inventory Transaction has been Created';
         $log->ref = $inventory_transaction->id;
@@ -324,16 +334,16 @@ class InventoryController extends Controller
 
 
 
-            $product = App\InventoryProduct::findOrFail($product_id);
-            $invoice = App\Invoice::findOrFail($id);
+            $product = InventoryProduct::findOrFail($product_id);
+            $invoice = Invoice::findOrFail($id);
 
-            $purchases = App\InventoryTransaction::where('product_id', $product->id)->where('transaction', 'purchase')->sum('quantity');
-            $sells = App\InventoryTransaction::where('product_id', $product->id)->where('transaction', 'sell')->sum('quantity');
+            $purchases = InventoryTransaction::where('product_id', $product->id)->where('transaction', 'purchase')->sum('quantity');
+            $sells = InventoryTransaction::where('product_id', $product->id)->where('transaction', 'sell')->sum('quantity');
             $stock = $purchases - $sells;
 
             if ($stock >= $quantity) {
 
-                $check_transaction = App\InventoryTransaction::where('product_id', $product_id)->where('invoice_id', $id)->first();
+                $check_transaction = InventoryTransaction::where('product_id', $product_id)->where('invoice_id', $id)->first();
 
                 if ($check_transaction) {
                     $inventory_transaction = $check_transaction;
@@ -341,7 +351,7 @@ class InventoryController extends Controller
                     $inventory_transaction->save();
                 } else {
 
-                    $inventory_transaction = new App\InventoryTransaction();
+                    $inventory_transaction = new InventoryTransaction();
                     $inventory_transaction->product_id = $product_id;
                     $inventory_transaction->invoice_id = $id;
                     $inventory_transaction->transaction = 'sell';
@@ -351,13 +361,13 @@ class InventoryController extends Controller
                 }
 
                 $transactions_sum = 0;
-                $transactions = App\InventoryTransaction::where('invoice_id', $id)->get();
+                $transactions = InventoryTransaction::where('invoice_id', $id)->get();
                 foreach ($transactions as $transaction) {
                     $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
                 }
 
-                $items_sum = App\InvoiceItem::where('invoice', $id)->sum('total') + $transactions_sum;
-                $payments_sum = App\Payment::where('invoice', $id)->sum('amount');
+                $items_sum = InvoiceItem::where('invoice', $id)->sum('total') + $transactions_sum;
+                $payments_sum = Payment::where('invoice', $id)->sum('amount');
 
                 $invoice->subtotal = (float)$items_sum;
                 $invoice->tax = (float)($items_sum / 100) *  (float)$invoice->tax_porcentage;
@@ -365,7 +375,7 @@ class InventoryController extends Controller
                 $invoice->balance = ((float)$items_sum + (($items_sum / 100) *  (float)$invoice->tax_porcentage)) - $payments_sum;
                 $invoice->save();
 
-                $log = new App\Log;
+                $log = new Log;
                 $log->table = 'inventory_transactions';
                 $log->data = 'Inventory Transaction has been Created';
                 $log->ref = $inventory_transaction->id;
@@ -381,16 +391,16 @@ class InventoryController extends Controller
 
         if ($task == 'repair') {
 
-            $product = App\InventoryProduct::findOrFail($product_id);
-            $repair = App\Repair::findOrFail($id);
+            $product = InventoryProduct::findOrFail($product_id);
+            $repair = Repair::findOrFail($id);
 
-            $purchases = App\InventoryTransaction::where('product_id', $product->id)->where('transaction', 'purchase')->sum('quantity');
-            $sells = App\InventoryTransaction::where('product_id', $product->id)->where('transaction', 'sell')->sum('quantity');
+            $purchases = InventoryTransaction::where('product_id', $product->id)->where('transaction', 'purchase')->sum('quantity');
+            $sells = InventoryTransaction::where('product_id', $product->id)->where('transaction', 'sell')->sum('quantity');
             $stock = $purchases - $sells;
 
             if ($stock > 0) {
 
-                $check_transaction = App\InventoryTransaction::where('product_id', $product_id)->where('repair_id', $id)->first();
+                $check_transaction = InventoryTransaction::where('product_id', $product_id)->where('repair_id', $id)->first();
 
                 if ($check_transaction) {
                     $inventory_transaction = $check_transaction;
@@ -398,7 +408,7 @@ class InventoryController extends Controller
                     $inventory_transaction->save();
                 } else {
 
-                    $inventory_transaction = new App\InventoryTransaction();
+                    $inventory_transaction = new InventoryTransaction();
                     $inventory_transaction->product_id = $product_id;
                     $inventory_transaction->repair_id = $id;
                     $inventory_transaction->transaction = 'sell';
@@ -407,7 +417,7 @@ class InventoryController extends Controller
                     $inventory_transaction->save();
                 }
 
-                $log = new App\Log;
+                $log = new Log;
                 $log->table = 'inventory_transactions';
                 $log->data = 'Inventory Transaction has been Created';
                 $log->ref = $inventory_transaction->id;
@@ -426,18 +436,18 @@ class InventoryController extends Controller
     {
 
         if ($task == 'invoice') {
-            $invoice = App\Invoice::findOrFail($id);
-            $transaction = App\InventoryTransaction::findOrFail($transaction);
+            $invoice = Invoice::findOrFail($id);
+            $transaction = InventoryTransaction::findOrFail($transaction);
             $transaction->delete();
 
             $transactions_sum = 0;
-            $transactions = App\InventoryTransaction::where('invoice_id', $id)->get();
+            $transactions = InventoryTransaction::where('invoice_id', $id)->get();
             foreach ($transactions as $transaction) {
                 $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
             }
 
-            $items_sum = App\InvoiceItem::where('invoice', $id)->sum('total') + $transactions_sum;
-            $payments_sum = App\Payment::where('invoice', $id)->sum('amount');
+            $items_sum = InvoiceItem::where('invoice', $id)->sum('total') + $transactions_sum;
+            $payments_sum = Payment::where('invoice', $id)->sum('amount');
 
             $invoice->subtotal = (float)$items_sum;
             $invoice->tax = (float)($items_sum / 100) *  (float)$invoice->tax_porcentage;
@@ -445,7 +455,7 @@ class InventoryController extends Controller
             $invoice->balance = ((float)$items_sum + (($items_sum / 100) *  (float)$invoice->tax_porcentage)) - $payments_sum;
             $invoice->save();
 
-            $log = new App\Log;
+            $log = new Log;
             $log->table = 'inventory_transactions';
             $log->data = 'Inventory Transaction has been Deleted';
             $log->ref = $transaction->id;
@@ -457,10 +467,10 @@ class InventoryController extends Controller
 
         if ($task == 'repair') {
 
-            $transaction = App\InventoryTransaction::findOrFail($transaction);
+            $transaction = InventoryTransaction::findOrFail($transaction);
             $transaction->delete();
 
-            $log = new App\Log;
+            $log = new Log;
             $log->table = 'inventory_transactions';
             $log->data = 'Inventory Transaction has been Deleted';
             $log->ref = $transaction->id;
@@ -475,9 +485,9 @@ class InventoryController extends Controller
     public function inventory_quick_sell_transaction($product_id)
     {
         //STOCK CHECK
-        $product = App\InventoryProduct::findOrFail($product_id);
-        $purchases = App\InventoryTransaction::where('product_id', $product->id)->where('transaction', 'purchase')->sum('quantity');
-        $sells = App\InventoryTransaction::where('product_id', $product->id)->where('transaction', 'sell')->sum('quantity');
+        $product = InventoryProduct::findOrFail($product_id);
+        $purchases = InventoryTransaction::where('product_id', $product->id)->where('transaction', 'purchase')->sum('quantity');
+        $sells = InventoryTransaction::where('product_id', $product->id)->where('transaction', 'sell')->sum('quantity');
         $stock = $purchases - $sells;
 
         //END STOCK CHECK
@@ -487,16 +497,16 @@ class InventoryController extends Controller
             //NEW INVOICE
 
             /* business-profile */
-            $business_profile_settings = App\Setting::where('group', 'business_profile')->get();
+            $business_profile_settings = Setting::where('group', 'business_profile')->get();
             $company_profile = (object)[];
             foreach ($business_profile_settings as $setting) {
                 $company_profile->{$setting->name} = $setting->data;
             }
 
-            $invoice_tax_string = App\Setting::where('name', 'invoice_tax')->where('group', 'tax')->firstOrFail();
+            $invoice_tax_string = Setting::where('name', 'invoice_tax')->where('group', 'tax')->firstOrFail();
             $invoice_tax = (float)$invoice_tax_string->data;
 
-            $invoice = new App\Invoice;
+            $invoice = new Invoice;
             $invoice->company_name = $company_profile->name;
             $invoice->company_phone = preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $company_profile->phone);
             $invoice->company_email = $company_profile->email;
@@ -510,7 +520,7 @@ class InventoryController extends Controller
             $invoice->user = Auth::user()->id;
             $invoice->save();
 
-            $log = new App\Log;
+            $log = new Log;
             $log->table = 'invoices';
             $log->data = 'Invoice has been Created';
             $log->ref = $invoice->id;
@@ -519,7 +529,7 @@ class InventoryController extends Controller
 
             //END NEW INVOICE
 
-            $check_transaction = App\InventoryTransaction::where('product_id', $product_id)->where('invoice_id', $invoice->id)->first();
+            $check_transaction = InventoryTransaction::where('product_id', $product_id)->where('invoice_id', $invoice->id)->first();
 
             if ($check_transaction) {
                 $inventory_transaction = $check_transaction;
@@ -527,7 +537,7 @@ class InventoryController extends Controller
                 $inventory_transaction->save();
             } else {
 
-                $inventory_transaction = new App\InventoryTransaction();
+                $inventory_transaction = new InventoryTransaction();
                 $inventory_transaction->product_id = $product_id;
                 $inventory_transaction->invoice_id = $invoice->id;
                 $inventory_transaction->transaction = 'sell';
@@ -536,7 +546,7 @@ class InventoryController extends Controller
                 $inventory_transaction->save();
             }
 
-            $log = new App\Log;
+            $log = new Log;
             $log->table = 'inventory_transactions';
             $log->data = 'Inventory Transaction has been Created';
             $log->ref = $inventory_transaction->id;
@@ -545,7 +555,7 @@ class InventoryController extends Controller
 
             // NEW PAYMENT
 
-            $payment =  new App\Payment;
+            $payment =  new Payment;
             $payment->amount = $product->selling_price;
             $payment->method = 'cash';
             $payment->ref = 'Quick Sell Transaction';
@@ -553,16 +563,16 @@ class InventoryController extends Controller
             $payment->invoice = $invoice->id;
             $payment->save();
 
-            $items_sum = App\InvoiceItem::where('invoice', $invoice->id)->sum('total');
+            $items_sum = InvoiceItem::where('invoice', $invoice->id)->sum('total');
 
             $transactions_sum = 0;
-            $transactions = App\InventoryTransaction::where('invoice_id', $invoice->id)->get();
+            $transactions = InventoryTransaction::where('invoice_id', $invoice->id)->get();
             foreach ($transactions as $transaction) {
                 $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
             }
 
-            $items_sum = App\InvoiceItem::where('invoice', $invoice->id)->sum('total') + $transactions_sum;
-            $payments_sum = App\Payment::where('invoice', $invoice->id)->sum('amount');
+            $items_sum = InvoiceItem::where('invoice', $invoice->id)->sum('total') + $transactions_sum;
+            $payments_sum = Payment::where('invoice', $invoice->id)->sum('amount');
 
             $invoice->subtotal = (float)$items_sum;
             $invoice->tax = (float)($items_sum / 100) *  (float)$invoice->tax_porcentage;
@@ -570,7 +580,7 @@ class InventoryController extends Controller
             $invoice->balance = ((float)$items_sum + (($items_sum / 100) *  (float)$invoice->tax_porcentage)) - $payments_sum;
             $invoice->save();
 
-            $log = new App\Log;
+            $log = new Log;
             $log->table = 'invoices';
             $log->data = 'Payment has been Created [$' . $product->selling_pice . '][cash][Quick Sell Transaction]';
             $log->ref = $invoice->id;

@@ -1,10 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RepairSetting extends Model
+class InventoryCategory extends Model
 {
     //
 }
