@@ -6,10 +6,17 @@ services:
         container_name: ${SERVICE_NAME:-repair-business-app-development}
         ports:
             - "${SERVICE_PORT:-8000}:80"
+        volumes:
+            - .:/var/www
+            - /var/www/vendor
+            - /var/www/storage
+            - /var/www/public
+            - /var/www/bootstrap/cache
         env_file:
             - .env
         networks:
             - app_network
+
 networks:
   app_network:
     name: ${NETWORK_NAME:-default}
