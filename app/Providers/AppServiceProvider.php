@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use URL;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,8 +29,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         URL::forceRootUrl(env("PROXY_URL"));
         URL::forceScheme(env("PROXY_SCHEMA"));
+
+        Paginator::useBootstrap();
 
     }
 }
