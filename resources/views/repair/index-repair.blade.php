@@ -49,6 +49,12 @@
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">{{ __('repair-business.repairs') }}</h1>
         </div>
+
+        <div class=" p-2">
+            @foreach ($repair_settings as $setting)
+                <a href="{{ route('index-repair', ['task' => 'group_by_settings', 'id' => $setting->id]) }}" class="badge badge-{{ $setting->color ?? 'secondary' }}">{{ $setting->name ?? '' }}</a>
+            @endforeach
+        </div>
         <div class="row">
             <div class="col">
                 @if (!$repairs->isEmpty())
