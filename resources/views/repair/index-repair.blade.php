@@ -47,7 +47,7 @@
 @section('page-content')
     <div class="container-fluid">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">{{ __('repair-business.repairs') }}</h1>
+            <h1 class="h3 mb-0 text-gray-800"><a href="{{ route('index-repair') }}">{{ __('repair-business.repairs') }}</a></h1>
         </div>
 
         <div class=" p-2">
