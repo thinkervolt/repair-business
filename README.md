@@ -9,9 +9,9 @@
 *Seamlessly handle repairs, invoices, payments, and generate reports in a `fast-paced repair business environment`.*
 
 ### Highlights
-- Laravel 7
-- PHP7 - PHP8
-- MYSQL
+- Laravel 8
+- PHP 8
+- mySQL
 - Docker
 - Boostrap 4 
 - Thermal Printer Drop-off Receipt and Invoice
