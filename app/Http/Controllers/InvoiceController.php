@@ -37,6 +37,10 @@ class InvoiceController extends Controller
 
         if ($task == 'unpaid') {
             $invoices = Invoice::where('balance', '>', 0)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);
+        
+        } elseif($task == 'group_by_status' && $request->id != null) {
+            $invoices = Invoice::where('status', $request->id)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);    
+        
         } else {
 
 
@@ -52,7 +56,9 @@ class InvoiceController extends Controller
             $invoices = Invoice::whereIn('id', $search)->where('active', 'yes')->orderBy('created_at', 'DESC')->paginate(25);
         }
 
-        return view('invoice.index-invoice', compact('invoices'))->with('search', $request->search);
+        $statuses = InvoiceSetting::where('group', 'status')->orderBy('group')->get();
+
+        return view('invoice.index-invoice', compact('invoices', 'statuses'))->with('search', $request->search);
     }
 
     public function view_invoice($id)
