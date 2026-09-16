@@ -17,6 +17,19 @@ services:
         networks:
             - app_network
 
+    client:
+        image: node:20-alpine
+        tty: true
+        container_name: ${CLIENT_NAME:-repair-business-client}
+        working_dir: /app
+        command: sh -c "npm install && exec npm run dev -- --host 0.0.0.0"
+        ports:
+            - "${CLIENT_PORT:-5173}:5173"
+        volumes:
+            - ./client:/app
+        networks:
+            - app_network
+
 networks:
   app_network:
     name: ${NETWORK_NAME:-default}

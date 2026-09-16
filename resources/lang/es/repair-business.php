@@ -7,6 +7,7 @@ return [
     'error_customer-has-been-deleted' => 'El cliente ha sido eliminado.',
     'error_customer-has-been-restored' => 'El cliente ha sido restaurado.',
     'error_customer-has-been-destroyed' => 'El cliente ha sido destruido.',
+    'error_not-found' => 'No encontrado.',
 
     'error_inventory-category-has-been-created' => 'La categoría de inventario ha sido creada.',
     'error_inventory-category-has-been-updated' => 'La categoría de inventario ha sido actualizada.',
@@ -31,6 +32,16 @@ return [
     'error_invoice-has-been-destroyed' => 'La factura ha sido destruida.',
 
     'error_email-has-been-sent' => 'El correo electrónico ha sido enviado.',
+
+    'login-success' => 'Has iniciado sesión.',
+    'logout-success' => 'Has cerrado sesión.',
+    'user-created' => 'El usuario ha sido creado.',
+    'error_invalid-login' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+    'error_invalid-verification' => 'El enlace de verificación no es válido.',
+    'error_verification-expired' => 'El enlace de verificación ha caducado.',
+    'verification-success' => 'Tu dirección de correo electrónico ha sido verificada.',
+    'email-already-verified' => 'Tu dirección de correo electrónico ya está verificada.',
+    'error_password-reset-failed' => 'No pudimos restablecer tu contraseña con la información proporcionada.',
 
     'error_something-went-wrong' => 'Algo salió mal.',
 

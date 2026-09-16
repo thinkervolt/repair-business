@@ -7,6 +7,7 @@ return [
     'error_customer-has-been-deleted'=>'Customer has been Deleted.',
     'error_customer-has-been-restored'=>'Customer has been Restored.',
     'error_customer-has-been-destroyed'=>'Customer has been Destroyed.',
+    'error_not-found'=>'Not found.',
 
     'error_inventory-category-has-been-created'=>'Inventory Category has been Created.',
     'error_inventory-category-has-been-updated'=>'Inventory Category has been Updated.',
@@ -31,6 +32,16 @@ return [
     'error_invoice-has-been-destroyed'=>'Invoice has been Destroyed.',
 
     'error_email-has-been-sent'=>'Email has been Sent.',
+
+    'login-success' => 'You are now logged in.',
+    'logout-success' => 'You are now logged out.',
+    'user-created' => 'User has been Created.',
+    'error_invalid-login' => 'The provided credentials do not match our records.',
+    'error_invalid-verification' => 'The verification link is not valid.',
+    'error_verification-expired' => 'The verification link has expired.',
+    'verification-success' => 'Your email address has been verified.',
+    'email-already-verified' => 'Your email address is already verified.',
+    'error_password-reset-failed' => 'We could not reset your password with the given information.',
 
     'error_something-went-wrong'=>'Something went Wrong.',
 

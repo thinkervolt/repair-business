@@ -10,13 +10,14 @@
     "require": {
         "php": "^7.3|^8.0",
         "barryvdh/laravel-dompdf": "^2.0",
+        "facade/ignition": "^2.10",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
         "laravel/framework": "^8.0",
+        "laravel/sanctum": "^2.15",
         "laravel/tinker": "^2.7",
         "laravel/ui": "^3.0",
-        "milon/barcode": "^8.0",
-        "facade/ignition": "^2.10"
+        "milon/barcode": "^8.0"
     },
     "require-dev": {
         "facade/ignition": "^2.0",
