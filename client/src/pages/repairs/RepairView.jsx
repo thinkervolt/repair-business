@@ -20,6 +20,7 @@ import Badge from '../../components/ui/Badge';
 import Alert from '../../components/ui/Alert';
 import Pagination from '../../components/ui/Pagination';
 import CustomerPicker from '../../components/customers/CustomerPicker';
+import ProductPicker from '../../components/inventory/ProductPicker';
 
 function FieldError({ error }) {
     return error ? <p className="mt-1 text-xs text-red-600">{error[0]}</p> : null;
@@ -53,6 +54,7 @@ export default function RepairView() {
     const [message, setMessage] = useState('');
     const [messageTone, setMessageTone] = useState('success');
     const [pickerOpen, setPickerOpen] = useState(false);
+    const [partsOpen, setPartsOpen] = useState(false);
     const [logsOpen, setLogsOpen] = useState(false);
 
     const load = () => {
@@ -118,6 +120,17 @@ export default function RepairView() {
         try {
             await api.post(`/repairs/${id}/items`, { data: itemText, group: itemGroup });
             setItemText('');
+            load();
+        } catch (err) {
+            notify(getApiError(err), 'error');
+        }
+    };
+
+    const handleAddPart = async (product) => {
+        setPartsOpen(false);
+        try {
+            const { data } = await api.post(`/inventory/repairs/${id}/products/${product.id}/sell`);
+            notify(data.message);
             load();
         } catch (err) {
             notify(getApiError(err), 'error');
@@ -387,8 +400,17 @@ export default function RepairView() {
                     </Card>
 
                     <Card className="overflow-hidden">
-                        <div className="border-b border-slate-100 px-6 py-4">
+                        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
                             <h2 className="text-sm font-semibold text-slate-900">Parts used</h2>
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => setPartsOpen(true)}
+                            >
+                                <Plus className="h-3.5 w-3.5" />
+                                Add part
+                            </Button>
                         </div>
                         {transactions.length === 0 ? (
                             <EmptyBlock label="parts" />
@@ -643,6 +665,11 @@ export default function RepairView() {
                 </div>
             </div>
 
+            <ProductPicker
+                open={partsOpen}
+                onClose={() => setPartsOpen(false)}
+                onSelect={handleAddPart}
+            />
             <CustomerPicker
                 open={pickerOpen}
                 onClose={() => setPickerOpen(false)}

@@ -22,6 +22,7 @@ return [
 
     'error_transaction-has-been-deleted'=>'Transactions has been Deleted.',
     'error_transaction-has-been-created'=>'Transactions has been Created.',
+    'transaction-has-been-created'=>'Transaction has been Created.',
 
     'error_product-is-out-of-stock'=>'Product is out of Stock',
 

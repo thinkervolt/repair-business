@@ -17,6 +17,11 @@ import RepairsList from './pages/repairs/RepairsList';
 import RepairForm from './pages/repairs/RepairForm';
 import RepairSettings from './pages/repairs/RepairSettings';
 import RepairView from './pages/repairs/RepairView';
+import ProductsList from './pages/inventory/ProductsList';
+import ProductForm from './pages/inventory/ProductForm';
+import ProductView from './pages/inventory/ProductView';
+import TransactionsList from './pages/inventory/TransactionsList';
+import CategoriesList from './pages/inventory/CategoriesList';
 
 export default function App() {
     return (
@@ -66,9 +71,12 @@ export default function App() {
                 <Route path="invoices/create" element={<Placeholder title="Create Invoice" />} />
                 <Route path="invoices/:id" element={<Placeholder title="Invoice Detail" />} />
                 <Route path="invoices/settings" element={<Placeholder title="Invoice Settings" />} />
-                <Route path="inventory/products" element={<Placeholder title="Products" />} />
-                <Route path="inventory/transactions" element={<Placeholder title="Transactions" />} />
-                <Route path="inventory/categories" element={<Placeholder title="Categories" />} />
+                <Route path="inventory/products" element={<ProductsList />} />
+                <Route path="inventory/products/create" element={<ProductForm />} />
+                <Route path="inventory/products/:id" element={<ProductView />} />
+                <Route path="inventory/products/:id/edit" element={<ProductForm />} />
+                <Route path="inventory/transactions" element={<TransactionsList />} />
+                <Route path="inventory/categories" element={<CategoriesList />} />
                 <Route path="reports" element={<Placeholder title="Create Report" />} />
                 <Route path="reports/register" element={<Placeholder title="Register Report" />} />
                 <Route path="payments" element={<Placeholder title="Payments" />} />

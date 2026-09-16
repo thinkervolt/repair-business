@@ -22,6 +22,7 @@ return [
 
     'error_transaction-has-been-deleted' => 'La transacción ha sido eliminada.',
     'error_transaction-has-been-created' => 'La transacción ha sido creada.',
+    'transaction-has-been-created' => 'La transacción ha sido creada.',
 
     'error_product-is-out-of-stock' => 'El producto está agotado.',
 
