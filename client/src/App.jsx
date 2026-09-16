@@ -22,6 +22,10 @@ import ProductForm from './pages/inventory/ProductForm';
 import ProductView from './pages/inventory/ProductView';
 import TransactionsList from './pages/inventory/TransactionsList';
 import CategoriesList from './pages/inventory/CategoriesList';
+import InvoicesList from './pages/invoices/InvoicesList';
+import InvoiceForm from './pages/invoices/InvoiceForm';
+import InvoiceView from './pages/invoices/InvoiceView';
+import InvoiceSettings from './pages/invoices/InvoiceSettings';
 
 export default function App() {
     return (
@@ -67,10 +71,17 @@ export default function App() {
                     }
                 />
                 <Route path="repairs/:id" element={<RepairView />} />
-                <Route path="invoices" element={<Placeholder title="Invoices" />} />
-                <Route path="invoices/create" element={<Placeholder title="Create Invoice" />} />
-                <Route path="invoices/:id" element={<Placeholder title="Invoice Detail" />} />
-                <Route path="invoices/settings" element={<Placeholder title="Invoice Settings" />} />
+                <Route path="invoices" element={<InvoicesList />} />
+                <Route path="invoices/create" element={<InvoiceForm />} />
+                <Route path="invoices/:id" element={<InvoiceView />} />
+                <Route
+                    path="invoices/settings"
+                    element={
+                        <AdminOnlyRoute>
+                            <InvoiceSettings />
+                        </AdminOnlyRoute>
+                    }
+                />
                 <Route path="inventory/products" element={<ProductsList />} />
                 <Route path="inventory/products/create" element={<ProductForm />} />
                 <Route path="inventory/products/:id" element={<ProductView />} />

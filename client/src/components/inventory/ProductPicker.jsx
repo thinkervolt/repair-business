@@ -32,7 +32,7 @@ export default function ProductPicker({ open, onClose, onSelect }) {
         if (!open) return;
         setLoading(true);
         api.get('/inventory/products', { params: { search: debounced } })
-            .then(({ data }) => setProducts(data.data.data))
+            .then(({ data }) => setProducts(data.data.products.data))
             .catch((err) => setError(getApiError(err)))
             .finally(() => setLoading(false));
     }, [open, debounced]);
