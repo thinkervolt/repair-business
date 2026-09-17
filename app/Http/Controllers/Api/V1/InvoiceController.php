@@ -451,6 +451,10 @@ class InvoiceController extends Controller
         $pdf = Pdf::loadView($view, compact('invoice', 'invoice_items', 'invoice_statuses', 'logs', 'payments', 'terms', 'transactions'))
             ->setOptions(['defaultFont' => 'sans-serif']);
 
+        if ($task === 'print') {
+            $pdf->setPaper('letter', 'portrait');
+        }
+
         return $pdf->stream('invoice-' . $task . '-' . $id . '.pdf');
     }
 
@@ -462,8 +466,8 @@ class InvoiceController extends Controller
             return $this->error(Lang::get('repair-business.error_not-found'), 404);
         }
 
-        if (File::exists(public_path() . '/invoice-receipt.pdf')) {
-            File::delete(public_path() . '/invoice-receipt.pdf');
+        if (File::exists(public_path() . '/invoice.pdf')) {
+            File::delete(public_path() . '/invoice.pdf');
         }
 
         if (empty($invoice->customer_email)) {
@@ -478,17 +482,18 @@ class InvoiceController extends Controller
         $profile = $this->companyProfile();
         $terms = $profile->terms ?? null;
 
-        $pdf = Pdf::loadView('invoice.print-invoice-receipt', compact('invoice', 'invoice_items', 'invoice_statuses', 'logs', 'payments', 'terms', 'transactions'))
-            ->setOptions(['defaultFont' => 'sans-serif']);
-        $pdf->save(public_path() . '/invoice-receipt.pdf');
+        $pdf = Pdf::loadView('invoice.print-invoice', compact('invoice', 'invoice_items', 'invoice_statuses', 'logs', 'payments', 'terms', 'transactions'))
+            ->setOptions(['defaultFont' => 'sans-serif'])
+            ->setPaper('letter', 'portrait');
+        $pdf->save(public_path() . '/invoice.pdf');
 
         $mail_data = (object)[];
         $mail_data->invoice = $invoice;
 
         try {
             Mail::to($invoice->customer_email)->send(new MailInvoice($mail_data));
-            if (File::exists(public_path() . '/invoice-receipt.pdf')) {
-                File::delete(public_path() . '/invoice-receipt.pdf');
+            if (File::exists(public_path() . '/invoice.pdf')) {
+                File::delete(public_path() . '/invoice.pdf');
             }
 
             $log = new Log;
@@ -500,8 +505,8 @@ class InvoiceController extends Controller
 
             return $this->success(null, Lang::get('repair-business.error_email-has-been-sent'));
         } catch (Exception $ex) {
-            if (File::exists(public_path() . '/invoice-receipt.pdf')) {
-                File::delete(public_path() . '/invoice-receipt.pdf');
+            if (File::exists(public_path() . '/invoice.pdf')) {
+                File::delete(public_path() . '/invoice.pdf');
             }
             return $this->error(Lang::get('repair-business.error_something-went-wrong'), 500);
         }

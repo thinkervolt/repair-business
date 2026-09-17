@@ -16,6 +16,17 @@ export function formatDate(value, options = {}) {
     return new Date(value).toLocaleDateString('en-US', options.year ? options : defaults);
 }
 
+export function formatDateTime(value) {
+    if (!value) return '';
+    return new Date(value).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+    });
+}
+
 export function getApiError(error, fallback = 'Something went wrong.') {
     if (error.response) {
         const { data } = error.response;

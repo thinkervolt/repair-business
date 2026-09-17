@@ -58,7 +58,7 @@ return [
 
     'error_payment-has-been-created'=>'Payment has been Created',
     'error_payment-has-been-deleted'=>'Payment has been Deleted',
-    'error_payment-has-been-deleted'=>'Payment has been Updated',
+    'error_payment-has-been-updated'=>'Payment has been Updated',
     'error_payments-have-been-created'=>'Payments have been Created',
 
     'error_you-have-been-signed-up'=> 'You have been Signed-Up',
@@ -316,6 +316,9 @@ return [
     'check' => 'Check',
     'other' => 'Other',
     'date' => 'Date',
+    'terms' => 'Terms',
+    'ref' => 'Ref',
+    'breakdown' => 'Breakdown',
     'total-cash-regiter' => 'TOTAL CASH REGISTER',
     'total-cash-invoices' => 'TOTAL CASH INVOICES',
     'no-invoice-cash-transactions' => 'NOT-INVOICED CASH TRANSACTIONS',

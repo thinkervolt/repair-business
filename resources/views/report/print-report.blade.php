@@ -2,326 +2,443 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{{ config('app.name', 'Laravel') }} </title>
+    <title>{{ config('app.name', 'Laravel') }} - {{ __('repair-business.report') }}</title>
 
-    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <style>
-        @font-face {
-            font-family: 'Nunito';
-            font-style: normal;
-            font-weight: 400;
-            src: url({{ asset('/vendor/google-fonts/nunito/Nunito-Regular.ttf')}}) format('truetype');
+        @page {
+            size: letter;
+            margin: 0;
         }
-    </style>
 
-    <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+        * {
+            box-sizing: border-box;
+        }
 
-    <style>
         html,
-        body,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        table,
-        td,
-        th,
-        p,
-        tr {
-            color: black !important;
-            font-weight: 500 !important;
-            text-transform: uppercase;
+        body {
+            margin: 0;
+            padding: 0;
+            background: #ffffff;
+            color: #334155;
+            font-family: 'DejaVu Sans', 'Segoe UI', Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.5;
+        }
 
+        body {
+            margin: 18mm 20mm;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .muted {
+            color: #64748b;
+        }
+
+        .small {
+            font-size: 10px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        /* ---------- card ---------- */
+        .card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 26px 30px;
+        }
+
+        /* ---------- header ---------- */
+        .header-row td {
+            padding-bottom: 16px;
+            vertical-align: top;
+        }
+
+        .company-name {
+            font-size: 19px;
+            font-weight: bold;
+            color: #0f172a;
+            margin: 0;
+            padding: 0;
+        }
+
+        .doc-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #94a3b8;
+            margin: 0;
+            padding: 0;
+            text-align: right;
+        }
+
+        .doc-meta {
+            font-size: 10px;
+            color: #64748b;
+            margin: 4px 0 0;
+            padding: 0;
+            text-align: right;
+        }
+
+        .hr {
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 8px;
+        }
+
+        /* ---------- sections ---------- */
+        .section {
+            margin-top: 24px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #475569;
+            margin: 0 0 12px;
+            padding: 0;
+        }
+
+        .stat-strip {
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .stat-strip td {
+            padding: 9px 12px;
+            background: #f8fafc;
+            border: 1px solid #eef2f7;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .stat-strip .stat-value {
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .stat-strip .stat-sub {
+            font-size: 9px;
+            color: #94a3b8;
+        }
+
+        .no-data {
+            background: #fafbfc;
+            border: 1px dashed #e2e8f0;
+            border-radius: 4px;
+            color: #94a3b8;
+            font-size: 11px;
+            text-align: center;
+            padding: 18px 10px;
+        }
+
+        /* ---------- data tables ---------- */
+        .data-table th {
+            background: #f8fafc;
+            color: #64748b;
+            text-align: left;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 9px 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table td {
+            padding: 9px 8px;
+            vertical-align: top;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 11px;
+            color: #475569;
+        }
+
+        .data-table tr.alt td {
+            background: #fafbfc;
+        }
+
+        .data-table .num {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .data-table .sub-line {
+            font-size: 10px;
+            color: #94a3b8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .data-table .cell-strong {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* ---------- soft badges ---------- */
+        .badge-inline {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 8.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* ---------- footer ---------- */
+        .footer {
+            margin-top: 30px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+            text-align: center;
+            font-size: 9px;
+            color: #94a3b8;
+        }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
     </style>
 </head>
-
 <body>
-    <div class="container-fluid pt-4">
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">{{ __('repair-business.report') }}</h1>
-            <h5 class="mb-0 text-gray-800">{{ __('repair-business.from:') }} {{ date('M d, Y', strtotime($report_data['from'])) }} {{ __('repair-business.to') }}:
-                {{ date('M d, Y', strtotime($report_data['to'])) }} </h5>
-        </div>
-        @if ($report_data['invoices'] == 'on')
-            <h5 class="h5 text-uppercase">{{ __('repair-business.invoices') }}</h5>
-            @if (!$invoices->isEmpty())
-                <div class="row">
-                    <div class="col-md text-right"> {{ __('repair-business.invoices') }}: {{ $invoice_data['count'] }}</div>
-                    <div class="col-md text-center"> {{ __('repair-business.unpaid-amount') }}: $
-                        {{ number_format((float) $invoice_data['balance'], 2, '.', ',') }}</div>
-                    <div class="col-md text-left"> {{ __('repair-business.earnings') }}: $
-                        {{ number_format((float) ($invoice_data['total'] - $invoice_data['balance']), 2, '.', ',') }}
-                    </div>
-                </div>
-                <div class="table-responsive ">
+    @php
+        $badges = [
+            'primary' => ['background' => '#dbeafe', 'color' => '#1d4ed8'],
+            'success' => ['background' => '#dcfce7', 'color' => '#15803d'],
+            'warning' => ['background' => '#fef3c7', 'color' => '#b45309'],
+            'danger' => ['background' => '#fee2e2', 'color' => '#b91c1c'],
+            'info' => ['background' => '#e0f2fe', 'color' => '#0369a1'],
+            'secondary' => ['background' => '#e2e8f0', 'color' => '#475569'],
+            'dark' => ['background' => '#e2e8f0', 'color' => '#1e293b'],
+            'light' => ['background' => '#f8fafc', 'color' => '#94a3b8'],
+        ];
+        $fmt = function ($v) {
+            return number_format((float) $v, 2, '.', ',');
+        };
+    @endphp
 
-                    <table class="table table-sm mt-3 table-hover  table-bordered ">
+    <div class="card">
+        <table class="header-row">
+            <tr>
+                <td>
+                    <div class="company-name">{{ config('app.name', 'Laravel') }}</div>
+                </td>
+                <td style="width:42%;">
+                    <p class="doc-label">{{ __('repair-business.report') }}</p>
+                    <p class="doc-meta">
+                        {{ __('repair-business.from') }}: {{ date('M d, Y', strtotime($report_data['from'])) }}
+                        &nbsp;&middot;&nbsp;
+                        {{ __('repair-business.to') }}: {{ date('M d, Y', strtotime($report_data['to'])) }}
+                    </p>
+                    <p class="doc-meta">{{ date('M d, Y') }}</p>
+                </td>
+            </tr>
+        </table>
+        <div class="hr"></div>
+
+        @if ($report_data['invoices'] == 'on')
+            <div class="section">
+                <p class="section-title">{{ __('repair-business.invoices') }}</p>
+                @if (!$invoices->isEmpty())
+                    <table class="stat-strip">
+                        <tr>
+                            <td class="center">{{ __('repair-business.invoices') }}<br><span class="stat-value">{{ $invoice_data['count'] }}</span></td>
+                            <td class="center">{{ __('repair-business.unpaid-amount') }}<br><span class="stat-value">$ {{ $fmt($invoice_data['balance']) }}</span></td>
+                            <td class="center">{{ __('repair-business.earnings') }}<br><span class="stat-value">$ {{ $fmt($invoice_data['total'] - $invoice_data['balance']) }}</span></td>
+                        </tr>
+                    </table>
+                    <table class="data-table">
                         <thead>
                             <tr>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_id') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_customer') }} </p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_items') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_status') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_balance') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_total') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_date') }}</p>
-                                </th>
-
+                                <th style="width:30px;">{{ __('repair-business.table_id') }}</th>
+                                <th>{{ __('repair-business.table_customer') }}</th>
+                                <th>{{ __('repair-business.table_items') }}</th>
+                                <th>{{ __('repair-business.table_status') }}</th>
+                                <th class="num" style="width:90px;">{{ __('repair-business.table_balance') }}</th>
+                                <th class="num" style="width:90px;">{{ __('repair-business.table_total') }}</th>
+                                <th style="width:80px;">{{ __('repair-business.table_date') }}</th>
                             </tr>
                         </thead>
                         <tbody>
-
                             @foreach ($invoices as $invoice)
-                                <tr>
+                                @php $ivb = $invoice->status_data ? ($badges[$invoice->status_data->color] ?? $badges['secondary']) : null; @endphp
+                                <tr class="{{ $loop->iteration % 2 === 0 ? 'alt' : '' }}">
+                                    <td>{{ $invoice->id }}</td>
                                     <td>
-                                        <p class="m-0 p-0 small">{{ $invoice->id }}</p>
+                                        <div class="cell-strong">{{ $invoice->customer_name }}</div>
+                                        <p class="sub-line">{{ preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $invoice->customer_phone) }}</p>
+                                        <p class="sub-line">{{ $invoice->customer_email }}</p>
                                     </td>
                                     <td>
-
-                                        <p class="m-0 p-0 small">{{ $invoice->customer_name }}</p>
-                                        <p class="m-0 p-0 small">
-                                            {{ preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $invoice->customer_phone) }}
-                                        </p>
-                                        <p class="m-0 p-0 small">{{ $invoice->customer_email }}</p>
-                                    </td>
-
-                                    <td>
-
                                         @foreach ($invoice->items as $item)
-                                            <div class="p-3">
-                                                <p class="m-0 p-0 small">{{ $item->name }}</p>
-                                                <p class="m-0 p-0 small">{{ $item->description }}</p>
-                                                <p class="m-0 p-0 small">{{ $item->sub_description }}</p>
-                                            </div>
+                                            <div>{{ $item->name }}</div>
+                                            @if ($item->description)
+                                                <p class="sub-line">{{ $item->description }}</p>
+                                            @endif
+                                            @if ($item->sub_description)
+                                                <p class="sub-line">{{ $item->sub_description }}</p>
+                                            @endif
                                         @endforeach
                                     </td>
                                     <td>
-                                        @if (isset($invoice->status))
-                                            <p
-                                                class="font-weight-bold text-uppercase m-0 p-0 small text-{{ $invoice->status_data->color }}">
-                                                {{ $invoice->status_data->name }}</p>
+                                        @if ($ivb)
+                                            <span class="badge-inline" style="background:{{ $ivb['background'] }};color:{{ $ivb['color'] }};">{{ $invoice->status_data->name }}</span>
                                         @endif
                                     </td>
-                                    <td>
-                                        <p
-                                            class=" m-0 p-0 small @if ($invoice->balance < 0) text-success @endif @if ($invoice->balance > 0) text-danger @endif">
-                                            $ {{ number_format((float) $invoice->balance, 2, '.', ',') }} </p>
-                                    </td>
-                                    <td>
-                                        <p class=" m-0 p-0 small"> $
-                                            {{ number_format((float) $invoice->total, 2, '.', ',') }} </p>
-                                    </td>
-                                    <td>
-                                        <p class="m-0 p-0 small">{{ date_format($invoice->created_at, 'M d, Y') }}</p>
-                                    </td>
-
+                                    <td class="num" style="color:{{ $invoice->balance < 0 ? '#15803d' : ($invoice->balance > 0 ? '#b91c1c' : '#1e293b') }};">$ {{ $fmt($invoice->balance) }}</td>
+                                    <td class="num">$ {{ $fmt($invoice->total) }}</td>
+                                    <td>{{ date('M d, Y', strtotime($invoice->created_at)) }}</td>
                                 </tr>
                             @endforeach
-
                         </tbody>
                     </table>
-
-                </div>
-            @else
-                <div class="alert alert-secondary" role="alert">
-                    {{ __('repair-business.no-information-to-show') }}
-                </div>
-            @endif
+                @else
+                    <div class="no-data">{{ __('repair-business.no-information-to-show') }}</div>
+                @endif
+            </div>
         @endif
 
         @if ($report_data['repairs'] == 'on')
-            <h3>{{ __('repair-business.repairs') }}</h3>
-            @if (!$repairs->isEmpty())
-                <div class="row">
-                    <div class="col-md text-right">{{ __('repair-business.repairs') }}: {{ $repair_data['count'] }}</div>
-                    <div class="col-md text-center"></div>
-                    <div class="col-md text-left"></div>
-                </div>
-                <div class="table-responsive ">
-                    <table class="table table-sm mt-3 table-hover table-bordered ">
+            <div class="section">
+                <p class="section-title">{{ __('repair-business.repairs') }}</p>
+                @if (!$repairs->isEmpty())
+                    <table class="stat-strip">
+                        <tr>
+                            <td class="center">{{ __('repair-business.repairs') }}<br><span class="stat-value">{{ $repair_data['count'] }}</span></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <table class="data-table">
                         <thead>
                             <tr>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_id') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_customer') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_target') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_request') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_status') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_priority') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_date') }}</p>
-                                </th>
-
+                                <th style="width:30px;">{{ __('repair-business.table_id') }}</th>
+                                <th>{{ __('repair-business.table_customer') }}</th>
+                                <th>{{ __('repair-business.table_target') }}</th>
+                                <th>{{ __('repair-business.table_request') }}</th>
+                                <th>{{ __('repair-business.table_status') }}</th>
+                                <th>{{ __('repair-business.table_priority') }}</th>
+                                <th style="width:80px;">{{ __('repair-business.table_date') }}</th>
                             </tr>
                         </thead>
                         <tbody>
-
                             @foreach ($repairs as $repair)
-                                <tr>
+                                @php
+                                    $rsb = $repair->status_data ? ($badges[$repair->status_data->color] ?? $badges['secondary']) : null;
+                                    $rpb = $repair->priority_data ? ($badges[$repair->priority_data->color] ?? $badges['secondary']) : null;
+                                @endphp
+                                <tr class="{{ $loop->iteration % 2 === 0 ? 'alt' : '' }}">
+                                    <td>{{ $repair->id }}</td>
                                     <td>
-                                        <p class="m-0 p-0 small">{{ $repair->id }}</p>
+                                        @if ($repair->customer_data)
+                                            <div class="cell-strong">{{ $repair->customer_data->first_name }} {{ $repair->customer_data->last_name }}</div>
+                                            <p class="sub-line">{{ preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $repair->customer_data->phone) }}</p>
+                                            <p class="sub-line">{{ $repair->customer_data->email }}</p>
+                                        @endif
                                     </td>
+                                    <td>{{ $repair->target }}</td>
+                                    <td>{{ $repair->request }}</td>
                                     <td>
-                                        @if (isset($repair->customer))
-                                            <p class="m-0 p-0 small">{{ $repair->customer_data->first_name }}
-                                                {{ $repair->customer_data->last_name }}</p>
-                                            <p class="m-0 p-0 small">
-                                                {{ preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $repair->customer_data->phone) }}
-                                            </p>
-                                            <p class="m-0 p-0 small">{{ $repair->customer_data->email }}</p>
+                                        @if ($rsb)
+                                            <span class="badge-inline" style="background:{{ $rsb['background'] }};color:{{ $rsb['color'] }};">{{ $repair->status_data->name }}</span>
                                         @endif
                                     </td>
                                     <td>
-                                        <p class="m-0 p-0 small">{{ $repair->target }}</p>
-                                    </td>
-                                    <td>
-                                        <p class="m-0 p-0 small">{{ $repair->request }}</p>
-                                    </td>
-                                    <td>
-                                        @if (isset($repair->status))
-                                            <p
-                                                class="font-weight-bold text-uppercase small m-0 p-0 text-{{ $repair->status_data->color }}">
-                                                {{ $repair->status_data->name }} </p>
+                                        @if ($rpb)
+                                            <span class="badge-inline" style="background:{{ $rpb['background'] }};color:{{ $rpb['color'] }};">{{ $repair->priority_data->name }}</span>
                                         @endif
                                     </td>
-                                    <td>
-                                        @if (isset($repair->priority))
-                                            <p
-                                                class="font-weight-bold text-uppercase small m-0 p-0 text-{{ $repair->priority_data->color }}">
-                                                {{ $repair->priority_data->name }} </p>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <p class="m-0 p-0 small">{{ date_format($repair->created_at, 'M d, Y') }}</p>
-                                    </td>
+                                    <td>{{ date('M d, Y', strtotime($repair->created_at)) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-                </div>
-            @else
-                <div class="alert alert-secondary" role="alert">
-                    {{ __('repair-business.no-information-to-show') }}
-                </div>
-            @endif
+                @else
+                    <div class="no-data">{{ __('repair-business.no-information-to-show') }}</div>
+                @endif
+            </div>
         @endif
 
         @if ($report_data['payments'] == 'on')
-            <h3>{{ __('repair-business.payments') }}</h3>
-            @if (!$payments->isEmpty())
-                <div class="row">
-                    <div class="col-md text-left">{{ __('repair-business.payments') }}: {{ $payment_data['count'] }}</div>
-                    <div class="col-md text-center"> {{ __('repair-business.total') }}: $
-                        {{ number_format((float) $payment_data['total'], 2, '.', ',') }}</div>
-                    <div class="col-md text-right">
-                        <p class="m-0 p-0">{{ __('repair-business.input_cash') }}: $
-                            {{ number_format((float) $payment_data['total_cash'], 2, '.', ',') }}
-                        </p>
-                        <p class="m-0 p-0">{{ __('repair-business.input_card') }}: $
-                            {{ number_format((float) $payment_data['total_card'], 2, '.', ',') }}
-                        </p>
-                        <p class="m-0 p-0">{{ __('repair-business.input_check') }}: $
-                            {{ number_format((float) $payment_data['total_check'], 2, '.', ',') }}</p>
-                        <p class="m-0 p-0">{{ __('repair-business.input_other') }}: $
-                            {{ number_format((float) $payment_data['total_other'], 2, '.', ',') }}</p>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-sm mt-3 table-hover  table-bordered ">
+            <div class="section">
+                <p class="section-title">{{ __('repair-business.payments') }}</p>
+                @if (!$payments->isEmpty())
+                    <table class="stat-strip">
+                        <tr>
+                            <td class="center">{{ __('repair-business.payments') }}<br><span class="stat-value">{{ $payment_data['count'] }}</span></td>
+                            <td class="center">{{ __('repair-business.total') }}<br><span class="stat-value">$ {{ $fmt($payment_data['total']) }}</span></td>
+                            <td class="center">{{ __('repair-business.breakdown') }}<br>
+                                <span class="stat-sub">
+                                    {{ __('repair-business.cash') }}: $ {{ $fmt($payment_data['total_cash']) }} &middot;
+                                    {{ __('repair-business.card') }}: $ {{ $fmt($payment_data['total_card']) }}
+                                </span>
+                                <br>
+                                <span class="stat-sub">
+                                    {{ __('repair-business.check') }}: $ {{ $fmt($payment_data['total_check']) }} &middot;
+                                    {{ __('repair-business.other') }}: $ {{ $fmt($payment_data['total_other']) }}
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="data-table">
                         <thead>
                             <tr>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_id') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_invoice') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_amount') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_method') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_reference') }}</p>
-                                </th>
-                                <th scope="col">
-                                    <p class="m-0 p-0 small">{{ __('repair-business.table_date') }}</p>
-                                </th>
+                                <th style="width:30px;">{{ __('repair-business.table_id') }}</th>
+                                <th style="width:60px;">{{ __('repair-business.table_invoice') }}</th>
+                                <th class="num" style="width:90px;">{{ __('repair-business.table_amount') }}</th>
+                                <th>{{ __('repair-business.table_method') }}</th>
+                                <th>{{ __('repair-business.table_reference') }}</th>
+                                <th style="width:80px;">{{ __('repair-business.table_date') }}</th>
                             </tr>
                         </thead>
                         <tbody>
-
                             @foreach ($payments as $payment)
-                                <tr>
-                                    <td>
-                                        <p class="m-0 p-0 small">{{ $payment->id }}</p>
-                                    </td>
-                                    <td>
-                                        <p class="m-0 p-0 small">{{ $payment->invoice }}</p>
-                                    </td>
-                                    <td>
-                                        <p class="m-0 p-0 "> $
-                                            {{ number_format((float) $payment->amount, 2, '.', ',') }} </p>
-                                    </td>
-                                    <td>
-                                        <p class="m-0 p-0 small text-uppercase">{{ $payment->method }}</p>
-                                    </td>
-                                    <td>
-                                        <p class="m-0 p-0 small">{{ $payment->ref }}</p>
-                                    </td>
-                                    <td>
-                                        <p class="m-0 p-0 small">{{ date_format($payment->created_at, 'M d, Y') }}</p>
-                                    </td>
-
+                                <tr class="{{ $loop->iteration % 2 === 0 ? 'alt' : '' }}">
+                                    <td>{{ $payment->id }}</td>
+                                    <td>{{ $payment->invoice ?? '' }}</td>
+                                    <td class="num">$ {{ $fmt($payment->amount) }}</td>
+                                    <td class="cell-strong" style="text-transform:uppercase;">{{ $payment->method }}</td>
+                                    <td>{{ $payment->ref }}</td>
+                                    <td>{{ date('M d, Y', strtotime($payment->created_at)) }}</td>
                                 </tr>
                             @endforeach
-
                         </tbody>
                     </table>
-
-                </div>
-            @else
-                <div class="alert alert-secondary" role="alert">
-                    {{ __('repair-business.no-information-to-show') }}
-                </div>
-            @endif
+                @else
+                    <div class="no-data">{{ __('repair-business.no-information-to-show') }}</div>
+                @endif
+            </div>
         @endif
+
+        <div class="footer">
+            {{ config('app.name', 'Laravel') }} &middot; {{ __('repair-business.report') }} &middot;
+            {{ date('M d, Y') }}
+        </div>
     </div>
+
     <script>
         window.print();
     </script>
 </body>
-
 </html>

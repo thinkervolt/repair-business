@@ -10,7 +10,10 @@ use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\InventoryController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\RepairController;
+use App\Http\Controllers\Api\V1\ReportController;
+use App\Http\Controllers\Api\V1\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,6 +112,21 @@ Route::prefix('v1')->group(function () {
     Route::put('/invoice-settings/tax', [InvoiceController::class, 'updateTaxSetting'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
     Route::put('/invoice-settings/{id}', [InvoiceController::class, 'updateSetting'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
     Route::delete('/invoice-settings/{id}', [InvoiceController::class, 'deleteSetting'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
+
+    Route::get('/payments', [PaymentController::class, 'index'])->middleware(['auth:sanctum', 'api.locale']);
+    Route::post('/payments/{id?}', [PaymentController::class, 'store'])->middleware(['auth:sanctum', 'api.locale']);
+    Route::get('/payments/{id}', [PaymentController::class, 'show'])->middleware(['auth:sanctum', 'api.locale']);
+    Route::put('/payments/{id}', [PaymentController::class, 'update'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
+    Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
+
+    Route::post('/reports/preview', [ReportController::class, 'preview'])->middleware(['auth:sanctum', 'api.locale']);
+    Route::get('/reports/print', [ReportController::class, 'print'])->middleware(['auth:sanctum', 'api.locale']);
+    Route::post('/reports/register', [ReportController::class, 'register'])->middleware(['auth:sanctum', 'api.locale']);
+    Route::post('/reports/register/insert', [ReportController::class, 'registerInsert'])->middleware(['auth:sanctum', 'api.locale']);
+
+    Route::get('/settings', [SettingController::class, 'index'])->middleware(['auth:sanctum', 'api.locale']);
+    Route::put('/settings/business-profile', [SettingController::class, 'updateProfile'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
+    Route::put('/settings/{id}', [SettingController::class, 'update'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
 
     Route::post('/public-new-customer', [CustomerController::class, 'publicNewCustomer'])->middleware('api.locale');
 });

@@ -369,7 +369,7 @@ class InvoiceController extends Controller
         }
 
         if ($task == 'receipt') {
-            return view('invoice.print-invoice-receipt', compact('invoice', 'invoice_items', 'invoice_statuses', 'logs', 'payments', 'terms', 'transactions'));
+            return view('invoice.print-invoice', compact('invoice', 'invoice_items', 'invoice_statuses', 'logs', 'payments', 'terms', 'transactions'));
         }
     }
 
@@ -397,7 +397,7 @@ class InvoiceController extends Controller
 
         /* return view('invoice.email-invoice',compact('invoice','invoice_items','invoice_statuses','logs','payments','terms','transactions')); */
 
-        $pdf = Pdf::loadView('invoice.print-invoice-receipt', compact('invoice', 'invoice_items', 'invoice_statuses', 'logs', 'payments', 'terms', 'transactions'))->setOptions(['defaultFont' => 'sans-serif']);
+        $pdf = Pdf::loadView('invoice.print-invoice', compact('invoice', 'invoice_items', 'invoice_statuses', 'logs', 'payments', 'terms', 'transactions'))->setOptions(['defaultFont' => 'sans-serif'])->setPaper('letter', 'portrait');
         $pdf->save(public_path() . '/invoice-receipt.pdf');
 
         $mail_data = (object)[];

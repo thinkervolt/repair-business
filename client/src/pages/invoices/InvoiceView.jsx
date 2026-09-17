@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
     ChevronDown,
+    DollarSign,
     FileText,
     Mail,
     Pencil,
@@ -15,7 +16,7 @@ import {
     X,
 } from 'lucide-react';
 import api from '../../api/client';
-import { formatMoney, formatDate, getApiError } from '../../utils/format';
+import { formatMoney, formatDate, formatDateTime, getApiError } from '../../utils/format';
 import { toneFor } from '../../utils/colors';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -415,6 +416,10 @@ export default function InvoiceView() {
     const [pickerOpen, setPickerOpen] = useState(false);
     const [partsOpen, setPartsOpen] = useState(false);
     const [repairsOpen, setRepairsOpen] = useState(false);
+    const [payOpen, setPayOpen] = useState(false);
+    const [payForm, setPayForm] = useState({ amount: '', method: 'cash', ref: '' });
+    const [payErrors, setPayErrors] = useState({});
+    const [paying, setPaying] = useState(false);
     const [logsOpen, setLogsOpen] = useState(false);
     const [logsPage, setLogsPage] = useState(1);
     const [barcode, setBarcode] = useState('');
@@ -542,6 +547,33 @@ export default function InvoiceView() {
             load();
         } catch (err) {
             notify(getApiError(err), 'error');
+        }
+    };
+
+    const handleCreatePayment = async (e) => {
+        e.preventDefault();
+        setPayErrors({});
+        setPaying(true);
+        try {
+            const { data } = await api.post(`/payments/${id}`, {
+                amount: Number(payForm.amount),
+                method: payForm.method,
+                ref: payForm.ref || null,
+            });
+            notify(data.message);
+            setPayOpen(false);
+            setPayForm({ amount: '', method: 'cash', ref: '' });
+            load();
+        } catch (err) {
+            const response = err.response;
+            if (response && response.data && response.data.errors) {
+                setPayErrors(response.data.errors);
+                notify(response.data.message || getApiError(err), 'error');
+            } else {
+                notify(getApiError(err), 'error');
+            }
+        } finally {
+            setPaying(false);
         }
     };
 
@@ -945,44 +977,120 @@ export default function InvoiceView() {
 
                 <div className="flex justify-end border-t border-slate-100 px-6 py-5">
                     <dl className="w-full max-w-xs space-y-2 text-sm">
-                        <div className="flex justify-between gap-3">
-                            <dt className="text-slate-400">Subtotal</dt>
-                            <dd className="font-medium text-slate-700">$ {formatMoney(invoice.subtotal)}</dd>
-                        </div>
-                        <div className="flex justify-between gap-3">
-                            <dt className="text-slate-400">Tax ({invoice.tax_porcentage}%)</dt>
-                            <dd className="font-medium text-slate-700">$ {formatMoney(invoice.tax)}</dd>
-                        </div>
-                        <div className="flex justify-between gap-3">
-                            <dt className="text-slate-400">Total</dt>
-                            <dd className="font-semibold text-slate-900">$ {formatMoney(invoice.total)}</dd>
-                        </div>
-                        {payments.map((payment) => (
-                            <div
-                                key={payment.id}
-                                className="flex justify-between gap-3 border-t border-slate-100 pt-2"
-                            >
-                                <dt className="text-slate-400">
-                                    {payment.method}
-                                    {payment.ref ? ` · ${payment.ref}` : ''}
-                                </dt>
-                                <dd
-                                    className={`font-medium ${
-                                        payment.amount > 0 ? 'text-emerald-600' : 'text-red-600'
-                                    }`}
+                            <div className="flex justify-between gap-3">
+                                <dt className="text-slate-400">Subtotal</dt>
+                                <dd className="font-medium text-slate-700">$ {formatMoney(invoice.subtotal)}</dd>
+                            </div>
+                            <div className="flex justify-between gap-3">
+                                <dt className="text-slate-400">Tax ({invoice.tax_porcentage}%)</dt>
+                                <dd className="font-medium text-slate-700">$ {formatMoney(invoice.tax)}</dd>
+                            </div>
+                            <div className="flex justify-between gap-3">
+                                <dt className="text-slate-400">Total</dt>
+                                <dd className="font-semibold text-slate-900">$ {formatMoney(invoice.total)}</dd>
+                            </div>
+                            {payments.map((payment) => (
+                                <div
+                                    key={payment.id}
+                                    className="flex justify-between gap-3 border-t border-slate-100 pt-2"
                                 >
-                                    $ {formatMoney(payment.amount)}
+                                    <dt className="text-slate-400">
+                                        <span className="uppercase">{payment.method}</span>
+                                        {payment.ref ? ` · ${payment.ref}` : ''}
+                                        <span className="mt-0.5 block text-[10px] text-slate-400">
+                                            {formatDateTime(payment.created_at)}
+                                        </span>
+                                    </dt>
+                                    <dd
+                                        className={`font-medium ${
+                                            payment.amount > 0 ? 'text-emerald-600' : 'text-red-600'
+                                        }`}
+                                    >
+                                        $ {formatMoney(payment.amount)}
+                                    </dd>
+                                </div>
+                            ))}
+                            <div className="flex justify-between gap-3 border-t border-slate-100 pt-2">
+                                <dt className="font-medium text-slate-500">Balance</dt>
+                                <dd className={`text-base font-semibold ${balanceTone}`}>
+                                    $ {formatMoney(invoice.balance)}
                                 </dd>
                             </div>
-                        ))}
-                        <div className="flex justify-between gap-3 border-t border-slate-100 pt-2">
-                            <dt className="font-medium text-slate-500">Balance</dt>
-                            <dd className={`text-base font-semibold ${balanceTone}`}>
-                                $ {formatMoney(invoice.balance)}
-                            </dd>
-                        </div>
-                    </dl>
-                </div>
+                            {payOpen && (
+                                <form
+                                    onSubmit={handleCreatePayment}
+                                    className="space-y-2 border-t border-slate-100 pt-3"
+                                >
+                                    <div className="flex gap-2">
+                                        <Input
+                                            type="number"
+                                            step="0.01"
+                                            value={payForm.amount}
+                                            onChange={(e) =>
+                                                setPayForm((f) => ({ ...f, amount: e.target.value }))
+                                            }
+                                            placeholder="Amount"
+                                            invalid={!!payErrors.amount}
+                                            autoFocus
+                                        />
+                                        <select
+                                            value={payForm.method}
+                                            onChange={(e) =>
+                                                setPayForm((f) => ({ ...f, method: e.target.value }))
+                                            }
+                                            className="shrink-0 rounded-lg border border-slate-300 bg-white px-2 py-2 text-xs text-slate-800 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                        >
+                                            {['cash', 'card', 'check', 'other'].map((method) => (
+                                                <option key={method} value={method}>
+                                                    {method.toUpperCase()}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    {payErrors.amount && (
+                                        <p className="text-xs text-red-600">{payErrors.amount[0]}</p>
+                                    )}
+                                    <Input
+                                        value={payForm.ref}
+                                        onChange={(e) =>
+                                            setPayForm((f) => ({ ...f, ref: e.target.value }))
+                                        }
+                                        placeholder="Reference (optional)"
+                                        invalid={!!payErrors.ref}
+                                    />
+                                    {payErrors.ref && (
+                                        <p className="text-xs text-red-600">{payErrors.ref[0]}</p>
+                                    )}
+                                    <div className="flex justify-end gap-2">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setPayOpen(false)}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            size="sm"
+                                            loading={paying}
+                                            disabled={!payForm.amount}
+                                        >
+                                            Record
+                                        </Button>
+                                    </div>
+                                </form>
+                            )}
+                            {!payOpen && (
+                                <div className="flex justify-end border-t border-slate-100 pt-2">
+                                    <Button type="button" variant="secondary" size="sm" onClick={() => setPayOpen(true)}>
+                                        <DollarSign className="h-3.5 w-3.5" />
+                                        Record payment
+                                    </Button>
+                                </div>
+                            )}
+                        </dl>
+                    </div>
 
                 {repairs.length > 0 && (
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-slate-100 px-6 py-3">

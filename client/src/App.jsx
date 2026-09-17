@@ -26,6 +26,11 @@ import InvoicesList from './pages/invoices/InvoicesList';
 import InvoiceForm from './pages/invoices/InvoiceForm';
 import InvoiceView from './pages/invoices/InvoiceView';
 import InvoiceSettings from './pages/invoices/InvoiceSettings';
+import PaymentsList from './pages/payments/PaymentsList';
+import PaymentView from './pages/payments/PaymentView';
+import ReportsPage from './pages/reports/ReportsPage';
+import RegisterReport from './pages/reports/RegisterReport';
+import SettingsPage from './pages/settings/SettingsPage';
 
 export default function App() {
     return (
@@ -88,10 +93,46 @@ export default function App() {
                 <Route path="inventory/products/:id/edit" element={<ProductForm />} />
                 <Route path="inventory/transactions" element={<TransactionsList />} />
                 <Route path="inventory/categories" element={<CategoriesList />} />
-                <Route path="reports" element={<Placeholder title="Create Report" />} />
-                <Route path="reports/register" element={<Placeholder title="Register Report" />} />
-                <Route path="payments" element={<Placeholder title="Payments" />} />
-                <Route path="settings" element={<Placeholder title="Settings" />} />
+                <Route
+                    path="payments"
+                    element={
+                        <AdminOnlyRoute>
+                            <PaymentsList />
+                        </AdminOnlyRoute>
+                    }
+                />
+                <Route
+                    path="payments/:id"
+                    element={
+                        <AdminOnlyRoute>
+                            <PaymentView />
+                        </AdminOnlyRoute>
+                    }
+                />
+                <Route
+                    path="reports"
+                    element={
+                        <AdminOnlyRoute>
+                            <ReportsPage />
+                        </AdminOnlyRoute>
+                    }
+                />
+                <Route
+                    path="reports/register"
+                    element={
+                        <AdminOnlyRoute>
+                            <RegisterReport />
+                        </AdminOnlyRoute>
+                    }
+                />
+                <Route
+                    path="settings"
+                    element={
+                        <AdminOnlyRoute>
+                            <SettingsPage />
+                        </AdminOnlyRoute>
+                    }
+                />
                 <Route path="users" element={<Placeholder title="Users" />} />
                 <Route path="logs" element={<Placeholder title="Activity Log" />} />
                 <Route path="trash" element={<Placeholder title="Trash" />} />

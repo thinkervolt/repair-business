@@ -28,7 +28,7 @@ class MailInvoice extends Mailable
     public function build()
     {
 
-        return $this->markdown('emails.invoice')->subject(Lang::get('repair-business.email_invoice-subject'))->attach(public_path().'/invoice-receipt.pdf');
+        return $this->markdown('emails.invoice')->subject(Lang::get('repair-business.email_invoice-subject'))->attach(public_path().'/invoice.pdf');
         
     }
 }
