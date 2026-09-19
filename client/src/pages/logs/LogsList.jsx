@@ -1,43 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, UserPlus } from 'lucide-react';
+import { ScrollText, Search } from 'lucide-react';
 import api from '../../api/client';
 import { useI18n } from '../../i18n/I18nContext';
-import { formatPhone, getApiError } from '../../utils/format';
+import { formatDateTime, getApiError } from '../../utils/format';
 import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Alert from '../../components/ui/Alert';
 import Pagination from '../../components/ui/Pagination';
 
-function CustomerRow({ customer }) {
-    const { t } = useI18n();
-    return (
-        <tr className="border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50">
-            <td className="px-6 py-3">
-                <Link
-                    to={`/customers/${customer.id}`}
-                    className="font-medium text-blue-700 hover:underline"
-                >
-                    {customer.first_name} {customer.last_name || ''}
-                </Link>
-            </td>
-            <td className="px-6 py-3 text-sm text-slate-600">{formatPhone(customer.phone)}</td>
-            <td className="px-6 py-3 text-sm text-slate-600">{customer.email || '—'}</td>
-            <td className="px-6 py-3 text-sm text-slate-600">{customer.company || '—'}</td>
-            <td className="px-6 py-3 text-right">
-                <Link
-                    to={`/customers/${customer.id}`}
-                    className="text-sm font-medium text-blue-700 hover:underline"
-                >
-                    {t('common.view')}
-                </Link>
-            </td>
-        </tr>
-    );
-}
-
-export default function CustomersList() {
+export default function LogsList() {
     const { t } = useI18n();
     const [data, setData] = useState(null);
     const [search, setSearch] = useState('');
@@ -56,26 +27,18 @@ export default function CustomersList() {
     }, [search]);
 
     useEffect(() => {
-        api.get('/customers', { params: { search: debounced, page } })
+        api.get('/logs', { params: { search: debounced, page } })
             .then(({ data }) => setData(data.data))
             .catch((err) => setError(getApiError(err)));
     }, [debounced, page]);
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('nav.customers')}</h1>
-                    <p className="mt-1 text-sm text-slate-500">
-                        {t('customers.subtitle')}
-                    </p>
-                </div>
-                <Link to="/customers/create">
-                    <Button>
-                        <UserPlus className="h-4 w-4" />
-                        {t('customers.new')}
-                    </Button>
-                </Link>
+            <div>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('nav.activity_log')}</h1>
+                <p className="mt-1 text-sm text-slate-500">
+                    {t('logs.subtitle')}
+                </p>
             </div>
 
             {error && <Alert tone="error">{error}</Alert>}
@@ -88,7 +51,7 @@ export default function CustomersList() {
                             type="search"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder={t('customers.search_placeholder')}
+                            placeholder={t('logs.search_placeholder')}
                             className="pl-9"
                         />
                     </div>
@@ -102,16 +65,27 @@ export default function CustomersList() {
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                        <th className="px-6 py-3">{t('common.name')}</th>
-                                        <th className="px-6 py-3">{t('common.phone')}</th>
-                                        <th className="px-6 py-3">{t('common.email')}</th>
-                                        <th className="px-6 py-3">{t('common.company')}</th>
-                                        <th className="px-6 py-3 text-right">{t('common.actions')}</th>
+                                        <th className="px-6 py-3">{t('logs.activity')}</th>
+                                        <th className="px-6 py-3">{t('logs.user')}</th>
+                                        <th className="px-6 py-3">{t('logs.when')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {data.data.map((customer) => (
-                                        <CustomerRow key={customer.id} customer={customer} />
+                                    {data.data.map((log) => (
+                                        <tr
+                                            key={log.id}
+                                            className="border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50"
+                                        >
+                                            <td className="px-6 py-3 text-sm text-slate-600">
+                                                {log.data}
+                                            </td>
+                                            <td className="px-6 py-3 text-sm font-medium text-slate-700">
+                                                {log.user_data ? log.user_data.name : '—'}
+                                            </td>
+                                            <td className="px-6 py-3 text-sm text-slate-500">
+                                                {formatDateTime(log.created_at)}
+                                            </td>
+                                        </tr>
                                     ))}
                                 </tbody>
                             </table>

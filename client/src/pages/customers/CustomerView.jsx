@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Save, Trash2, Wrench } from 'lucide-react';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { formatDate, formatMoney, formatPhone, getApiError } from '../../utils/format';
 import { toneFor } from '../../utils/colors';
 import Card from '../../components/ui/Card';
@@ -10,13 +11,15 @@ import Badge from '../../components/ui/Badge';
 import Alert from '../../components/ui/Alert';
 import CustomerFields from '../../components/customers/CustomerFields';
 
-function EmptyTable({ label }) {
-    return <div className="px-6 py-10 text-center text-sm text-slate-400">Nothing has been found.</div>;
+function EmptyTable() {
+    const { t } = useI18n();
+    return <div className="px-6 py-10 text-center text-sm text-slate-400">{t('common.nothing_found')}</div>;
 }
 
 export default function CustomerView() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { t } = useI18n();
     const [data, setData] = useState(null);
     const [form, setForm] = useState(null);
     const [errors, setErrors] = useState({});
@@ -80,7 +83,7 @@ export default function CustomerView() {
     };
 
     const handleDelete = async () => {
-        if (!window.confirm('Delete this customer? It can be restored later from the trash.')) return;
+        if (!window.confirm(t('customers.view.delete_confirm'))) return;
         setDeleting(true);
         try {
             await api.put(`/customers/${id}/delete`);
@@ -92,7 +95,7 @@ export default function CustomerView() {
     };
 
     if (!data || !form) {
-        return <div className="py-12 text-center text-sm text-slate-400">Loading...</div>;
+        return <div className="py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>;
     }
 
     const { customer, repairs, invoices } = data;
@@ -104,13 +107,16 @@ export default function CustomerView() {
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                     <Link to="/customers" className="text-sm font-medium text-blue-700 hover:underline">
-                        &larr; Back to customers
+                        &larr; {t('customers.back')}
                     </Link>
                     <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
                         {customer.first_name} {customer.last_name || ''}
                     </h1>
                     <p className="mt-1 text-sm text-slate-500">
-                        Customer #{customer.id} &middot; Registered {formatDate(customer.created_at)}
+                        {t('customers.view.registered', {
+                            id: customer.id,
+                            date: formatDate(customer.created_at),
+                        })}
                     </p>
                 </div>
                 <Link
@@ -119,7 +125,7 @@ export default function CustomerView() {
                 >
                     <Button>
                         <Wrench className="h-4 w-4" />
-                        New repair
+                        {t('repairs.new')}
                     </Button>
                 </Link>
             </div>
@@ -128,7 +134,7 @@ export default function CustomerView() {
                 <div className="space-y-6 lg:col-span-2">
                     <Card className="p-6">
                         <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
-                            Customer details
+                            {t('customers.view.details')}
                         </h2>
                         <form onSubmit={handleUpdate} className="space-y-6">
                             <CustomerFields value={form} onChange={setForm} errors={errors} />
@@ -140,11 +146,11 @@ export default function CustomerView() {
                                     loading={deleting}
                                 >
                                     <Trash2 className="h-4 w-4" />
-                                    Delete customer
+                                    {t('customers.delete')}
                                 </Button>
                                 <Button type="submit" loading={saving}>
                                     <Save className="h-4 w-4" />
-                                    Update customer
+                                    {t('customers.update')}
                                 </Button>
                             </div>
                         </form>
@@ -154,26 +160,26 @@ export default function CustomerView() {
                 <div className="space-y-4">
                     <Card className="p-5">
                         <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            Contact
+                            {t('customers.view.contact')}
                         </h3>
                         <dl className="mt-3 space-y-2 text-sm">
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Phone</dt>
+                                <dt className="text-slate-400">{t('common.phone')}</dt>
                                 <dd className="font-medium text-slate-700">{formatPhone(customer.phone)}</dd>
                             </div>
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Email</dt>
+                                <dt className="text-slate-400">{t('common.email')}</dt>
                                 <dd className="font-medium text-slate-700">{customer.email || '—'}</dd>
                             </div>
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Company</dt>
+                                <dt className="text-slate-400">{t('common.company')}</dt>
                                 <dd className="font-medium text-slate-700">{customer.company || '—'}</dd>
                             </div>
                         </dl>
                     </Card>
                     <Card className="p-5">
                         <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            Address
+                            {t('customers.view.address')}
                         </h3>
                         <p className="mt-3 text-sm text-slate-700">
                             {[customer.address, customer.city, customer.state, customer.zip]
@@ -185,7 +191,7 @@ export default function CustomerView() {
             </div>
 
             <section>
-                <h2 className="mb-3 text-lg font-semibold text-slate-900">Repairs</h2>
+                <h2 className="mb-3 text-lg font-semibold text-slate-900">{t('customers.view.repairs')}</h2>
                 <Card className="overflow-hidden">
                     {repairs.data.length > 0 ? (
                         <>
@@ -193,13 +199,13 @@ export default function CustomerView() {
                                 <table className="w-full text-left">
                                     <thead>
                                         <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                            <th className="px-6 py-3">ID</th>
-                                            <th className="px-6 py-3">Target</th>
-                                            <th className="px-6 py-3">Request</th>
-                                            <th className="px-6 py-3">Status</th>
-                                            <th className="px-6 py-3">Priority</th>
-                                            <th className="px-6 py-3">Date</th>
-                                            <th className="px-6 py-3 text-right">Actions</th>
+                                            <th className="px-6 py-3">{t('common.id')}</th>
+                                            <th className="px-6 py-3">{t('repairs.target')}</th>
+                                            <th className="px-6 py-3">{t('repairs.request')}</th>
+                                            <th className="px-6 py-3">{t('common.status')}</th>
+                                            <th className="px-6 py-3">{t('repairs.priority')}</th>
+                                            <th className="px-6 py-3">{t('common.date')}</th>
+                                            <th className="px-6 py-3 text-right">{t('common.actions')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -235,7 +241,7 @@ export default function CustomerView() {
                                                         to={`/repairs/${repair.id}`}
                                                         className="text-sm font-medium text-blue-700 hover:underline"
                                                     >
-                                                        View
+                                                        {t('common.view')}
                                                     </Link>
                                                 </td>
                                             </tr>
@@ -251,18 +257,18 @@ export default function CustomerView() {
             </section>
 
             <section>
-                <h2 className="mb-3 text-lg font-semibold text-slate-900">Invoices</h2>
+                <h2 className="mb-3 text-lg font-semibold text-slate-900">{t('customers.view.invoices')}</h2>
                 <Card className="overflow-hidden">
                     {invoices.data.length > 0 ? (
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                        <th className="px-6 py-3">ID</th>
-                                        <th className="px-6 py-3">Status</th>
-                                        <th className="px-6 py-3">Balance</th>
-                                        <th className="px-6 py-3">Date</th>
-                                        <th className="px-6 py-3 text-right">Actions</th>
+                                        <th className="px-6 py-3">{t('common.id')}</th>
+                                        <th className="px-6 py-3">{t('common.status')}</th>
+                                        <th className="px-6 py-3">{t('common.balance')}</th>
+                                        <th className="px-6 py-3">{t('common.date')}</th>
+                                        <th className="px-6 py-3 text-right">{t('common.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -298,7 +304,7 @@ export default function CustomerView() {
                                                     to={`/invoices/${invoice.id}`}
                                                     className="text-sm font-medium text-blue-700 hover:underline"
                                                 >
-                                                    View
+                                                    {t('common.view')}
                                                 </Link>
                                             </td>
                                         </tr>

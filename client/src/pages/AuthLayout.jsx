@@ -1,9 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Wrench, Receipt } from 'lucide-react';
+import { Wrench, Receipt, ShieldCheck } from 'lucide-react';
 import Logo from '../components/ui/Logo';
+import { useI18n } from '../i18n/I18nContext';
+import { useAuth } from '../auth/AuthContext';
 
 export default function AuthLayout({ title, subtitle, children, hideLoginLink = false }) {
+    const { t } = useI18n();
+    const { appName } = useAuth();
+
     return (
         <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-slate-50 to-blue-100/70 p-4">
             <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/60 md:grid-cols-2">
@@ -11,28 +16,24 @@ export default function AuthLayout({ title, subtitle, children, hideLoginLink = 
                     <div>
                         <div className="flex items-center gap-2.5">
                             <Logo className="h-10 w-10 bg-blue-600" />
-                            <span className="text-lg font-bold tracking-tight">RepairHero</span>
+                            <span className="text-lg font-bold tracking-tight">{appName}</span>
                         </div>
                         <h2 className="mt-12 text-3xl font-bold leading-tight tracking-tight">
-                            Repairs, invoices and inventory in one place.
+                            {t('auth.hero_tagline')}
                         </h2>
                         <p className="mt-3 text-sm leading-relaxed text-slate-300">
-                            Run your repair business faster — from drop-off to delivery, without
-                            the paper trail.
+                            {t('auth.hero_text')}
                         </p>
                     </div>
                     <ul className="space-y-4 text-sm text-slate-300">
                         <li className="flex items-center gap-3">
-                            <Wrench className="h-4.5 w-4.5 text-blue-400" /> Track repairs and
-                            drop-off receipts
+                            <Wrench className="h-4.5 w-4.5 text-blue-400" /> {t('auth.feature_repairs')}
                         </li>
                         <li className="flex items-center gap-3">
-                            <Receipt className="h-4.5 w-4.5 text-blue-400" /> Invoice, print
-                            and email customers
+                            <Receipt className="h-4.5 w-4.5 text-blue-400" /> {t('auth.feature_invoicing')}
                         </li>
                         <li className="flex items-center gap-3">
-                            <ShieldCheck className="h-4.5 w-4.5 text-blue-400" /> Secure, verified
-                            staff accounts
+                            <ShieldCheck className="h-4.5 w-4.5 text-blue-400" /> {t('auth.feature_security')}
                         </li>
                     </ul>
                 </div>
@@ -41,7 +42,7 @@ export default function AuthLayout({ title, subtitle, children, hideLoginLink = 
                         <div className="flex items-center gap-2.5">
                             <Logo className="h-9 w-9" />
                             <span className="text-base font-bold tracking-tight text-slate-900">
-                                RepairHero
+                                {appName}
                             </span>
                         </div>
                     </div>
@@ -50,12 +51,12 @@ export default function AuthLayout({ title, subtitle, children, hideLoginLink = 
                     <div className="mt-7">{children}</div>
                     {!hideLoginLink && (
                         <p className="mt-6 text-center text-sm text-slate-500">
-                            Already have an account?{' '}
+                            {t('auth.already_account')}{' '}
                             <Link
                                 to="/login"
                                 className="font-semibold text-blue-600 hover:text-blue-700"
                             >
-                                Sign in
+                                {t('auth.back_to_sign_in')}
                             </Link>
                         </p>
                     )}

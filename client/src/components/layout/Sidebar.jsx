@@ -1,11 +1,11 @@
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useAuth } from '../../auth/AuthContext';
+import { useI18n } from '../../i18n/I18nContext';
 import Logo from '../ui/Logo';
 import { NAV_SECTIONS } from './nav';
 
-function NavList({ sections, collapsed, onNavigate }) {
+function NavList({ sections, collapsed, onNavigate, translate }) {
     const location = useLocation();
 
     return (
@@ -20,7 +20,7 @@ function NavList({ sections, collapsed, onNavigate }) {
                 <div key={section.section || i} className={collapsed ? 'flex flex-col items-center gap-1' : ''}>
                     {!collapsed && section.section && (
                         <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                            {section.section}
+                            {translate(section.section)}
                         </p>
                     )}
                     {collapsed && section.section && (
@@ -34,7 +34,7 @@ function NavList({ sections, collapsed, onNavigate }) {
                                     <li key={item.to}>
                                         <Link
                                             to={item.to}
-                                            title={item.label}
+                                            title={translate(item.label)}
                                             onClick={onNavigate}
                                             className={clsx(
                                                 'flex h-10 w-10 items-center justify-center rounded-lg transition-colors',
@@ -68,7 +68,7 @@ function NavList({ sections, collapsed, onNavigate }) {
                                                     : 'text-slate-400 group-hover:text-slate-600'
                                             )}
                                         />
-                                        {item.label}
+                                        {translate(item.label)}
                                     </Link>
                                 </li>
                             );
@@ -81,7 +81,8 @@ function NavList({ sections, collapsed, onNavigate }) {
 }
 
 export default function Sidebar({ collapsed, mobileOpen, onCloseMobile }) {
-    const { isAdmin } = useAuth();
+    const { isAdmin, appName } = useAuth();
+    const { t } = useI18n();
     const sections = NAV_SECTIONS.filter((s) => !s.adminOnly || isAdmin);
 
     return (
@@ -101,9 +102,11 @@ export default function Sidebar({ collapsed, mobileOpen, onCloseMobile }) {
                     mobileOpen ? 'translate-x-0' : '-translate-x-full'
                 )}
             >
-                <div
+                <Link
+                    to="/dashboard"
+                    onClick={onCloseMobile}
                     className={clsx(
-                        'flex h-16 shrink-0 items-center gap-2.5 border-b border-slate-100 px-4',
+                        'flex h-16 shrink-0 items-center gap-2.5 border-b border-slate-100 px-4 transition-colors',
                         collapsed && 'lg:justify-center lg:px-0'
                     )}
                 >
@@ -114,10 +117,10 @@ export default function Sidebar({ collapsed, mobileOpen, onCloseMobile }) {
                             collapsed && 'lg:hidden'
                         )}
                     >
-                        RepairHero
+                        {appName}
                     </span>
-                </div>
-                <NavList sections={sections} collapsed={collapsed} onNavigate={onCloseMobile} />
+                </Link>
+                <NavList sections={sections} collapsed={collapsed} onNavigate={onCloseMobile} translate={t} />
             </aside>
         </>
     );

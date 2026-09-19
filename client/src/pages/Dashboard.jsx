@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import { CirclePlus, DollarSign, Receipt, Wrench } from 'lucide-react';
 import api from '../api/client';
+import { useI18n } from '../i18n/I18nContext';
 import { formatMoney, getApiError } from '../utils/format';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -55,6 +56,7 @@ function StatCard({ label, value, prefix, icon: Icon, tone, to }) {
 }
 
 function EarningsChart({ current, past, year, lastYear }) {
+    const { t } = useI18n();
     const data = MONTHS.map((month, i) => ({
         month,
         [year]: Number(current[MONTHS[i].toLowerCase()] || 0),
@@ -64,7 +66,7 @@ function EarningsChart({ current, past, year, lastYear }) {
     return (
         <Card>
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-6 py-4">
-                <h3 className="text-sm font-semibold text-slate-900">Earnings overview</h3>
+                <h3 className="text-sm font-semibold text-slate-900">{t('dashboard.earnings_overview')}</h3>
                 <div className="flex items-center gap-4 text-xs text-slate-500">
                     <span className="flex items-center gap-1.5">
                         <span className="h-2 w-2 rounded-full bg-blue-600" /> {year}
@@ -125,6 +127,7 @@ function EarningsChart({ current, past, year, lastYear }) {
 }
 
 export default function Dashboard() {
+    const { t } = useI18n();
     const [stats, setStats] = useState(null);
     const [error, setError] = useState('');
 
@@ -142,15 +145,15 @@ export default function Dashboard() {
         <div className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('nav.dashboard')}</h1>
                     <p className="mt-1 text-sm text-slate-500">
-                        Here's what's happening in your business today.
+                        {t('dashboard.subtitle')}
                     </p>
                 </div>
                 <Link to="/repairs/create">
                     <Button>
                         <CirclePlus className="h-4 w-4" />
-                        New repair
+                        {t('dashboard.new_repair')}
                     </Button>
                 </Link>
             </div>
@@ -167,35 +170,35 @@ export default function Dashboard() {
                 <>
                     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
                         <StatCard
-                            label={`Earnings · today`}
+                            label={t('dashboard.earnings_today')}
                             value={formatMoney(stats.current_year_income.current_day)}
                             prefix="$"
                             icon={DollarSign}
                             tone="emerald"
                         />
                         <StatCard
-                            label={`Earnings · ${monthLabel}`}
+                            label={t('dashboard.earnings_month', { month: monthLabel })}
                             value={formatMoney(stats.current_year_income.current_month)}
                             prefix="$"
                             icon={DollarSign}
                             tone="emerald"
                         />
                         <StatCard
-                            label={`Earnings · ${year}`}
+                            label={t('dashboard.earnings_year', { year })}
                             value={formatMoney(stats.current_year_income.total)}
                             prefix="$"
                             icon={DollarSign}
                             tone="emerald"
                         />
                         <StatCard
-                            label="Repairs not invoiced"
+                            label={t('dashboard.repairs_not_invoiced')}
                             value={stats.repairs_no_invoice}
                             icon={Wrench}
                             tone="blue"
-                            to="/repairs"
+                            to="/repairs?filter=no-invoice"
                         />
                         <StatCard
-                            label="Unpaid invoices"
+                            label={t('dashboard.unpaid_invoices')}
                             value={stats.unpaid_invoices}
                             icon={Receipt}
                             tone="slate"

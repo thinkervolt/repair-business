@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Save } from 'lucide-react';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { getApiError } from '../../utils/format';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -23,6 +24,7 @@ const EMPTY = {
 export default function CustomerForm() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { t } = useI18n();
     const isEdit = Boolean(id);
 
     const [form, setForm] = useState(EMPTY);
@@ -75,16 +77,16 @@ export default function CustomerForm() {
     return (
         <div className="mx-auto max-w-3xl space-y-6">
             <Link to="/customers" className="text-sm font-medium text-blue-700 hover:underline">
-                &larr; Back to customers
+                &larr; {t('customers.back')}
             </Link>
             <div>
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-                    {isEdit ? 'Edit customer' : 'Create customer'}
+                    {isEdit ? t('customers.edit') : t('customers.create')}
                 </h1>
                 <p className="mt-1 text-sm text-slate-500">
                     {isEdit
-                        ? 'Update the details of this customer.'
-                        : 'Add a new customer to your business.'}
+                        ? t('customers.edit_subtitle')
+                        : t('customers.create_subtitle')}
                 </p>
             </div>
 
@@ -97,19 +99,19 @@ export default function CustomerForm() {
 
             <Card className="p-6">
                 {loading ? (
-                    <div className="py-8 text-center text-sm text-slate-400">Loading...</div>
+                    <div className="py-8 text-center text-sm text-slate-400">{t('common.loading')}</div>
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <CustomerFields value={form} onChange={setForm} errors={errors} />
                         <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
                             <Link to="/customers">
                                 <Button type="button" variant="secondary">
-                                    Cancel
+                                    {t('common.cancel')}
                                 </Button>
                             </Link>
                             <Button type="submit" loading={submitting}>
                                 <Save className="h-4 w-4" />
-                                {isEdit ? 'Update customer' : 'Create customer'}
+                                {isEdit ? t('customers.update') : t('customers.create')}
                             </Button>
                         </div>
                     </form>

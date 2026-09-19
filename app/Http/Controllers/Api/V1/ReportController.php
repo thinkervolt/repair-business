@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\Log;
 use App\Models\Payment;
 use App\Models\Repair;
+use App\Models\Setting;
 use App\Traits\ApiResponses;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -151,6 +152,11 @@ class ReportController extends Controller
         $repairs = $repair_data['items'];
         $payments = $payment_data['items'];
 
+        $profile = (object)[];
+        foreach (Setting::where('group', 'business_profile')->get() as $setting) {
+            $profile->{$setting->name} = $setting->data;
+        }
+
         $pdf = Pdf::loadView('report.print-report', compact(
             'report_data',
             'invoice_data',
@@ -158,7 +164,8 @@ class ReportController extends Controller
             'payment_data',
             'invoices',
             'repairs',
-            'payments'
+            'payments',
+            'profile'
         ))->setOptions(['defaultFont' => 'sans-serif'])->setPaper('letter', 'portrait');
 
         return $pdf->stream('report-' . $data['from'] . '-' . $data['to'] . '.pdf');

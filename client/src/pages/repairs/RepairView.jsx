@@ -11,6 +11,7 @@ import {
     UserRound,
 } from 'lucide-react';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { formatMoney, formatDate, getApiError } from '../../utils/format';
 import { toneFor } from '../../utils/colors';
 import Card from '../../components/ui/Card';
@@ -32,10 +33,10 @@ const fieldClasses =
 const selectBase =
     'rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20';
 
-function EmptyBlock({ label }) {
+function EmptyBlock({ children }) {
     return (
         <div className="px-6 py-8 text-center text-sm text-slate-400">
-            No {label} have been found.
+            {children}
         </div>
     );
 }
@@ -43,6 +44,7 @@ function EmptyBlock({ label }) {
 export default function RepairView() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { t } = useI18n();
     const [data, setData] = useState(null);
     const [form, setForm] = useState(null);
     const [errors, setErrors] = useState({});
@@ -181,7 +183,7 @@ export default function RepairView() {
     };
 
     const handleDelete = async () => {
-        if (!window.confirm('Delete this repair? It can be restored later from the trash.')) return;
+        if (!window.confirm(t('repairs.delete_confirm'))) return;
         setDeleting(true);
         try {
             await api.put(`/repairs/${id}/delete`);
@@ -193,7 +195,7 @@ export default function RepairView() {
     };
 
     if (!data || !form) {
-        return <div className="py-12 text-center text-sm text-slate-400">Loading...</div>;
+        return <div className="py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>;
     }
 
     const { repair, comments, jobs, transactions, logs, invoices, users, statuses, priorities } = data;
@@ -205,28 +207,28 @@ export default function RepairView() {
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                     <Link to="/repairs" className="text-sm font-medium text-blue-700 hover:underline">
-                        &larr; Back to repairs
+                        &larr; {t('repairs.back')}
                     </Link>
                     <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
-                        Repair #{repair.id}
+                        {t('repairs.repair_number', { id: repair.id })}
                     </h1>
                     <p className="mt-1 text-sm text-slate-500">
-                        {repair.target} &middot; Created {formatDate(repair.created_at)}
+                        {repair.target} &middot; {t('common.created_on', { date: formatDate(repair.created_at) })}
                     </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                     <Button type="button" variant="secondary" onClick={handlePrint}>
                         <Printer className="h-4 w-4" />
-                        Drop-off receipt
+                        {t('repairs.dropoff_receipt')}
                     </Button>
                     <Button type="button" variant="secondary" onClick={handleMail} loading={mailing}>
                         <Mail className="h-4 w-4" />
-                        Email receipt
+                        {t('repairs.email_receipt')}
                     </Button>
                     <Link to={`/invoices/create?repair=${repair.id}`}>
                         <Button>
                             <FileText className="h-4 w-4" />
-                            Invoice
+                            {t('repairs.invoice')}
                         </Button>
                     </Link>
                 </div>
@@ -236,13 +238,13 @@ export default function RepairView() {
                 <div className="space-y-6 lg:col-span-2">
                     <Card className="p-6">
                         <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
-                            Repair details
+                            {t('repairs.details')}
                         </h2>
                         <form onSubmit={handleUpdate} className="space-y-5">
                             <div className="grid gap-5 sm:grid-cols-2">
                                 <div>
                                     <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="target">
-                                        Target *
+                                        {t('repairs.target')} *
                                     </label>
                                     <Input
                                         id="target"
@@ -254,7 +256,7 @@ export default function RepairView() {
                                 </div>
                                 <div>
                                     <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="request">
-                                        Request *
+                                        {t('repairs.request')} *
                                     </label>
                                     <Input
                                         id="request"
@@ -266,7 +268,7 @@ export default function RepairView() {
                                 </div>
                                 <div>
                                     <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="status">
-                                        Status
+                                        {t('common.status')}
                                     </label>
                                     <select
                                         id="status"
@@ -284,7 +286,7 @@ export default function RepairView() {
                                 </div>
                                 <div>
                                     <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="priority">
-                                        Priority
+                                        {t('repairs.priority')}
                                     </label>
                                     <select
                                         id="priority"
@@ -302,7 +304,7 @@ export default function RepairView() {
                                 </div>
                                 <div>
                                     <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="estimate">
-                                        Estimate ($)
+                                        {t('repairs.estimate')}
                                     </label>
                                     <Input
                                         id="estimate"
@@ -317,7 +319,7 @@ export default function RepairView() {
                                 </div>
                                 <div>
                                     <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="user">
-                                        Assigned agent
+                                        {t('repairs.assigned_agent')}
                                     </label>
                                     <select
                                         id="user"
@@ -337,7 +339,7 @@ export default function RepairView() {
                             <div className="flex justify-end border-t border-slate-100 pt-5">
                                 <Button type="submit" loading={saving}>
                                     <Save className="h-4 w-4" />
-                                    Update repair
+                                    {t('repairs.update')}
                                 </Button>
                             </div>
                         </form>
@@ -345,7 +347,7 @@ export default function RepairView() {
 
                     <Card className="overflow-hidden">
                         <div className="border-b border-slate-100 px-6 py-4">
-                            <h2 className="text-sm font-semibold text-slate-900">Jobs &amp; comments</h2>
+                            <h2 className="text-sm font-semibold text-slate-900">{t('repairs.jobs_comments')}</h2>
                         </div>
                         <form onSubmit={handleAddItem} className="flex gap-2 border-b border-slate-100 px-6 py-4">
                             <select
@@ -353,22 +355,22 @@ export default function RepairView() {
                                 value={itemGroup}
                                 onChange={(e) => setItemGroup(e.target.value)}
                             >
-                                <option value="job">Job</option>
-                                <option value="comment">Comment</option>
+                                <option value="job">{t('repairs.job')}</option>
+                                <option value="comment">{t('repairs.comment')}</option>
                             </select>
                             <Input
                                 value={itemText}
                                 onChange={(e) => setItemText(e.target.value)}
-                                placeholder={itemGroup === 'job' ? 'Job description e.g. Replaced screen' : 'Add a comment'}
+                                placeholder={itemGroup === 'job' ? t('repairs.job_placeholder') : t('repairs.comment_placeholder')}
                                 className="min-w-0 flex-1"
                             />
                             <Button type="submit" className="shrink-0" disabled={!itemText.trim()}>
                                 <Plus className="h-4 w-4" />
-                                Add
+                                {t('common.add')}
                             </Button>
                         </form>
                         {comments.length === 0 && jobs.length === 0 ? (
-                            <EmptyBlock label="jobs or comments" />
+                            <EmptyBlock>{t('repairs.empty_jobs_comments')}</EmptyBlock>
                         ) : (
                             <ul className="divide-y divide-slate-100">
                                 {[...jobs, ...comments].map((item) => (
@@ -376,7 +378,7 @@ export default function RepairView() {
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2">
                                                 <Badge tone={item.group === 'job' ? 'blue' : 'slate'}>
-                                                    {item.group}
+                                                    {item.group === 'job' ? t('repairs.job') : t('repairs.comment')}
                                                 </Badge>
                                                 <span className="text-sm text-slate-400">
                                                     {item.agent_data ? item.agent_data.name : '—'} &middot;{' '}
@@ -401,7 +403,7 @@ export default function RepairView() {
 
                     <Card className="overflow-hidden">
                         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-                            <h2 className="text-sm font-semibold text-slate-900">Parts used</h2>
+                            <h2 className="text-sm font-semibold text-slate-900">{t('repairs.parts_used')}</h2>
                             <Button
                                 type="button"
                                 variant="secondary"
@@ -409,36 +411,36 @@ export default function RepairView() {
                                 onClick={() => setPartsOpen(true)}
                             >
                                 <Plus className="h-3.5 w-3.5" />
-                                Add part
+                                {t('repairs.add_part')}
                             </Button>
                         </div>
                         {transactions.length === 0 ? (
-                            <EmptyBlock label="parts" />
+                            <EmptyBlock>{t('repairs.empty_parts')}</EmptyBlock>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left">
                                     <thead>
                                         <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                            <th className="px-6 py-3">Product</th>
-                                            <th className="px-6 py-3">Type</th>
-                                            <th className="px-6 py-3">Qty</th>
-                                            <th className="px-6 py-3">Price</th>
+                                            <th className="px-6 py-3">{t('inventory.product')}</th>
+                                            <th className="px-6 py-3">{t('inventory.type')}</th>
+                                            <th className="px-6 py-3">{t('common.qty')}</th>
+                                            <th className="px-6 py-3">{t('common.price')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {transactions.map((t) => (
-                                            <tr key={t.id} className="border-b border-slate-100 last:border-0">
+                                        {transactions.map((tx) => (
+                                            <tr key={tx.id} className="border-b border-slate-100 last:border-0">
                                                 <td className="px-6 py-3 text-sm text-slate-700">
-                                                    {t.product ? t.product.name : `#${t.product_id}`}
+                                                    {tx.product ? tx.product.name : `#${tx.product_id}`}
                                                 </td>
                                                 <td className="px-6 py-3">
-                                                    <Badge tone={t.transaction === 'purchase' ? 'emerald' : 'red'}>
-                                                        {t.transaction === 'purchase' ? 'Purchased' : 'Used on repair'}
+                                                    <Badge tone={tx.transaction === 'purchase' ? 'emerald' : 'red'}>
+                                                        {tx.transaction === 'purchase' ? t('repairs.purchased') : t('repairs.used_on_repair')}
                                                     </Badge>
                                                 </td>
-                                                <td className="px-6 py-3 text-sm text-slate-600">{t.quantity}</td>
+                                                <td className="px-6 py-3 text-sm text-slate-600">{tx.quantity}</td>
                                                 <td className="px-6 py-3 text-sm text-slate-600">
-                                                    {t.selling_price != null ? `$ ${formatMoney(t.selling_price)}` : '—'}
+                                                    {tx.selling_price != null ? `$ ${formatMoney(tx.selling_price)}` : '—'}
                                                 </td>
                                             </tr>
                                         ))}
@@ -450,20 +452,20 @@ export default function RepairView() {
 
                     <Card className="overflow-hidden">
                         <div className="border-b border-slate-100 px-6 py-4">
-                            <h2 className="text-sm font-semibold text-slate-900">Invoices</h2>
+                            <h2 className="text-sm font-semibold text-slate-900">{t('repairs.invoices')}</h2>
                         </div>
                         {invoices.data.length === 0 ? (
-                            <EmptyBlock label="invoices" />
+                            <EmptyBlock>{t('repairs.empty_invoices')}</EmptyBlock>
                         ) : (
                             <>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left">
                                         <thead>
                                             <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                                <th className="px-6 py-3">ID</th>
-                                                <th className="px-6 py-3">Status</th>
-                                                <th className="px-6 py-3">Balance</th>
-                                                <th className="px-6 py-3 text-right">Actions</th>
+                                                <th className="px-6 py-3">{t('common.id')}</th>
+                                                <th className="px-6 py-3">{t('common.status')}</th>
+                                                <th className="px-6 py-3">{t('common.balance')}</th>
+                                                <th className="px-6 py-3 text-right">{t('common.actions')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -493,7 +495,7 @@ export default function RepairView() {
                                                             to={`/invoices/${inv.id}`}
                                                             className="text-sm font-medium text-blue-700 hover:underline"
                                                         >
-                                                            View
+                                                            {t('common.view')}
                                                         </Link>
                                                     </td>
                                                 </tr>
@@ -513,7 +515,7 @@ export default function RepairView() {
                             className="flex w-full items-center justify-between px-6 py-3 text-left transition-colors hover:bg-slate-50"
                         >
                             <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                Activity log
+                                {t('repairs.activity_log')}
                                 <span className="ml-1.5 font-normal normal-case text-slate-400">({logs.total})</span>
                             </span>
                             <ChevronDown
@@ -522,7 +524,7 @@ export default function RepairView() {
                         </button>
                         {logsOpen &&
                             (logs.data.length === 0 ? (
-                                <EmptyBlock label="entries" />
+                                <EmptyBlock>{t('repairs.empty_entries')}</EmptyBlock>
                             ) : (
                                 <>
                                     <ul className="divide-y divide-slate-100">
@@ -546,7 +548,7 @@ export default function RepairView() {
                     <Card className="p-5">
                         <div className="flex items-center justify-between">
                             <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                Customer
+                                {t('common.customer')}
                             </h3>
                             {!repair.customer_data && (
                                 <button
@@ -554,7 +556,7 @@ export default function RepairView() {
                                     onClick={() => setPickerOpen(true)}
                                     className="text-xs font-medium text-blue-700 hover:underline"
                                 >
-                                    Assign
+                                    {t('repairs.assign')}
                                 </button>
                             )}
                         </div>
@@ -568,19 +570,19 @@ export default function RepairView() {
                                 </Link>
                                 <dl className="mt-3 space-y-2 text-sm">
                                     <div className="flex justify-between gap-3">
-                                        <dt className="text-slate-400">Phone</dt>
+                                        <dt className="text-slate-400">{t('common.phone')}</dt>
                                         <dd className="font-medium text-slate-700">
                                             {repair.customer_data.phone}
                                         </dd>
                                     </div>
                                     <div className="flex justify-between gap-3">
-                                        <dt className="text-slate-400">Email</dt>
+                                        <dt className="text-slate-400">{t('common.email')}</dt>
                                         <dd className="font-medium text-slate-700">
                                             {repair.customer_data.email || '—'}
                                         </dd>
                                     </div>
                                     <div className="flex justify-between gap-3">
-                                        <dt className="text-slate-400">Company</dt>
+                                        <dt className="text-slate-400">{t('common.company')}</dt>
                                         <dd className="font-medium text-slate-700">
                                             {repair.customer_data.company || '—'}
                                         </dd>
@@ -592,7 +594,7 @@ export default function RepairView() {
                                     className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-blue-700 hover:underline"
                                 >
                                     <UserRound className="h-3.5 w-3.5" />
-                                    Reassign
+                                    {t('repairs.reassign')}
                                 </button>
                             </>
                         ) : (
@@ -602,14 +604,14 @@ export default function RepairView() {
                                 className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 px-3 py-3 text-sm text-slate-500 transition-colors hover:border-blue-400 hover:text-blue-700"
                             >
                                 <UserRound className="h-4 w-4" />
-                                Assign customer
+                                {t('repairs.assign_customer')}
                             </button>
                         )}
                     </Card>
 
                     <Card className="p-5">
                         <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            Assigned agent
+                            {t('repairs.assigned_agent')}
                         </h3>
                         <p className="mt-3 text-sm text-slate-700">
                             {repair.agent_data ? repair.agent_data.name : '—'}
@@ -618,11 +620,11 @@ export default function RepairView() {
 
                     <Card className="p-5">
                         <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            Repair info
+                            {t('repairs.info')}
                         </h3>
                         <dl className="mt-3 space-y-2 text-sm">
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Status</dt>
+                                <dt className="text-slate-400">{t('common.status')}</dt>
                                 <dd>
                                     {repair.status_data ? (
                                         <Badge solid tone={toneFor(repair.status_data.color)}>
@@ -634,7 +636,7 @@ export default function RepairView() {
                                 </dd>
                             </div>
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Priority</dt>
+                                <dt className="text-slate-400">{t('repairs.priority')}</dt>
                                 <dd>
                                     {repair.priority_data ? (
                                         <Badge solid tone={toneFor(repair.priority_data.color)}>
@@ -646,13 +648,13 @@ export default function RepairView() {
                                 </dd>
                             </div>
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Estimate</dt>
+                                <dt className="text-slate-400">{t('common.estimate')}</dt>
                                 <dd className="font-medium text-slate-700">
                                     {repair.estimate != null ? `$ ${formatMoney(repair.estimate)}` : '—'}
                                 </dd>
                             </div>
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Created</dt>
+                                <dt className="text-slate-400">{t('common.created')}</dt>
                                 <dd className="font-medium text-slate-700">{formatDate(repair.created_at)}</dd>
                             </div>
                         </dl>
@@ -660,7 +662,7 @@ export default function RepairView() {
 
                     <Button variant="danger" className="w-full" onClick={handleDelete} loading={deleting}>
                         <Trash2 className="h-4 w-4" />
-                        Delete repair
+                        {t('repairs.delete')}
                     </Button>
                 </div>
             </div>

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ClipboardList, Save } from 'lucide-react';
 import api from '../../api/client';
-import { formatMoney, getApiError } from '../../utils/format';
+import { useI18n } from '../../i18n/I18nContext';
+import { formatDate, formatMoney, getApiError } from '../../utils/format';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -18,6 +19,7 @@ function today() {
 const td = 'px-6 py-3 text-sm text-slate-600 align-top';
 
 export default function RegisterReport() {
+    const { t } = useI18n();
     const [date, setDate] = useState(today());
     const [cash, setCash] = useState('');
     const [card, setCard] = useState('');
@@ -69,10 +71,9 @@ export default function RegisterReport() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900">Register Report</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('nav.register_report')}</h1>
                 <p className="mt-1 text-sm text-slate-500">
-                    Compare the cash and credit/debit totals recorded in the day's register against the
-                    payments in the system, then insert the difference as non-invoiced transactions.
+                    {t('reports.register.subtitle')}
                 </p>
             </div>
 
@@ -83,16 +84,16 @@ export default function RegisterReport() {
                 <div className="border-b border-slate-100 px-5 py-4">
                     <div className="flex items-center gap-2">
                         <ClipboardList className="h-4 w-4 text-slate-400" />
-                        <h2 className="text-sm font-semibold text-slate-900">Register totals</h2>
+                        <h2 className="text-sm font-semibold text-slate-900">{t('reports.register.totals')}</h2>
                     </div>
                 </div>
                 <form onSubmit={handleGenerate} className="grid gap-4 px-5 py-4 sm:grid-cols-[1fr_200px_200px_auto] sm:items-end">
                     <div>
-                        <label className="mb-1 block text-xs font-medium text-slate-500">Date</label>
+                        <label className="mb-1 block text-xs font-medium text-slate-500">{t('reports.register.date')}</label>
                         <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
                     </div>
                     <div>
-                        <label className="mb-1 block text-xs font-medium text-slate-500">Cash register total</label>
+                        <label className="mb-1 block text-xs font-medium text-slate-500">{t('reports.register.cash_total')}</label>
                         <Input
                             type="number"
                             step="0.01"
@@ -102,7 +103,7 @@ export default function RegisterReport() {
                         />
                     </div>
                     <div>
-                        <label className="mb-1 block text-xs font-medium text-slate-500">Credit / debit total</label>
+                        <label className="mb-1 block text-xs font-medium text-slate-500">{t('reports.register.card_total')}</label>
                         <Input
                             type="number"
                             step="0.01"
@@ -113,7 +114,7 @@ export default function RegisterReport() {
                     </div>
                     <div className="flex items-end">
                         <Button type="submit" loading={loading}>
-                            Generate
+                            {t('reports.register.generate')}
                         </Button>
                     </div>
                 </form>
@@ -122,26 +123,26 @@ export default function RegisterReport() {
             {result && (
                 <div className="space-y-6">
                     <h2 className="text-lg font-semibold text-slate-900">
-                        Register Report <span className="font-normal text-slate-500">— {result.date}</span>
+                        {t('reports.register.title_with_date', { date: result.date })}
                     </h2>
 
                     <Card className="overflow-hidden">
                         <div className="border-b border-slate-100 px-5 py-4">
-                            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-900">Payments</h3>
+                            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-900">{t('nav.payments')}</h3>
                             <div className="mt-2 flex flex-wrap items-start justify-between gap-4 text-sm">
                                 <div className="flex gap-6">
                                     <span className="text-slate-600">
-                                        Payments: <strong>{result.count}</strong>
+                                        {t('reports.payments_count', { count: result.count })}
                                     </span>
                                     <span className="text-slate-600">
-                                        Total: <strong>$ {formatMoney(result.total)}</strong>
+                                        {t('reports.total_count', { amount: formatMoney(result.total) })}
                                     </span>
                                 </div>
                                 <div className="text-right">
-                                    <p className="m-0 text-slate-500">Cash: $ {formatMoney(result.total_cash)}</p>
-                                    <p className="m-0 text-slate-500">Card: $ {formatMoney(result.total_card)}</p>
-                                    <p className="m-0 text-slate-500">Check: $ {formatMoney(result.total_check)}</p>
-                                    <p className="m-0 text-slate-500">Other: $ {formatMoney(result.total_other)}</p>
+                                    <p className="m-0 text-slate-500">{t('reports.cash', { amount: formatMoney(result.total_cash) })}</p>
+                                    <p className="m-0 text-slate-500">{t('reports.card', { amount: formatMoney(result.total_card) })}</p>
+                                    <p className="m-0 text-slate-500">{t('reports.check', { amount: formatMoney(result.total_check) })}</p>
+                                    <p className="m-0 text-slate-500">{t('reports.other', { amount: formatMoney(result.total_other) })}</p>
                                 </div>
                             </div>
                         </div>
@@ -149,19 +150,19 @@ export default function RegisterReport() {
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                        <th className="px-6 py-3">Id</th>
-                                        <th className="px-6 py-3">Invoice</th>
-                                        <th className="px-6 py-3 text-right">Amount</th>
-                                        <th className="px-6 py-3">Method</th>
-                                        <th className="px-6 py-3">Reference</th>
-                                        <th className="px-6 py-3">Date</th>
+                                        <th className="px-6 py-3">{t('common.id')}</th>
+                                        <th className="px-6 py-3">{t('payments.invoice')}</th>
+                                        <th className="px-6 py-3 text-right">{t('common.amount')}</th>
+                                        <th className="px-6 py-3">{t('common.method')}</th>
+                                        <th className="px-6 py-3">{t('common.reference')}</th>
+                                        <th className="px-6 py-3">{t('common.date')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {result.items.length === 0 ? (
                                         <tr>
                                             <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-400">
-                                                No information to show.
+                                                {t('reports.no_info')}
                                             </td>
                                         </tr>
                                     ) : (
@@ -198,33 +199,33 @@ export default function RegisterReport() {
                     <div className="grid gap-4 sm:grid-cols-2">
                         <Card className="p-5">
                             <p className="mb-0 text-sm text-slate-600">
-                                Total cash register: <strong>$ {formatMoney(result.cash_register)}</strong>
+                                {t('reports.register.cash_register_line', { amount: formatMoney(result.cash_register) })}
                             </p>
                             <p className="mt-1 text-sm text-slate-600">
-                                Total cash invoices: <strong>$ {formatMoney(result.total_cash)}</strong>
+                                {t('reports.register.cash_invoices_line', { amount: formatMoney(result.total_cash) })}
                             </p>
                             <hr className="my-3 border-slate-200" />
                             <p className="font-semibold text-slate-900">
-                                No-invoice cash transactions: $ {formatMoney(result.cash_diff)}
+                                {t('reports.register.no_invoice_cash', { amount: formatMoney(result.cash_diff) })}
                             </p>
                         </Card>
                         <Card className="p-5">
                             <p className="mb-0 text-sm text-slate-600">
-                                Total card register: <strong>$ {formatMoney(result.card_register)}</strong>
+                                {t('reports.register.card_register_line', { amount: formatMoney(result.card_register) })}
                             </p>
                             <p className="mt-1 text-sm text-slate-600">
-                                Total card invoices: <strong>$ {formatMoney(result.total_card)}</strong>
+                                {t('reports.register.card_invoices_line', { amount: formatMoney(result.total_card) })}
                             </p>
                             <hr className="my-3 border-slate-200" />
                             <p className="font-semibold text-slate-900">
-                                No-invoice card transactions: $ {formatMoney(result.card_diff)}
+                                {t('reports.register.no_invoice_card', { amount: formatMoney(result.card_diff) })}
                             </p>
                         </Card>
                     </div>
 
                     <Button onClick={handleInsert} loading={inserting} disabled={!result.cash_diff && !result.card_diff}>
                         <Save className="h-4 w-4" />
-                        Insert transactions
+                        {t('reports.register.insert')}
                     </Button>
                 </div>
             )}

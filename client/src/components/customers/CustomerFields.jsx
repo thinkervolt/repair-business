@@ -1,13 +1,15 @@
 import React from 'react';
+import { useI18n } from '../../i18n/I18nContext';
 import Input from '../ui/Input';
 import Field from '../ui/Field';
 
 export default function CustomerFields({ value, onChange, errors = {} }) {
+    const { t } = useI18n();
     const set = (key) => (e) => onChange({ ...value, [key]: e.target.value });
 
     return (
         <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="First name" error={errors.first_name}>
+            <Field label={t('customers.form.first_name')} error={errors.first_name}>
                 <Input
                     type="text"
                     value={value.first_name || ''}
@@ -17,7 +19,7 @@ export default function CustomerFields({ value, onChange, errors = {} }) {
                     autoFocus
                 />
             </Field>
-            <Field label="Last name" error={errors.last_name}>
+            <Field label={t('customers.form.last_name')} error={errors.last_name}>
                 <Input
                     type="text"
                     value={value.last_name || ''}
@@ -25,7 +27,7 @@ export default function CustomerFields({ value, onChange, errors = {} }) {
                     invalid={!!errors.last_name}
                 />
             </Field>
-            <Field label="Phone" error={errors.phone}>
+            <Field label={t('customers.form.phone')} error={errors.phone}>
                 <Input
                     type="tel"
                     value={value.phone || ''}
@@ -35,7 +37,7 @@ export default function CustomerFields({ value, onChange, errors = {} }) {
                     required
                 />
             </Field>
-            <Field label="Email" error={errors.email}>
+            <Field label={t('customers.form.email')} error={errors.email}>
                 <Input
                     type="email"
                     value={value.email || ''}
@@ -43,7 +45,7 @@ export default function CustomerFields({ value, onChange, errors = {} }) {
                     invalid={!!errors.email}
                 />
             </Field>
-            <Field label="Company" error={errors.company}>
+            <Field label={t('customers.form.company')} error={errors.company}>
                 <Input
                     type="text"
                     value={value.company || ''}
@@ -51,7 +53,7 @@ export default function CustomerFields({ value, onChange, errors = {} }) {
                     invalid={!!errors.company}
                 />
             </Field>
-            <Field label="Address" error={errors.address}>
+            <Field label={t('customers.form.address')} error={errors.address}>
                 <Input
                     type="text"
                     value={value.address || ''}
@@ -59,7 +61,7 @@ export default function CustomerFields({ value, onChange, errors = {} }) {
                     invalid={!!errors.address}
                 />
             </Field>
-            <Field label="City" error={errors.city}>
+            <Field label={t('customers.form.city')} error={errors.city}>
                 <Input
                     type="text"
                     value={value.city || ''}
@@ -67,7 +69,7 @@ export default function CustomerFields({ value, onChange, errors = {} }) {
                     invalid={!!errors.city}
                 />
             </Field>
-            <Field label="State" error={errors.state} hint="Two-letter code, e.g. CA">
+            <Field label={t('customers.form.state')} error={errors.state} hint={t('customers.form.state_hint')}>
                 <Input
                     type="text"
                     value={value.state || ''}
@@ -76,7 +78,7 @@ export default function CustomerFields({ value, onChange, errors = {} }) {
                     invalid={!!errors.state}
                 />
             </Field>
-            <Field label="Zip" error={errors.zip}>
+            <Field label={t('customers.form.zip')} error={errors.zip}>
                 <Input
                     type="text"
                     value={value.zip || ''}

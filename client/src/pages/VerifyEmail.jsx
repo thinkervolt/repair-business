@@ -7,8 +7,10 @@ import AuthLayout from './AuthLayout';
 import Alert from '../components/ui/Alert';
 import Button from '../components/ui/Button';
 import Spinner from '../components/ui/Spinner';
+import { useI18n } from '../i18n/I18nContext';
 
 export default function VerifyEmail() {
+    const { t } = useI18n();
     const [status, setStatus] = useState('loading');
     const [message, setMessage] = useState('');
 
@@ -22,7 +24,7 @@ export default function VerifyEmail() {
 
         if (!payload.id || !payload.hash || !payload.expires) {
             setStatus('error');
-            setMessage('The verification link is not valid.');
+            setMessage(t('auth.link_invalid'));
             return;
         }
 
@@ -33,16 +35,16 @@ export default function VerifyEmail() {
             })
             .catch((err) => {
                 setStatus('error');
-                setMessage(getApiError(err, 'The verification link is not valid.'));
+                setMessage(getApiError(err, t('auth.link_invalid')));
             });
     }, []);
 
     return (
-        <AuthLayout title="Email verification" hideLoginLink>
+        <AuthLayout title={t('auth.email_verification')} hideLoginLink>
             {status === 'loading' && (
                 <div className="flex items-center justify-center gap-2 py-4 text-slate-500">
                     <Spinner className="h-5 w-5 animate-spin text-blue-600" />
-                    Verifying your email address...
+                    {t('auth.verifying')}
                 </div>
             )}
             {status === 'success' && (
@@ -54,7 +56,7 @@ export default function VerifyEmail() {
                     </Alert>
                     <Link to="/login">
                         <Button size="lg" className="w-full">
-                            Go to sign in
+                            {t('auth.go_to_sign_in')}
                         </Button>
                     </Link>
                 </div>
@@ -68,7 +70,7 @@ export default function VerifyEmail() {
                     </Alert>
                     <Link to="/login">
                         <Button variant="secondary" size="lg" className="w-full">
-                            Back to sign in
+                            {t('auth.back_to_sign_in')}
                         </Button>
                     </Link>
                 </div>

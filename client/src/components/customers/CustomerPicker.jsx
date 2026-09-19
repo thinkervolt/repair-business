@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { formatPhone } from '../../utils/format';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 
 export default function CustomerPicker({ open, onClose, onSelect }) {
+    const { t } = useI18n();
     const [search, setSearch] = useState('');
     const [debounced, setDebounced] = useState('');
     const [customers, setCustomers] = useState([]);
@@ -48,7 +50,7 @@ export default function CustomerPicker({ open, onClose, onSelect }) {
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                    <h3 className="text-sm font-semibold text-slate-900">Select a customer</h3>
+                    <h3 className="text-sm font-semibold text-slate-900">{t('picker.select_customer')}</h3>
                     <button
                         type="button"
                         onClick={onClose}
@@ -66,7 +68,7 @@ export default function CustomerPicker({ open, onClose, onSelect }) {
                             type="search"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search name, phone, email..."
+                            placeholder={t('picker.search_customer')}
                             className="pl-9"
                             autoFocus
                         />
@@ -75,10 +77,10 @@ export default function CustomerPicker({ open, onClose, onSelect }) {
 
                 <div className="flex-1 overflow-y-auto">
                     {loading ? (
-                        <div className="px-5 py-10 text-center text-sm text-slate-400">Loading...</div>
+                        <div className="px-5 py-10 text-center text-sm text-slate-400">{t('common.loading')}</div>
                     ) : customers.length === 0 ? (
                         <div className="px-5 py-10 text-center text-sm text-slate-400">
-                            Nothing has been found.
+                            {t('common.nothing_found')}
                         </div>
                     ) : (
                         customers.map((customer) => (
@@ -106,7 +108,7 @@ export default function CustomerPicker({ open, onClose, onSelect }) {
 
                 <div className="flex justify-end border-t border-slate-100 px-5 py-3">
                     <Button type="button" variant="secondary" className="w-full" onClick={onClose}>
-                        Cancel
+                        {t('common.cancel')}
                     </Button>
                 </div>
             </div>

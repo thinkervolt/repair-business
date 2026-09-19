@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { MailCheck } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
+import { useI18n } from '../i18n/I18nContext';
 import Sidebar from '../components/layout/Sidebar';
 import Topbar from '../components/layout/Topbar';
 import Footer from '../components/layout/Footer';
+import GlobalScanner from '../components/inventory/GlobalScanner';
 import Alert from '../components/ui/Alert';
 import api from '../api/client';
 
 function VerifyBanner({ email }) {
+    const { t } = useI18n();
     const [sent, setSent] = useState(false);
     const [error, setError] = useState('');
 
@@ -18,7 +21,7 @@ function VerifyBanner({ email }) {
             await api.post('/auth/email/resend');
             setSent(true);
         } catch (err) {
-            setError('We could not resend the verification email.');
+            setError(t('app.resend_error'));
         }
     };
 
@@ -27,10 +30,10 @@ function VerifyBanner({ email }) {
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                 <MailCheck className="h-5 w-5 shrink-0 text-amber-500" />
                 <div>
-                    <strong>Verify your email address.</strong>{' '}
+                    <strong>{t('app.verify_email_warning')}</strong>{' '}
                     <span>
-                        Check <span className="font-medium">{email}</span> and open the verification
-                        link we sent you.
+                        {t('app.verify_check_part1')} <span className="font-medium">{email}</span>{' '}
+                        {t('app.verify_check_part2')}
                     </span>
                 </div>
                 <button
@@ -38,7 +41,7 @@ function VerifyBanner({ email }) {
                     onClick={resend}
                     className="ml-auto text-sm font-semibold text-amber-800 underline-offset-2 hover:underline"
                 >
-                    {sent ? 'Verification email sent!' : 'Resend verification email'}
+                    {sent ? t('app.resend_sent') : t('app.resend')}
                 </button>
             </div>
             {error && <p className="mt-1">{error}</p>}
@@ -78,6 +81,7 @@ export default function AppLayout() {
                     <Outlet />
                 </main>
                 <Footer />
+                <GlobalScanner />
             </div>
         </div>
     );

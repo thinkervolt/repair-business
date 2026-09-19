@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PackagePlus, Pencil, Trash2, Zap } from 'lucide-react';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { formatDate, formatMoney, getApiError } from '../../utils/format';
 import Card, { CardHeader } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -21,6 +22,7 @@ function stockTone(stock, product) {
 export default function ProductView() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { t } = useI18n();
     const [data, setData] = useState(null);
     const [restock, setRestock] = useState({ purchase_price: '', quantity: '' });
     const [errors, setErrors] = useState({});
@@ -95,7 +97,7 @@ export default function ProductView() {
     };
 
     const handleDeleteTransaction = async (transaction) => {
-        if (!window.confirm('Delete this transaction?')) return;
+        if (!window.confirm(t('inventory.delete_transaction_confirm'))) return;
         const task = transaction.repair_id ? 'repair' : transaction.invoice_id ? 'invoice' : null;
         try {
             if (task && (transaction.repair_id || transaction.invoice_id)) {
@@ -111,7 +113,7 @@ export default function ProductView() {
     };
 
     const handleDeleteProduct = async () => {
-        if (!window.confirm('Delete this product and all of its transactions?')) return;
+        if (!window.confirm(t('inventory.delete_product_confirm'))) return;
         try {
             await api.delete(`/inventory/products/${id}`);
             navigate('/inventory/products');
@@ -121,7 +123,7 @@ export default function ProductView() {
     };
 
     if (!data) {
-        return <div className="py-12 text-center text-sm text-slate-400">Loading...</div>;
+        return <div className="py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>;
     }
 
     const { product, stock, categories } = data;
@@ -133,40 +135,42 @@ export default function ProductView() {
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                     <Link to="/inventory/products" className="text-sm font-medium text-blue-700 hover:underline">
-                        &larr; Back to products
+                        &larr; {t('inventory.back')}
                     </Link>
                     <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{product.name}</h1>
                     <p className="mt-1 text-sm text-slate-500">
-                        {product.barcode ? `Barcode ${product.barcode} · ` : ''}
-                        {categories.find((c) => c.id === Number(product.category_id))?.name || 'No category'}
+                        {product.barcode ? `${t('inventory.barcode_label', { barcode: product.barcode })} · ` : ''}
+                        {categories.find((c) => c.id === Number(product.category_id))?.name || t('inventory.no_category')}
                     </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                     <Button type="button" variant="secondary" onClick={handleQuickSell} loading={working}>
                         <Zap className="h-4 w-4" />
-                        Quick sell
+                        {t('inventory.quick_sell')}
                     </Button>
                     <Link to={`/inventory/products/${id}/edit`}>
                         <Button type="button" variant="secondary">
                             <Pencil className="h-4 w-4" />
-                            Edit
+                            {t('common.edit')}
                         </Button>
                     </Link>
-                    <Button type="button" variant="danger" onClick={handleDeleteProduct}>
-                        <Trash2 className="h-4 w-4" />
-                        Delete
-                    </Button>
+                    {isAdmin && (
+                        <Button type="button" variant="danger" onClick={handleDeleteProduct}>
+                            <Trash2 className="h-4 w-4" />
+                            {t('common.delete')}
+                        </Button>
+                    )}
                 </div>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-3">
                 <div className="space-y-6 lg:col-span-2">
                     <Card className="overflow-hidden">
-                        <CardHeader title="Stock information" />
+                        <CardHeader title={t('inventory.stock_info')} />
                         <div className="grid gap-6 p-6 sm:grid-cols-3">
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                    Current stock
+                                    {t('inventory.current_stock')}
                                 </p>
                                 <Badge solid tone={stockTone(stock, product)} className="mt-2 text-base">
                                     {stock}
@@ -174,7 +178,7 @@ export default function ProductView() {
                             </div>
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                    Selling price
+                                    {t('inventory.selling_price_label')}
                                 </p>
                                 <p className="mt-2 text-lg font-semibold text-slate-800">
                                     $ {formatMoney(product.selling_price)}
@@ -182,25 +186,25 @@ export default function ProductView() {
                             </div>
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                    Alert range
+                                    {t('inventory.alert_range')}
                                 </p>
                                 <p className="mt-2 text-sm text-slate-700">
                                     {product.min_stock != null ? product.min_stock : '—'} &mdash;{' '}
                                     {product.max_stock != null ? product.max_stock : '—'}
                                 </p>
                                 {product.email_alert === 'yes' && (
-                                    <p className="mt-1 text-xs text-slate-400">Email alerts on</p>
+                                    <p className="mt-1 text-xs text-slate-400">{t('inventory.email_alerts_on')}</p>
                                 )}
                             </div>
                         </div>
                     </Card>
 
                     <Card className="overflow-hidden">
-                        <CardHeader title="Restock" subtitle="Add a purchase transaction to this product." />
+                        <CardHeader title={t('inventory.restock')} subtitle={t('inventory.restock_subtitle')} />
                         <form onSubmit={handleRestock} className="grid gap-5 border-b border-slate-100 p-6 sm:grid-cols-2">
                             <div>
                                 <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="rp">
-                                    Purchase price ($) *
+                                    {t('inventory.purchase_price')} *
                                 </label>
                                 <Input
                                     id="rp"
@@ -218,7 +222,7 @@ export default function ProductView() {
                             </div>
                             <div>
                                 <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="rq">
-                                    Quantity *
+                                    {t('common.quantity')} *
                                 </label>
                                 <Input
                                     id="rq"
@@ -236,17 +240,17 @@ export default function ProductView() {
                             <div className="sm:col-span-2">
                                 <Button type="submit" loading={working}>
                                     <PackagePlus className="h-4 w-4" />
-                                    Add to stock
+                                    {t('inventory.add_to_stock')}
                                 </Button>
                             </div>
                         </form>
                     </Card>
 
                     <Card className="overflow-hidden">
-                        <CardHeader title="Transactions" subtitle="Movement history for this product." />
+                        <CardHeader title={t('inventory.transactions')} subtitle={t('inventory.transactions_subtitle')} />
                         {transactions.length === 0 ? (
                             <div className="px-6 py-8 text-center text-sm text-slate-400">
-                                No transactions have been found.
+                                {t('inventory.no_transactions')}
                             </div>
                         ) : (
                             <>
@@ -254,49 +258,49 @@ export default function ProductView() {
                                     <table className="w-full text-left">
                                         <thead>
                                             <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                                <th className="px-6 py-3">Type</th>
-                                                <th className="px-6 py-3">Qty</th>
-                                                <th className="px-6 py-3">Price</th>
-                                                <th className="px-6 py-3">Source</th>
-                                                <th className="px-6 py-3">Date</th>
-                                                <th className="px-6 py-3 text-right">Actions</th>
+                                                <th className="px-6 py-3">{t('inventory.type')}</th>
+                                                <th className="px-6 py-3">{t('common.qty')}</th>
+                                                <th className="px-6 py-3">{t('common.price')}</th>
+                                                <th className="px-6 py-3">{t('inventory.source')}</th>
+                                                <th className="px-6 py-3">{t('common.date')}</th>
+                                                <th className="px-6 py-3 text-right">{t('common.actions')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {transactions.map((t) => (
+                                            {transactions.map((tx) => (
                                                 <tr
-                                                    key={t.id}
+                                                    key={tx.id}
                                                     className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
                                                 >
                                                     <td className="px-6 py-3">
-                                                        <Badge tone={t.transaction === 'purchase' ? 'emerald' : 'red'}>
-                                                            {t.transaction === 'purchase' ? 'Purchase' : 'Sell'}
+                                                        <Badge tone={tx.transaction === 'purchase' ? 'emerald' : 'red'}>
+                                                            {tx.transaction === 'purchase' ? t('inventory.purchase') : t('inventory.sell')}
                                                         </Badge>
                                                     </td>
-                                                    <td className="px-6 py-3 text-sm text-slate-600">{t.quantity}</td>
+                                                    <td className="px-6 py-3 text-sm text-slate-600">{tx.quantity}</td>
                                                     <td className="px-6 py-3 text-sm text-slate-600">
-                                                        {t.transaction === 'purchase'
-                                                            ? t.purchase_price != null
-                                                                ? `$ ${formatMoney(t.purchase_price)}`
+                                                        {tx.transaction === 'purchase'
+                                                            ? tx.purchase_price != null
+                                                                ? `$ ${formatMoney(tx.purchase_price)}`
                                                                 : '—'
-                                                            : t.selling_price != null
-                                                              ? `$ ${formatMoney(t.selling_price)}`
+                                                            : tx.selling_price != null
+                                                              ? `$ ${formatMoney(tx.selling_price)}`
                                                               : '—'}
                                                     </td>
                                                     <td className="px-6 py-3 text-sm text-slate-600">
-                                                        {t.repair_id
-                                                            ? `Repair #${t.repair_id}`
-                                                            : t.invoice_id
-                                                              ? `Invoice #${t.invoice_id}`
+                                                        {tx.repair_id
+                                                            ? t('inventory.repair_source', { id: tx.repair_id })
+                                                            : tx.invoice_id
+                                                              ? t('inventory.invoice_source', { id: tx.invoice_id })
                                                               : '—'}
                                                     </td>
                                                     <td className="px-6 py-3 text-sm text-slate-600">
-                                                        {formatDate(t.created_at)}
+                                                        {formatDate(tx.created_at)}
                                                     </td>
                                                     <td className="px-6 py-3 text-right">
                                                         <button
                                                             type="button"
-                                                            onClick={() => handleDeleteTransaction(t)}
+                                                            onClick={() => handleDeleteTransaction(tx)}
                                                             className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
                                                             aria-label="Delete transaction"
                                                         >
@@ -317,25 +321,25 @@ export default function ProductView() {
                 <div className="space-y-4">
                     <Card className="p-5">
                         <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            Product info
+                            {t('inventory.product_info')}
                         </h3>
                         <dl className="mt-3 space-y-2 text-sm">
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Supplier</dt>
+                                <dt className="text-slate-400">{t('inventory.supplier')}</dt>
                                 <dd className="font-medium text-slate-700">{product.supplier || '—'}</dd>
                             </div>
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Barcode</dt>
+                                <dt className="text-slate-400">{t('inventory.barcode')}</dt>
                                 <dd className="font-mono text-xs text-slate-700">{product.barcode || '—'}</dd>
                             </div>
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Email alert</dt>
+                                <dt className="text-slate-400">{t('inventory.email_alert')}</dt>
                                 <dd className="font-medium text-slate-700">
-                                    {product.email_alert === 'yes' ? 'Yes' : 'No'}
+                                    {product.email_alert === 'yes' ? t('common.yes') : t('common.no')}
                                 </dd>
                             </div>
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Created</dt>
+                                <dt className="text-slate-400">{t('common.created')}</dt>
                                 <dd className="font-medium text-slate-700">{formatDate(product.created_at)}</dd>
                             </div>
                         </dl>

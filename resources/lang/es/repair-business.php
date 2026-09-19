@@ -71,9 +71,11 @@ return [
 
     'error_current-password-does-not-match' => 'La contraseña actual no coincide.',
     'error_new-password-does-not-match' => 'La nueva contraseña no coincide.',
+    'error_password-has-been-updated' => 'La contraseña ha sido actualizada.',
 
     'error_user-has-been-updated' => 'El usuario ha sido actualizado.',
     'error_user-has-been-deleted' => 'El usuario ha sido eliminado.',
+    'error_user-password-reset' => 'La contraseña del usuario ha sido restablecida.',
     'error_admin-only-access' => 'Necesitas ser administrador para realizar esta acción.',
 
 
@@ -303,6 +305,7 @@ return [
     'estimate' => 'Estimado',
     'to' => 'A',
     'from' => 'De',
+    'bill-to' => 'Facturar a:',
     'subtotal' => 'Subtotal',
     'tax' => 'Impuesto',
     'total' => 'Total',

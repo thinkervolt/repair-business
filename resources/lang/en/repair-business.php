@@ -71,9 +71,11 @@ return [
 
     'error_current-password-does-not-match'=>'Current Password does not Match.',
     'error_new-password-does-not-match'=>'New Password does not Match.',
+    'error_password-has-been-updated'=>'Password has been Updated.',
 
     'error_user-has-been-updated'=>'User has been Updated.',
     'error_user-has-been-deleted'=>'User has been Deleted.',
+    'error_user-password-reset'=>'User Password has been Reset.',
     'error_admin-only-access'=>'You need to be Administrator to perform this Action.',
 
 
@@ -304,6 +306,7 @@ return [
     'estimate' => 'Estimate',
     'to'=>'To',
     'from' => 'From',
+    'bill-to' => 'Bill to:',
     'subtotal' => 'Subtotal',
     'tax' => 'Tax',
     'total' => 'Total',

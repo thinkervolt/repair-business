@@ -3,13 +3,11 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import RequireAuth from './auth/RequireAuth';
 import AppLayout from './layouts/AppLayout';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import VerifyEmail from './pages/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import AdminOnlyRoute from './auth/AdminOnlyRoute';
-import Placeholder from './pages/Placeholder';
 import CustomersList from './pages/customers/CustomersList';
 import CustomerForm from './pages/customers/CustomerForm';
 import CustomerView from './pages/customers/CustomerView';
@@ -31,6 +29,10 @@ import PaymentView from './pages/payments/PaymentView';
 import ReportsPage from './pages/reports/ReportsPage';
 import RegisterReport from './pages/reports/RegisterReport';
 import SettingsPage from './pages/settings/SettingsPage';
+import LogsList from './pages/logs/LogsList';
+import TrashList from './pages/trash/TrashList';
+import Profile from './pages/users/Profile';
+import UsersList from './pages/users/UsersList';
 
 export default function App() {
     return (
@@ -39,17 +41,6 @@ export default function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
-
-            <Route
-                path="/register"
-                element={
-                    <RequireAuth>
-                        <AdminOnlyRoute>
-                            <Register />
-                        </AdminOnlyRoute>
-                    </RequireAuth>
-                }
-            />
 
             <Route
                 path="/"
@@ -133,10 +124,31 @@ export default function App() {
                         </AdminOnlyRoute>
                     }
                 />
-                <Route path="users" element={<Placeholder title="Users" />} />
-                <Route path="logs" element={<Placeholder title="Activity Log" />} />
-                <Route path="trash" element={<Placeholder title="Trash" />} />
-                <Route path="profile" element={<Placeholder title="My Profile" />} />
+                <Route
+                    path="users"
+                    element={
+                        <AdminOnlyRoute>
+                            <UsersList />
+                        </AdminOnlyRoute>
+                    }
+                />
+                <Route
+                    path="logs"
+                    element={
+                        <AdminOnlyRoute>
+                            <LogsList />
+                        </AdminOnlyRoute>
+                    }
+                />
+                <Route
+                    path="trash"
+                    element={
+                        <AdminOnlyRoute>
+                            <TrashList />
+                        </AdminOnlyRoute>
+                    }
+                />
+                <Route path="profile" element={<Profile />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>
         </Routes>

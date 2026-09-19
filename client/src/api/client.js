@@ -18,8 +18,13 @@ export function getLocale() {
     return localStorage.getItem('rb_locale') || 'en';
 }
 
+export function hasLocale() {
+    return Boolean(localStorage.getItem('rb_locale'));
+}
+
 export function setLocale(locale) {
     localStorage.setItem('rb_locale', locale);
+    window.dispatchEvent(new Event('rb:localechange'));
 }
 
 const api = axios.create({
@@ -35,7 +40,9 @@ api.interceptors.request.use((config) => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
-    config.headers['Accept-Language'] = getLocale();
+    if (hasLocale()) {
+        config.headers['Accept-Language'] = getLocale();
+    }
     return config;
 });
 

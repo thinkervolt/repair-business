@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BarChart3, Printer } from 'lucide-react';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { formatDate, formatMoney, formatPhone, getApiError } from '../../utils/format';
 import { toneFor } from '../../utils/colors';
 import Card from '../../components/ui/Card';
@@ -18,14 +19,15 @@ function today() {
 }
 
 const MODULES = [
-    { key: 'invoices', label: 'Invoices' },
-    { key: 'repairs', label: 'Repairs' },
-    { key: 'payments', label: 'Payments' },
+    { key: 'invoices', labelKey: 'nav.invoices' },
+    { key: 'repairs', labelKey: 'nav.repairs' },
+    { key: 'payments', labelKey: 'nav.payments' },
 ];
 
 const statusTone = (color) => toneFor(color);
 
 export default function ReportsPage() {
+    const { t } = useI18n();
     const [from, setFrom] = useState(today());
     const [to, setTo] = useState(today());
     const [include, setInclude] = useState({ invoices: true, repairs: true, payments: true });
@@ -85,9 +87,9 @@ export default function ReportsPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900">Create Report</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('nav.create_report')}</h1>
                 <p className="mt-1 text-sm text-slate-500">
-                    Generate a printable business report for a date range.
+                    {t('reports.subtitle')}
                 </p>
             </div>
 
@@ -98,17 +100,17 @@ export default function ReportsPage() {
                 <div className="border-b border-slate-100 px-5 py-4">
                     <div className="flex items-center gap-2">
                         <BarChart3 className="h-4 w-4 text-slate-400" />
-                        <h2 className="text-sm font-semibold text-slate-900">Report options</h2>
+                        <h2 className="text-sm font-semibold text-slate-900">{t('reports.options')}</h2>
                     </div>
                 </div>
                 <form onSubmit={handleGenerate} className="px-5 py-4">
                     <div className="grid gap-4 sm:grid-cols-2">
                         <div>
-                            <label className="mb-1 block text-xs font-medium text-slate-500">From</label>
+                            <label className="mb-1 block text-xs font-medium text-slate-500">{t('reports.from')}</label>
                             <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
                         </div>
                         <div>
-                            <label className="mb-1 block text-xs font-medium text-slate-500">To</label>
+                            <label className="mb-1 block text-xs font-medium text-slate-500">{t('reports.to')}</label>
                             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
                         </div>
                     </div>
@@ -121,18 +123,18 @@ export default function ReportsPage() {
                                     onChange={() => toggle(mod.key)}
                                     className="h-4 w-4 rounded border-slate-300 text-blue-700 focus:ring-blue-500"
                                 />
-                                {mod.label}
+                                {mod.labelKey ? t(mod.labelKey) : mod.label}
                             </label>
                         ))}
                     </div>
                     <div className="mt-5 flex flex-wrap items-center gap-3">
                         <Button type="submit" loading={loading}>
-                            Generate report
+                            {t('reports.generate')}
                         </Button>
                         {result && (
                             <Button type="button" variant="secondary" onClick={handlePrint} loading={printing}>
                                 <Printer className="h-4 w-4" />
-                                Print
+                                {t('common.print')}
                             </Button>
                         )}
                     </div>
@@ -143,7 +145,7 @@ export default function ReportsPage() {
                 <div className="space-y-6">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                         <h2 className="text-lg font-semibold text-slate-900">
-                            Report <span className="font-normal text-slate-500">— {result.report.from} to {result.report.to}</span>
+                            {t('reports.report_range', { from: result.report.from, to: result.report.to })}
                         </h2>
                     </div>
 
@@ -160,19 +162,20 @@ const th = 'px-6 py-3';
 const td = 'px-6 py-3 text-sm text-slate-600 align-top';
 
 function InvoicesSection({ data }) {
+    const { t } = useI18n();
     return (
         <Card className="overflow-hidden">
             <div className="border-b border-slate-100 px-5 py-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-900">Invoices</h3>
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-900">{t('nav.invoices')}</h3>
                 <div className="mt-2 flex flex-wrap gap-6 text-sm">
                     <span className="text-slate-600">
-                        Invoices: <strong>{data.count}</strong>
+                        {t('reports.invoices_count', { count: data.count })}
                     </span>
                     <span className="text-slate-600">
-                        Unpaid amount: <strong>$ {formatMoney(data.balance)}</strong>
+                        {t('reports.unpaid_amount', { amount: formatMoney(data.balance) })}
                     </span>
                     <span className="text-slate-600">
-                        Earnings: <strong>$ {formatMoney(data.earnings)}</strong>
+                        {t('reports.earnings', { amount: formatMoney(data.earnings) })}
                     </span>
                 </div>
             </div>
@@ -180,21 +183,21 @@ function InvoicesSection({ data }) {
                 <table className="w-full text-left">
                     <thead>
                         <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            <th className={th}>Id</th>
-                            <th className={th}>Customer</th>
-                            <th className={th}>Items</th>
-                            <th className={th}>Status</th>
-                            <th className={`${th} text-right`}>Balance</th>
-                            <th className={`${th} text-right`}>Total</th>
-                            <th className={th}>Date</th>
-                            <th className={`${th} text-right`}>Actions</th>
+                            <th className={th}>{t('common.id')}</th>
+                            <th className={th}>{t('common.customer')}</th>
+                            <th className={th}>{t('invoices.items')}</th>
+                            <th className={th}>{t('common.status')}</th>
+                            <th className={`${th} text-right`}>{t('common.balance')}</th>
+                            <th className={`${th} text-right`}>{t('common.total')}</th>
+                            <th className={th}>{t('common.date')}</th>
+                            <th className={`${th} text-right`}>{t('common.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {data.items.length === 0 ? (
                             <tr>
                                 <td colSpan={8} className="px-6 py-12 text-center text-sm text-slate-400">
-                                    No information to show.
+                                    {t('reports.no_info')}
                                 </td>
                             </tr>
                         ) : (
@@ -245,7 +248,7 @@ function InvoicesSection({ data }) {
                                             to={`/invoices/${invoice.id}`}
                                             className="text-sm font-medium text-blue-700 hover:underline"
                                         >
-                                            View
+                                            {t('common.view')}
                                         </Link>
                                     </td>
                                 </tr>
@@ -259,33 +262,34 @@ function InvoicesSection({ data }) {
 }
 
 function RepairsSection({ data }) {
+    const { t } = useI18n();
     return (
         <Card className="overflow-hidden">
             <div className="border-b border-slate-100 px-5 py-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-900">Repairs</h3>
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-900">{t('nav.repairs')}</h3>
                 <div className="mt-2 text-sm text-slate-600">
-                    Repairs: <strong>{data.count}</strong>
+                    {t('reports.repairs_count', { count: data.count })}
                 </div>
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-left">
                     <thead>
                         <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            <th className={th}>Id</th>
-                            <th className={th}>Customer</th>
-                            <th className={th}>Target</th>
-                            <th className={th}>Request</th>
-                            <th className={th}>Status</th>
-                            <th className={th}>Priority</th>
-                            <th className={th}>Date</th>
-                            <th className={`${th} text-right`}>Actions</th>
+                            <th className={th}>{t('common.id')}</th>
+                            <th className={th}>{t('common.customer')}</th>
+                            <th className={th}>{t('repairs.target')}</th>
+                            <th className={th}>{t('repairs.request')}</th>
+                            <th className={th}>{t('common.status')}</th>
+                            <th className={th}>{t('repairs.priority')}</th>
+                            <th className={th}>{t('common.date')}</th>
+                            <th className={`${th} text-right`}>{t('common.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {data.items.length === 0 ? (
                             <tr>
                                 <td colSpan={8} className="px-6 py-12 text-center text-sm text-slate-400">
-                                    No information to show.
+                                    {t('reports.no_info')}
                                 </td>
                             </tr>
                         ) : (
@@ -330,7 +334,7 @@ function RepairsSection({ data }) {
                                             to={`/repairs/${repair.id}`}
                                             className="text-sm font-medium text-blue-700 hover:underline"
                                         >
-                                            View
+                                            {t('common.view')}
                                         </Link>
                                     </td>
                                 </tr>
@@ -344,24 +348,25 @@ function RepairsSection({ data }) {
 }
 
 function PaymentsSection({ data }) {
+    const { t } = useI18n();
     return (
         <Card className="overflow-hidden">
             <div className="border-b border-slate-100 px-5 py-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-900">Payments</h3>
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-900">{t('nav.payments')}</h3>
                 <div className="mt-2 flex flex-wrap items-start justify-between gap-4 text-sm">
                     <div className="flex gap-6">
                         <span className="text-slate-600">
-                            Payments: <strong>{data.count}</strong>
+                            {t('reports.payments_count', { count: data.count })}
                         </span>
                         <span className="text-slate-600">
-                            Total: <strong>$ {formatMoney(data.total)}</strong>
+                            {t('reports.total_count', { amount: formatMoney(data.total) })}
                         </span>
                     </div>
                     <div className="text-right">
-                        <p className="m-0 text-slate-500">Cash: $ {formatMoney(data.total_cash)}</p>
-                        <p className="m-0 text-slate-500">Card: $ {formatMoney(data.total_card)}</p>
-                        <p className="m-0 text-slate-500">Check: $ {formatMoney(data.total_check)}</p>
-                        <p className="m-0 text-slate-500">Other: $ {formatMoney(data.total_other)}</p>
+                        <p className="m-0 text-slate-500">{t('reports.cash', { amount: formatMoney(data.total_cash) })}</p>
+                        <p className="m-0 text-slate-500">{t('reports.card', { amount: formatMoney(data.total_card) })}</p>
+                        <p className="m-0 text-slate-500">{t('reports.check', { amount: formatMoney(data.total_check) })}</p>
+                        <p className="m-0 text-slate-500">{t('reports.other', { amount: formatMoney(data.total_other) })}</p>
                     </div>
                 </div>
             </div>
@@ -369,19 +374,19 @@ function PaymentsSection({ data }) {
                 <table className="w-full text-left">
                     <thead>
                         <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            <th className={th}>Id</th>
-                            <th className={th}>Invoice</th>
-                            <th className={`${th} text-right`}>Amount</th>
-                            <th className={th}>Method</th>
-                            <th className={th}>Reference</th>
-                            <th className={th}>Date</th>
+                            <th className={th}>{t('common.id')}</th>
+                            <th className={th}>{t('payments.invoice')}</th>
+                            <th className={`${th} text-right`}>{t('common.amount')}</th>
+                            <th className={th}>{t('common.method')}</th>
+                            <th className={th}>{t('common.reference')}</th>
+                            <th className={th}>{t('common.date')}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {data.items.length === 0 ? (
                             <tr>
                                 <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-400">
-                                    No information to show.
+                                    {t('reports.no_info')}
                                 </td>
                             </tr>
                         ) : (

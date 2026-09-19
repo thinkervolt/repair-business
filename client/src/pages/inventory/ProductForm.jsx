@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Save } from 'lucide-react';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { getApiError } from '../../utils/format';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -27,8 +28,19 @@ const blank = {
 
 export default function ProductForm() {
     const { id } = useParams();
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const { t } = useI18n();
     const isEdit = Boolean(id);
+
+    useEffect(() => {
+        if (isEdit) return;
+        const barcode = searchParams.get('barcode');
+        if (barcode) {
+            setForm((f) => ({ ...f, barcode }));
+        }
+    }, [isEdit, searchParams]);
+
     const [form, setForm] = useState(blank);
     const [categories, setCategories] = useState([]);
     const [errors, setErrors] = useState({});
@@ -94,7 +106,7 @@ export default function ProductForm() {
     };
 
     if (loading) {
-        return <div className="py-12 text-center text-sm text-slate-400">Loading...</div>;
+        return <div className="py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>;
     }
 
     return (
@@ -104,15 +116,15 @@ export default function ProductForm() {
                     to="/inventory/products"
                     className="text-sm font-medium text-blue-700 hover:underline"
                 >
-                    &larr; Back to products
+                    &larr; {t('inventory.back')}
                 </Link>
                 <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
-                    {isEdit ? 'Edit product' : 'Create product'}
+                    {isEdit ? t('inventory.edit_product') : t('inventory.create_product')}
                 </h1>
                 <p className="mt-1 text-sm text-slate-500">
                     {isEdit
-                        ? 'Update product information.'
-                        : 'Register a new part and its initial stock.'}
+                        ? t('inventory.edit_subtitle')
+                        : t('inventory.create_subtitle')}
                 </p>
             </div>
 
@@ -123,7 +135,7 @@ export default function ProductForm() {
                     <div className="grid gap-5 sm:grid-cols-2">
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="category">
-                                Category *
+                                {t('inventory.category')} *
                             </label>
                             <select
                                 id="category"
@@ -131,7 +143,7 @@ export default function ProductForm() {
                                 value={form.category}
                                 onChange={setField('category')}
                             >
-                                <option value="">Select a category</option>
+                                <option value="">{t('inventory.select_category')}</option>
                                 {categories.map((c) => (
                                     <option key={c.id} value={c.id}>
                                         {c.name}
@@ -142,46 +154,46 @@ export default function ProductForm() {
                         </div>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="name">
-                                Name *
+                                {t('common.name')} *
                             </label>
                             <Input
                                 id="name"
                                 value={form.name}
                                 onChange={setField('name')}
-                                placeholder="e.g. Screen protector glass"
+                                placeholder={t('inventory.name_placeholder')}
                                 invalid={!!errors.name}
                             />
                             <FieldError error={errors.name} />
                         </div>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="barcode">
-                                Barcode
+                                {t('inventory.barcode')}
                             </label>
                             <Input
                                 id="barcode"
                                 value={form.barcode}
                                 onChange={setField('barcode')}
-                                placeholder="Scan or type a code"
+                                placeholder={t('inventory.barcode_placeholder')}
                                 invalid={!!errors.barcode}
                             />
                             <FieldError error={errors.barcode} />
                         </div>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="supplier">
-                                Supplier
+                                {t('inventory.supplier')}
                             </label>
                             <Input
                                 id="supplier"
                                 value={form.supplier}
                                 onChange={setField('supplier')}
-                                placeholder="e.g. ACME Distributors"
+                                placeholder={t('inventory.supplier_placeholder')}
                                 invalid={!!errors.supplier}
                             />
                             <FieldError error={errors.supplier} />
                         </div>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="selling_price">
-                                Selling price ($) *
+                                {t('inventory.selling_price')} *
                             </label>
                             <Input
                                 id="selling_price"
@@ -197,7 +209,7 @@ export default function ProductForm() {
                         </div>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="min_stock">
-                                Min stock (alert)
+                                {t('inventory.min_stock')}
                             </label>
                             <Input
                                 id="min_stock"
@@ -212,7 +224,7 @@ export default function ProductForm() {
                         </div>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="max_stock">
-                                Max stock
+                                {t('inventory.max_stock')}
                             </label>
                             <Input
                                 id="max_stock"
@@ -227,7 +239,7 @@ export default function ProductForm() {
                         </div>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="email_alert">
-                                Email alert *
+                                {t('inventory.email_alert')} *
                             </label>
                             <select
                                 id="email_alert"
@@ -235,8 +247,8 @@ export default function ProductForm() {
                                 value={form.email_alert}
                                 onChange={setField('email_alert')}
                             >
-                                <option value="no">No</option>
-                                <option value="yes">Yes</option>
+                                <option value="no">{t('common.no')}</option>
+                                <option value="yes">{t('common.yes')}</option>
                             </select>
                             <FieldError error={errors.email_alert} />
                         </div>
@@ -244,7 +256,7 @@ export default function ProductForm() {
                             <>
                                 <div>
                                     <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="purchase_price">
-                                        Purchase price ($) *
+                                        {t('inventory.purchase_price')} *
                                     </label>
                                     <Input
                                         id="purchase_price"
@@ -260,7 +272,7 @@ export default function ProductForm() {
                                 </div>
                                 <div>
                                     <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="quantity">
-                                        Initial quantity *
+                                        {t('inventory.initial_quantity')} *
                                     </label>
                                     <Input
                                         id="quantity"
@@ -280,12 +292,12 @@ export default function ProductForm() {
                     <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
                         <Link to="/inventory/products">
                             <Button type="button" variant="secondary">
-                                Cancel
+                                {t('common.cancel')}
                             </Button>
                         </Link>
                         <Button type="submit" loading={saving}>
                             <Save className="h-4 w-4" />
-                            {isEdit ? 'Save changes' : 'Create product'}
+                            {isEdit ? t('common.save_changes') : t('inventory.create_product')}
                         </Button>
                     </div>
                 </form>

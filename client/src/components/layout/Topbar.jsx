@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Bell, LogOut, Menu, PanelLeftClose, PanelLeftOpen, UserRound } from 'lucide-react';
 import api from '../../api/client';
 import { useAuth } from '../../auth/AuthContext';
+import { useI18n } from '../../i18n/I18nContext';
 import Dropdown, { DropdownItem, DropdownLabel, DropdownSeparator } from '../ui/Dropdown';
 
 function NotificationPill({ count }) {
@@ -14,8 +15,18 @@ function NotificationPill({ count }) {
     );
 }
 
+const NOTIFICATION_ROUTES = {
+    'view-customer': (ref) => `/customers/${ref}`,
+    'view-repair': (ref) => `/repairs/${ref}`,
+    'view-invoice': (ref) => `/invoices/${ref}`,
+    'view-product': (ref) => `/inventory/products/${ref}`,
+    'view-payment': (ref) => `/payments/${ref}`,
+};
+
 export default function Topbar({ collapsed, onToggleCollapsed, onToggleMobile }) {
     const { user, logout } = useAuth();
+    const { t } = useI18n();
+    const navigate = useNavigate();
     const [notifications, setNotifications] = useState({ notifications: [], count: 0 });
 
     const loadNotifications = () => {
@@ -29,6 +40,23 @@ export default function Topbar({ collapsed, onToggleCollapsed, onToggleMobile })
         const timer = setInterval(loadNotifications, 60000);
         return () => clearInterval(timer);
     }, []);
+
+    const handleNotificationClick = async (notification) => {
+        setNotifications((prev) => ({
+            notifications: prev.notifications.filter((n) => n.id !== notification.id),
+            count: Math.max(0, prev.count - 1),
+        }));
+        try {
+            const { data } = await api.delete(`/notifications/${notification.id}`);
+            const { route, ref } = data.data;
+            const path = NOTIFICATION_ROUTES[route] ? NOTIFICATION_ROUTES[route](ref) : null;
+            if (path) {
+                navigate(path);
+            }
+        } catch {
+            loadNotifications();
+        }
+    };
 
     const handleLogout = async () => {
         await logout();
@@ -73,11 +101,11 @@ export default function Topbar({ collapsed, onToggleCollapsed, onToggleMobile })
                         </span>
                     }
                 >
-                    <DropdownLabel>Notifications</DropdownLabel>
+                    <DropdownLabel>{t('topbar.notifications')}</DropdownLabel>
                     <div className="max-h-72 overflow-y-auto scrollbar-thin">
                         {notifications.notifications.length > 0 ? (
                             notifications.notifications.map((n) => (
-                                <DropdownItem key={n.id}>
+                                <DropdownItem key={n.id} onClick={() => handleNotificationClick(n)}>
                                     <div className="min-w-0">
                                         <p className="font-medium text-slate-700">{n.message}</p>
                                         {n.created_at && (
@@ -88,7 +116,7 @@ export default function Topbar({ collapsed, onToggleCollapsed, onToggleMobile })
                             ))
                         ) : (
                             <div className="px-4 py-3 text-sm text-slate-400">
-                                There are no notifications.
+                                {t('topbar.no_notifications')}
                             </div>
                         )}
                     </div>
@@ -111,15 +139,15 @@ export default function Topbar({ collapsed, onToggleCollapsed, onToggleMobile })
                 >
                     {user && (
                         <DropdownLabel>
-                            Signed in as {user.email}
+                            {t('topbar.signed_in_as', { email: user.email })}
                         </DropdownLabel>
                     )}
                     <Link to="/profile">
-                        <DropdownItem icon={UserRound}>Profile</DropdownItem>
+                        <DropdownItem icon={UserRound}>{t('topbar.profile')}</DropdownItem>
                     </Link>
                     <DropdownSeparator />
                     <DropdownItem icon={LogOut} danger onClick={handleLogout}>
-                        Logout
+                        {t('topbar.logout')}
                     </DropdownItem>
                 </Dropdown>
             </div>

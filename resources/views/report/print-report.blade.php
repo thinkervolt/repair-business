@@ -28,7 +28,7 @@
         }
 
         body {
-            margin: 18mm 20mm;
+            margin: 9mm 10mm;
         }
 
         table {
@@ -58,8 +58,6 @@
 
         /* ---------- card ---------- */
         .card {
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
             padding: 26px 30px;
         }
 
@@ -242,7 +240,7 @@
         <table class="header-row">
             <tr>
                 <td>
-                    <div class="company-name">{{ config('app.name', 'Laravel') }}</div>
+                    <div class="company-name">{{ isset($profile) && $profile->name ? $profile->name : 'Repair Business' }}</div>
                 </td>
                 <td style="width:42%;">
                     <p class="doc-label">{{ __('repair-business.report') }}</p>

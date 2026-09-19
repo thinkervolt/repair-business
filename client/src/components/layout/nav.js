@@ -20,51 +20,50 @@ import {
 
 export const NAV_SECTIONS = [
     {
-        items: [{ label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard }],
+        items: [{ label: 'nav.dashboard', to: '/dashboard', icon: LayoutDashboard }],
     },
     {
-        section: 'Customers',
+        section: 'nav.customers',
         items: [
-            { label: 'All Customers', to: '/customers', icon: Users },
-            { label: 'Create Customer', to: '/customers/create', icon: UserPlus },
+            { label: 'nav.all_customers', to: '/customers', icon: Users },
+            { label: 'nav.create_customer', to: '/customers/create', icon: UserPlus },
         ],
     },
     {
-        section: 'Repairs',
+        section: 'nav.repairs',
         items: [
-            { label: 'All Repairs', to: '/repairs', icon: Wrench },
-            { label: 'Create Repair', to: '/repairs/create', icon: CirclePlus },
-            { label: 'Settings', to: '/repairs/settings', icon: Settings },
+            { label: 'nav.all_repairs', to: '/repairs', icon: Wrench },
+            { label: 'nav.create_repair', to: '/repairs/create', icon: CirclePlus },
+            { label: 'nav.settings', to: '/repairs/settings', icon: Settings },
         ],
     },
     {
-        section: 'Invoices',
+        section: 'nav.invoices',
         items: [
-            { label: 'All Invoices', to: '/invoices', icon: FileText },
-            { label: 'Create Invoice', to: '/invoices/create', icon: FilePlus },
-            { label: 'Settings', to: '/invoices/settings', icon: Settings },
+            { label: 'nav.all_invoices', to: '/invoices', icon: FileText },
+            { label: 'nav.create_invoice', to: '/invoices/create', icon: FilePlus },
+            { label: 'nav.settings', to: '/invoices/settings', icon: Settings },
         ],
     },
     {
-        section: 'Inventory',
+        section: 'nav.inventory',
         items: [
-            { label: 'Products', to: '/inventory/products', icon: Boxes },
-            { label: 'Transactions', to: '/inventory/transactions', icon: ArrowLeftRight },
-            { label: 'Categories', to: '/inventory/categories', icon: Tag },
+            { label: 'nav.products', to: '/inventory/products', icon: Boxes },
+            { label: 'nav.transactions', to: '/inventory/transactions', icon: ArrowLeftRight },
+            { label: 'nav.categories', to: '/inventory/categories', icon: Tag },
         ],
     },
     {
-        section: 'Management',
+        section: 'nav.management',
         adminOnly: true,
         items: [
-            { label: 'Payments', to: '/payments', icon: CreditCard },
-            { label: 'Create Report', to: '/reports', icon: BarChart3 },
-            { label: 'Register Report', to: '/reports/register', icon: ClipboardList },
-            { label: 'Users', to: '/users', icon: UsersRound },
-            { label: 'Create User', to: '/register', icon: UserPlus },
-            { label: 'Settings', to: '/settings', icon: Settings },
-            { label: 'Activity Log', to: '/logs', icon: ScrollText },
-            { label: 'Trash', to: '/trash', icon: Trash2 },
+            { label: 'nav.payments', to: '/payments', icon: CreditCard },
+            { label: 'nav.create_report', to: '/reports', icon: BarChart3 },
+            { label: 'nav.register_report', to: '/reports/register', icon: ClipboardList },
+            { label: 'nav.users', to: '/users', icon: UsersRound },
+            { label: 'nav.settings', to: '/settings', icon: Settings },
+            { label: 'nav.activity_log', to: '/logs', icon: ScrollText },
+            { label: 'nav.trash', to: '/trash', icon: Trash2 },
         ],
     },
 ];

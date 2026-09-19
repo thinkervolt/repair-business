@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use App\Models\User;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
@@ -13,6 +14,22 @@ use Illuminate\Support\Facades\Password;
 class AuthController extends Controller
 {
     use ApiResponses;
+
+    protected function systemLocale()
+    {
+        $setting = Setting::where('group', 'language')->first();
+        return in_array($setting ? $setting->data : null, ['en', 'es']) ? $setting->data : 'en';
+    }
+
+    protected function businessProfile()
+    {
+        $settings = Setting::where('group', 'business_profile')->get();
+        $profile = [];
+        foreach ($settings as $setting) {
+            $profile[$setting->name] = $setting->data;
+        }
+        return $profile;
+    }
 
     public function login(Request $request)
     {
@@ -33,6 +50,8 @@ class AuthController extends Controller
             'user' => $user,
             'token' => $token,
             'app_name' => config('app.name'),
+            'business_profile' => $this->businessProfile(),
+            'locale' => $this->systemLocale(),
         ], Lang::get('repair-business.login-success'));
     }
 
@@ -67,6 +86,8 @@ class AuthController extends Controller
         return $this->success([
             'user' => $request->user(),
             'app_name' => config('app.name'),
+            'business_profile' => $this->businessProfile(),
+            'locale' => $this->systemLocale(),
         ]);
     }
 

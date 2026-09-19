@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Save, UserRound } from 'lucide-react';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { getApiError } from '../../utils/format';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -15,6 +16,7 @@ function FieldError({ error }) {
 
 export default function RepairForm() {
     const navigate = useNavigate();
+    const { t } = useI18n();
     const [searchParams] = useSearchParams();
     const [form, setForm] = useState({ target: '', data_request: '' });
     const [customer, setCustomer] = useState(null);
@@ -57,11 +59,11 @@ export default function RepairForm() {
         <div className="mx-auto max-w-2xl space-y-6">
             <div>
                 <Link to="/repairs" className="text-sm font-medium text-blue-700 hover:underline">
-                    &larr; Back to repairs
+                    &larr; {t('repairs.back')}
                 </Link>
-                <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Create repair</h1>
+                <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{t('repairs.create')}</h1>
                 <p className="mt-1 text-sm text-slate-500">
-                    Open a new repair job for a walk-in or existing customer.
+                    {t('repairs.create_subtitle')}
                 </p>
             </div>
 
@@ -71,7 +73,7 @@ export default function RepairForm() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                         <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            Customer (optional)
+                            {t('repairs.customer_optional')}
                         </span>
                         <div className="mt-2 flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50/60 px-4 py-3">
                             {customer ? (
@@ -80,12 +82,12 @@ export default function RepairForm() {
                                         {customer.first_name} {customer.last_name || ''}
                                     </p>
                                     <p className="truncate text-xs text-slate-500">
-                                        {customer.company || customer.email || `Customer #${customer.id}`}
+                                        {customer.company || customer.email || t('repairs.customer_number', { id: customer.id })}
                                     </p>
                                 </div>
                             ) : (
                                 <p className="flex-1 text-sm text-slate-500">
-                                    No customer selected. The job can be assigned later.
+                                    {t('repairs.no_customer_selected')}
                                 </p>
                             )}
                             <Button
@@ -95,20 +97,20 @@ export default function RepairForm() {
                                 onClick={() => setPickerOpen(true)}
                             >
                                 <UserRound className="h-3.5 w-3.5" />
-                                {customer ? 'Change' : 'Select'}
+                                {customer ? t('common.change') : t('common.select')}
                             </Button>
                         </div>
                     </div>
 
                     <div>
                         <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="target">
-                            Target *
+                            {t('repairs.target')} *
                         </label>
                         <Input
                             id="target"
                             value={form.target}
                             onChange={(e) => setForm((f) => ({ ...f, target: e.target.value }))}
-                            placeholder="e.g. iPhone 14 screen"
+                            placeholder={t('repairs.target_placeholder')}
                             invalid={!!errors.target}
                         />
                         <FieldError error={errors.target} />
@@ -116,13 +118,13 @@ export default function RepairForm() {
 
                     <div>
                         <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="request">
-                            Request *
+                            {t('repairs.request')} *
                         </label>
                         <Input
                             id="request"
                             value={form.data_request}
                             onChange={(e) => setForm((f) => ({ ...f, data_request: e.target.value }))}
-                            placeholder="What does the customer need done?"
+                            placeholder={t('repairs.request_placeholder')}
                             invalid={!!errors.data_request}
                         />
                         <FieldError error={errors.data_request} />
@@ -131,12 +133,12 @@ export default function RepairForm() {
                     <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
                         <Link to="/repairs">
                             <Button type="button" variant="secondary">
-                                Cancel
+                                {t('common.cancel')}
                             </Button>
                         </Link>
                         <Button type="submit" loading={saving}>
                             <Save className="h-4 w-4" />
-                            Create repair
+                            {t('repairs.create')}
                         </Button>
                     </div>
                 </form>

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CreditCard, Search, Save } from 'lucide-react';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { formatDate, formatMoney, getApiError } from '../../utils/format';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -12,6 +13,7 @@ import Pagination from '../../components/ui/Pagination';
 const METHODS = ['cash', 'card', 'check', 'other'];
 
 function NewPaymentForm({ onCreated, notify }) {
+    const { t } = useI18n();
     const [form, setForm] = useState({ amount: '', method: 'cash', ref: '' });
     const [errors, setErrors] = useState({});
     const [saving, setSaving] = useState(false);
@@ -44,7 +46,7 @@ function NewPaymentForm({ onCreated, notify }) {
     return (
         <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-[1fr_160px_1fr_auto]">
             <div>
-                <label className="mb-1 block text-xs font-medium text-slate-500">Amount</label>
+                <label className="mb-1 block text-xs font-medium text-slate-500">{t('common.amount')}</label>
                 <Input
                     type="number"
                     step="0.01"
@@ -56,7 +58,7 @@ function NewPaymentForm({ onCreated, notify }) {
                 {errors.amount && <p className="mt-1 text-xs text-red-600">{errors.amount[0]}</p>}
             </div>
             <div>
-                <label className="mb-1 block text-xs font-medium text-slate-500">Method</label>
+                <label className="mb-1 block text-xs font-medium text-slate-500">{t('common.method')}</label>
                 <select
                     value={form.method}
                     onChange={(e) => setForm((f) => ({ ...f, method: e.target.value }))}
@@ -71,11 +73,11 @@ function NewPaymentForm({ onCreated, notify }) {
                 {errors.method && <p className="mt-1 text-xs text-red-600">{errors.method[0]}</p>}
             </div>
             <div>
-                <label className="mb-1 block text-xs font-medium text-slate-500">Reference</label>
+                <label className="mb-1 block text-xs font-medium text-slate-500">{t('common.reference')}</label>
                 <Input
                     value={form.ref}
                     onChange={(e) => setForm((f) => ({ ...f, ref: e.target.value }))}
-                    placeholder="Optional"
+                    placeholder={t('common.optional')}
                     invalid={!!errors.ref}
                 />
                 {errors.ref && <p className="mt-1 text-xs text-red-600">{errors.ref[0]}</p>}
@@ -83,7 +85,7 @@ function NewPaymentForm({ onCreated, notify }) {
             <div className="flex items-end">
                 <Button type="submit" loading={saving} disabled={!form.amount}>
                     <Save className="h-4 w-4" />
-                    Create payment
+                    {t('payments.create')}
                 </Button>
             </div>
         </form>
@@ -91,6 +93,7 @@ function NewPaymentForm({ onCreated, notify }) {
 }
 
 export default function PaymentsList() {
+    const { t } = useI18n();
     const [data, setData] = useState(null);
     const [search, setSearch] = useState('');
     const [debounced, setDebounced] = useState('');
@@ -125,9 +128,9 @@ export default function PaymentsList() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900">Payments</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('nav.payments')}</h1>
                 <p className="mt-1 text-sm text-slate-500">
-                    Record and manage payments received from customers.
+                    {t('payments.subtitle')}
                 </p>
             </div>
 
@@ -138,11 +141,10 @@ export default function PaymentsList() {
                 <div className="border-b border-slate-100 px-5 py-4">
                     <div className="flex items-center gap-2">
                         <CreditCard className="h-4 w-4 text-slate-400" />
-                        <h2 className="text-sm font-semibold text-slate-900">Create payment</h2>
+                        <h2 className="text-sm font-semibold text-slate-900">{t('payments.create')}</h2>
                     </div>
                     <p className="mt-1 text-xs text-slate-500">
-                        Unattached payments are recorded directly. Payments tied to an invoice are entered
-                        from the invoice screen.
+                        {t('payments.create_intro')}
                     </p>
                 </div>
                 <div className="px-5 py-4">
@@ -158,26 +160,26 @@ export default function PaymentsList() {
                             type="search"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search id, invoice, method, reference..."
+                            placeholder={t('payments.search_placeholder')}
                             className="pl-9"
                         />
                     </div>
                 </div>
 
                 {!data ? (
-                    <div className="px-6 py-12 text-center text-sm text-slate-400">Loading...</div>
+                    <div className="px-6 py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>
                 ) : data.data.length > 0 ? (
                     <>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                        <th className="px-6 py-3">Date</th>
-                                        <th className="px-6 py-3">Invoice</th>
-                                        <th className="px-6 py-3 text-right">Amount</th>
-                                        <th className="px-6 py-3">Method</th>
-                                        <th className="px-6 py-3">Reference</th>
-                                        <th className="px-6 py-3 text-right">Actions</th>
+                                        <th className="px-6 py-3">{t('common.date')}</th>
+                                        <th className="px-6 py-3">{t('payments.invoice')}</th>
+                                        <th className="px-6 py-3 text-right">{t('common.amount')}</th>
+                                        <th className="px-6 py-3">{t('common.method')}</th>
+                                        <th className="px-6 py-3">{t('common.reference')}</th>
+                                        <th className="px-6 py-3 text-right">{t('common.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -223,7 +225,7 @@ export default function PaymentsList() {
                                                     to={`/payments/${payment.id}`}
                                                     className="text-sm font-medium text-blue-700 hover:underline"
                                                 >
-                                                    View
+                                                    {t('common.view')}
                                                 </Link>
                                             </td>
                                         </tr>
@@ -235,7 +237,7 @@ export default function PaymentsList() {
                     </>
                 ) : (
                     <div className="px-6 py-12 text-center text-sm text-slate-400">
-                        Nothing has been found.
+                        {t('common.nothing_found')}
                     </div>
                 )}
             </Card>

@@ -21,6 +21,11 @@ class SettingController extends Controller
         return $this->success($settings);
     }
 
+    public function publicProfile()
+    {
+        return $this->success(['business_profile' => $this->businessProfile()]);
+    }
+
     public function updateProfile(Request $request)
     {
         $data = $request->validate([

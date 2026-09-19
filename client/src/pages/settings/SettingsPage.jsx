@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Info } from 'lucide-react';
-import api from '../../api/client';
+import api, { setLocale } from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
+import { useAuth } from '../../auth/AuthContext';
 import { getApiError } from '../../utils/format';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -16,6 +18,8 @@ const fieldClasses =
     'block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20';
 
 export default function SettingsPage() {
+    const { t } = useI18n();
+    const { refreshProfile } = useAuth();
     const [profile, setProfile] = useState({ name: '', phone: '', email: '', address: '', terms: '' });
     const [tax, setTax] = useState('0');
     const [language, setLanguage] = useState('en');
@@ -69,6 +73,7 @@ export default function SettingsPage() {
         try {
             const { data } = await api.put('/settings/business-profile', profile);
             notify(data.message);
+            refreshProfile();
         } catch (err) {
             notify(getApiError(err), 'error');
         } finally {
@@ -80,6 +85,7 @@ export default function SettingsPage() {
         e.preventDefault();
         if (!languageId) return;
         setSaving('language');
+        setLocale(language);
         try {
             const { data } = await api.put(`/settings/${languageId}`, { data: language });
             notify(data.message);
@@ -107,7 +113,7 @@ export default function SettingsPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-24 text-sm text-slate-400">
-                Loading settings…
+                {t('settings.loading')}
             </div>
         );
     }
@@ -115,9 +121,9 @@ export default function SettingsPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900">Settings</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('nav.settings')}</h1>
                 <p className="mt-1 text-sm text-slate-500">
-                    Manage your business profile, default language, and invoice tax.
+                    {t('settings.subtitle')}
                 </p>
             </div>
 
@@ -127,42 +133,42 @@ export default function SettingsPage() {
             <Card className="p-6">
                 <div className="mb-5 border-b border-slate-100 pb-4">
                     <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-                        Business profile
+                        {t('settings.business_profile')}
                     </h2>
                     <p className="mt-1 text-xs text-slate-400">
-                        Used as the sender on invoices and printed reports.
+                        {t('settings.business_profile_hint')}
                     </p>
                 </div>
                 <form onSubmit={handleSaveProfile} className="space-y-4">
                     <div>
                         <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="bp-name">
-                            Business name
+                            {t('settings.business_name')}
                         </label>
                         <Input id="bp-name" value={profile.name} onChange={(e) => setProfile((p) => ({ ...p, name: e.target.value }))} />
                     </div>
                     <div className="grid gap-4 sm:grid-cols-2">
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="bp-phone">
-                                Phone
+                                {t('common.phone')}
                             </label>
                             <Input id="bp-phone" value={profile.phone} onChange={(e) => setProfile((p) => ({ ...p, phone: e.target.value }))} />
                         </div>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="bp-email">
-                                Email
+                                {t('common.email')}
                             </label>
                             <Input id="bp-email" type="email" value={profile.email} onChange={(e) => setProfile((p) => ({ ...p, email: e.target.value }))} />
                         </div>
                     </div>
                     <div>
                         <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="bp-address">
-                            Address
+                            {t('common.address')}
                         </label>
                         <Input id="bp-address" value={profile.address} onChange={(e) => setProfile((p) => ({ ...p, address: e.target.value }))} />
                     </div>
                     <div>
                         <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="bp-terms">
-                            Invoice terms
+                            {t('settings.invoice_terms')}
                         </label>
                         <textarea
                             id="bp-terms"
@@ -174,7 +180,7 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex justify-end border-t border-slate-100 pt-4">
                         <Button type="submit" loading={saving === 'profile'}>
-                            Save profile
+                            {t('settings.save_profile')}
                         </Button>
                     </div>
                 </form>
@@ -182,16 +188,16 @@ export default function SettingsPage() {
 
             <Card className="p-6">
                 <div className="mb-5 border-b border-slate-100 pb-4">
-                    <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">General</h2>
+                    <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t('settings.general')}</h2>
                     <p className="mt-1 text-xs text-slate-400">
-                        Default language for the interface and the invoice tax percentage.
+                        {t('settings.general_hint')}
                     </p>
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2">
                     <form onSubmit={handleSaveLanguage} className="space-y-3">
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="lang">
-                                Language
+                                {t('settings.system_language')}
                             </label>
                             <select
                                 id="lang"
@@ -207,13 +213,13 @@ export default function SettingsPage() {
                             </select>
                         </div>
                         <Button type="submit" loading={saving === 'language'}>
-                            Save language
+                            {t('settings.save_language')}
                         </Button>
                     </form>
                     <form onSubmit={handleSaveTax} className="space-y-3">
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="tax">
-                                Tax percentage
+                                {t('invoices.settings.tax_percentage')}
                             </label>
                             <Input
                                 id="tax"
@@ -226,7 +232,7 @@ export default function SettingsPage() {
                             />
                         </div>
                         <Button type="submit" loading={saving === 'tax'}>
-                            Save tax
+                            {t('settings.save_tax')}
                         </Button>
                     </form>
                 </div>
@@ -234,7 +240,7 @@ export default function SettingsPage() {
 
             <div className="flex items-start gap-2 text-xs text-slate-400">
                 <Info className="mt-0.5 h-4 w-4 shrink-0" />
-                <p>Settings changes take effect immediately and apply to new invoices and printed reports.</p>
+                <p>{t('settings.footer_note')}</p>
             </div>
         </div>
     );

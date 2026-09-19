@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FileText, Pencil, Save, Trash2, X } from 'lucide-react';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { formatDate, formatDateTime, formatMoney, getApiError } from '../../utils/format';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -19,6 +20,7 @@ const fieldClasses =
     'block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20';
 
 export default function PaymentView() {
+    const { t } = useI18n();
     const { id } = useParams();
     const navigate = useNavigate();
     const [data, setData] = useState(null);
@@ -85,7 +87,7 @@ export default function PaymentView() {
     };
 
     const handleDelete = async () => {
-        if (!window.confirm('Delete this payment? This cannot be undone.')) return;
+        if (!window.confirm(t('payments.delete_confirm'))) return;
         setDeleting(true);
         try {
             await api.delete(`/payments/${id}`);
@@ -97,7 +99,7 @@ export default function PaymentView() {
     };
 
     if (!data || !form) {
-        return <div className="py-12 text-center text-sm text-slate-400">Loading...</div>;
+        return <div className="py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>;
     }
 
     const { payment, invoice } = data;
@@ -109,27 +111,27 @@ export default function PaymentView() {
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                     <Link to="/payments" className="text-sm font-medium text-blue-700 hover:underline">
-                        &larr; Back to payments
+                        &larr; {t('payments.back')}
                     </Link>
                     <div className="mt-2 flex items-center gap-3">
                         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-                            Payment #{payment.id}
+                            {t('payments.payment_number', { id: payment.id })}
                         </h1>
                         <Badge tone="emerald">$ {formatMoney(payment.amount)}</Badge>
                     </div>
-                    <p className="mt-1 text-sm text-slate-500">Created {formatDate(payment.created_at)}</p>
+                    <p className="mt-1 text-sm text-slate-500">{t('common.created_on', { date: formatDate(payment.created_at) })}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                     {invoice && (
                         <Button type="button" variant="secondary" onClick={() => navigate(`/invoices/${invoice.id}`)}>
                             <FileText className="h-4 w-4" />
-                            View invoice
+                            {t('payments.view_invoice')}
                         </Button>
                     )}
                     {!editing && (
                         <Button type="button" variant="secondary" onClick={() => setEditing(true)}>
                             <Pencil className="h-4 w-4" />
-                            Edit
+                            {t('common.edit')}
                         </Button>
                     )}
                     {!invoice && (
@@ -138,8 +140,8 @@ export default function PaymentView() {
                             onClick={handleDelete}
                             disabled={deleting}
                             className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
-                            aria-label="Delete payment"
-                            title="Delete payment"
+                            aria-label={t('payments.delete')}
+                            title={t('payments.delete')}
                         >
                             <Trash2 className="h-4 w-4" />
                         </button>
@@ -150,7 +152,7 @@ export default function PaymentView() {
             <Card className="overflow-hidden">
                 <form onSubmit={handleUpdate}>
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-6 py-4">
-                        <h2 className="text-sm font-semibold text-slate-900">Payment details</h2>
+                        <h2 className="text-sm font-semibold text-slate-900">{t('payments.details')}</h2>
                         {editing && (
                             <div className="flex gap-2">
                                 <Button
@@ -164,11 +166,11 @@ export default function PaymentView() {
                                     }}
                                 >
                                     <X className="h-3.5 w-3.5" />
-                                    Cancel
+                                    {t('common.cancel')}
                                 </Button>
                                 <Button type="submit" size="sm" loading={saving}>
                                     <Save className="h-3.5 w-3.5" />
-                                    Save
+                                    {t('common.save')}
                                 </Button>
                             </div>
                         )}
@@ -177,7 +179,7 @@ export default function PaymentView() {
                     <div className="grid gap-6 px-6 py-5 sm:grid-cols-2">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                                Amount
+                                {t('common.amount')}
                             </p>
                             {editing ? (
                                 <div className="mt-1.5">
@@ -200,7 +202,7 @@ export default function PaymentView() {
 
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                                Method
+                                {t('common.method')}
                             </p>
                             {editing ? (
                                 <div className="mt-1.5">
@@ -226,14 +228,14 @@ export default function PaymentView() {
 
                         <div className="sm:col-span-2">
                             <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                                Reference
+                                {t('common.reference')}
                             </p>
                             {editing ? (
                                 <div className="mt-1.5">
                                     <Input
                                         value={form.ref}
                                         onChange={(e) => setForm((f) => ({ ...f, ref: e.target.value }))}
-                                        placeholder="Optional"
+                                        placeholder={t('common.optional')}
                                         invalid={!!errors.ref}
                                     />
                                     <FieldError error={errors.ref} />
@@ -245,18 +247,18 @@ export default function PaymentView() {
 
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                                Invoice
+                                {t('payments.invoice')}
                             </p>
                             {invoice ? (
                                 <Link
                                     to={`/invoices/${invoice.id}`}
                                     className="mt-1 inline-block text-sm font-medium text-blue-700 hover:underline"
                                 >
-                                    #{invoice.id} &middot; {invoice.customer_name || 'No customer'} &middot;{' '}
+                                    #{invoice.id} &middot; {invoice.customer_name || t('payments.no_customer')} &middot;{' '}
                                     $ {formatMoney(invoice.total)}
                                 </Link>
                             ) : (
-                                <p className="mt-1 text-sm text-slate-500">Not attached to an invoice</p>
+                                <p className="mt-1 text-sm text-slate-500">{t('payments.not_attached')}</p>
                             )}
                         </div>
                     </div>

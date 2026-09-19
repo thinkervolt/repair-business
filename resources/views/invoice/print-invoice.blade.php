@@ -28,7 +28,7 @@
         }
 
         body {
-            margin: 18mm 20mm;
+            margin: 9mm 10mm;
         }
 
         table {
@@ -58,8 +58,6 @@
 
         /* ---------- card ---------- */
         .card {
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
             padding: 26px 30px;
         }
 
@@ -98,7 +96,7 @@
         .doc-no {
             font-size: 24px;
             font-weight: bold;
-            color: #2563eb;
+            color: #0f172a;
             margin: 0;
             padding: 0;
             text-align: right;
@@ -122,8 +120,8 @@
             text-transform: uppercase;
         }
 
-        /* ---------- addresses ---------- */
-        .address-cell {
+        /* ---------- bill-to ---------- */
+        .bill-to {
             padding: 16px 0 18px;
         }
 
@@ -164,6 +162,10 @@
             letter-spacing: 0.6px;
             padding: 9px;
             border-bottom: 1px solid #e2e8f0;
+        }
+
+        .items-table th.right {
+            text-align: right;
         }
 
         .items-table td {
@@ -245,9 +247,9 @@
 
         .balance-row td {
             padding: 10px 9px;
-            background: #eff6ff;
-            border-top: 1px solid #bfdbfe;
-            border-bottom: 1px solid #bfdbfe;
+            background: #f1f5f9;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
             font-weight: 700;
             color: #1e293b;
         }
@@ -307,11 +309,11 @@
 <body>
     @php
         $badges = [
-            'primary' => ['background' => '#dbeafe', 'color' => '#1d4ed8'],
+            'primary' => ['background' => '#e2e8f0', 'color' => '#475569'],
             'success' => ['background' => '#dcfce7', 'color' => '#15803d'],
             'warning' => ['background' => '#fef3c7', 'color' => '#b45309'],
             'danger' => ['background' => '#fee2e2', 'color' => '#b91c1c'],
-            'info' => ['background' => '#e0f2fe', 'color' => '#0369a1'],
+            'info' => ['background' => '#f1f5f9', 'color' => '#64748b'],
             'secondary' => ['background' => '#e2e8f0', 'color' => '#475569'],
             'dark' => ['background' => '#e2e8f0', 'color' => '#1e293b'],
             'light' => ['background' => '#f8fafc', 'color' => '#94a3b8'],
@@ -343,27 +345,16 @@
             </tr>
         </table>
 
-        <table>
-            <tr>
-                <td class="address-cell">
-                    <p class="addr-label">{{ __('repair-business.from') }}</p>
-                    <p class="addr-line strong">{{ $invoice->company_name }}</p>
-                    <p class="addr-line">{{ $invoice->company_phone }}</p>
-                    <p class="addr-line">{{ $invoice->company_email }}</p>
-                    <p class="addr-line">{{ $invoice->company_address }}</p>
-                </td>
-                <td class="address-cell">
-                    <p class="addr-label">{{ __('repair-business.to') }}</p>
-                    <p class="addr-line strong">{{ $invoice->customer_name }}</p>
-                    @if ($invoice->customer_company)
-                        <p class="addr-line">{{ $invoice->customer_company }}</p>
-                    @endif
-                    <p class="addr-line">{{ $invoice->customer_phone }}</p>
-                    <p class="addr-line">{{ $invoice->customer_email }}</p>
-                    <p class="addr-line">{{ $invoice->customer_address }}</p>
-                </td>
-            </tr>
-        </table>
+        <div class="bill-to">
+            <p class="addr-label">{{ __('repair-business.bill-to') }}</p>
+            <p class="addr-line strong">{{ $invoice->customer_name }}</p>
+            @if ($invoice->customer_company)
+                <p class="addr-line">{{ $invoice->customer_company }}</p>
+            @endif
+            <p class="addr-line">{{ $invoice->customer_phone }}</p>
+            <p class="addr-line">{{ $invoice->customer_email }}</p>
+            <p class="addr-line">{{ $invoice->customer_address }}</p>
+        </div>
 
         <table class="items-table">
             <thead>
@@ -410,39 +401,37 @@
                 @if (!$payments->isEmpty())
                     @foreach ($payments as $payment)
                         <tr class="payment-row">
-                            <td></td>
-                            <td class="item-name">{{ __('repair-business.payment') }}</td>
-                            <td>
-                                <p class="item-desc" style="text-transform:uppercase;font-weight:600;color:#475569;">{{ $payment->method }}</p>
+                            <td colspan="3"></td>
+                            <td colspan="2" class="right">
+                                <p class="item-desc" style="text-transform:uppercase;font-weight:600;color:#0f172a;">{{ $payment->method }}</p>
                                 <p class="item-desc">{{ date('M d, Y h:iA', strtotime($payment->created_at)) }}</p>
                                 @if (isset($payment->ref) && $payment->ref)
                                     <p class="item-desc">{{ __('repair-business.ref') }}: {{ $payment->ref }}</p>
                                 @endif
                             </td>
-                            <td class="num muted">&mdash;</td>
-                            <td></td>
                             <td class="num sum-value">$ {{ number_format((float) $payment->amount, 2, '.', ',') }}</td>
                         </tr>
                     @endforeach
                 @endif
 
                 <tr class="sum-row top">
-                    <td colspan="4" class="sum-label">{{ __('repair-business.subtotal') }}</td>
-                    <td></td>
+                    <td colspan="4"></td>
+                    <td class="sum-label">{{ __('repair-business.subtotal') }}</td>
                     <td class="sum-value">$ {{ number_format((float) $invoice->subtotal, 2, '.', ',') }}</td>
                 </tr>
                 <tr class="sum-row">
-                    <td colspan="4" class="sum-label">{{ __('repair-business.tax') }} ({{ number_format((float) $invoice->tax_porcentage, 2, '.', ',') }}%)</td>
-                    <td></td>
+                    <td colspan="4"></td>
+                    <td class="sum-label">{{ __('repair-business.tax') }} ({{ number_format((float) $invoice->tax_porcentage, 2, '.', ',') }}%)</td>
                     <td class="sum-value">$ {{ number_format((float) $invoice->tax, 2, '.', ',') }}</td>
                 </tr>
                 <tr class="sum-row grand-row">
-                    <td colspan="4" class="sum-label">{{ __('repair-business.total') }}</td>
-                    <td></td>
+                    <td colspan="4"></td>
+                    <td class="sum-label">{{ __('repair-business.total') }}</td>
                     <td class="sum-value">$ {{ number_format((float) $invoice->total, 2, '.', ',') }}</td>
                 </tr>
                 <tr class="balance-row">
-                    <td colspan="5" class="balance-label">{{ __('repair-business.balance') }}</td>
+                    <td colspan="4"></td>
+                    <td class="balance-label">{{ __('repair-business.balance') }}</td>
                     <td class="balance-figure" style="color:{{ $balance_color }};">$ {{ number_format($balance, 2, '.', ',') }}</td>
                 </tr>
             </tbody>

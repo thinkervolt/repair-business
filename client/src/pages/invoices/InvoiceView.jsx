@@ -16,6 +16,7 @@ import {
     X,
 } from 'lucide-react';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { formatMoney, formatDate, formatDateTime, getApiError } from '../../utils/format';
 import { toneFor } from '../../utils/colors';
 import Card from '../../components/ui/Card';
@@ -37,15 +38,16 @@ const fieldClasses =
 const iconButton =
     'rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700';
 
-function EmptyBlock({ label }) {
+function EmptyBlock({ children }) {
     return (
         <div className="px-6 py-10 text-center text-sm text-slate-400">
-            No {label} have been found.
+            {children}
         </div>
     );
 }
 
 function ItemRow({ invoiceId, item, onChanged, notify }) {
+    const { t } = useI18n();
     const [editing, setEditing] = useState(false);
     const [form, setForm] = useState({
         name: item.name,
@@ -82,7 +84,7 @@ function ItemRow({ invoiceId, item, onChanged, notify }) {
     };
 
     const handleDelete = async () => {
-        if (!window.confirm('Delete this invoice item?')) return;
+        if (!window.confirm(t('invoices.delete_item_confirm'))) return;
         try {
             const { data } = await api.delete(`/invoices/${invoiceId}/items/${item.id}`);
             notify(data.message);
@@ -101,7 +103,7 @@ function ItemRow({ invoiceId, item, onChanged, notify }) {
                             <Input
                                 value={form.name}
                                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                                placeholder="Item name"
+                                placeholder={t('invoices.item_name')}
                                 invalid={!!errors.name}
                             />
                             <FieldError error={errors.name} />
@@ -110,14 +112,14 @@ function ItemRow({ invoiceId, item, onChanged, notify }) {
                             <Input
                                 value={form.description}
                                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                                placeholder="Description"
+                                placeholder={t('invoices.description')}
                                 invalid={!!errors.description}
                             />
                             <Input
                                 className="mt-1.5"
                                 value={form.sub_description}
                                 onChange={(e) => setForm((f) => ({ ...f, sub_description: e.target.value }))}
-                                placeholder="Sub description"
+                                placeholder={t('invoices.sub_description')}
                             />
                         </div>
                         <div>
@@ -127,7 +129,7 @@ function ItemRow({ invoiceId, item, onChanged, notify }) {
                                 min="0"
                                 value={form.unit_cost}
                                 onChange={(e) => setForm((f) => ({ ...f, unit_cost: e.target.value }))}
-                                placeholder="Unit cost"
+                                placeholder={t('invoices.unit_cost')}
                                 invalid={!!errors.unit_cost}
                             />
                             <FieldError error={errors.unit_cost} />
@@ -139,7 +141,7 @@ function ItemRow({ invoiceId, item, onChanged, notify }) {
                                 min="1"
                                 value={form.quantity}
                                 onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))}
-                                placeholder="Qty"
+                                placeholder={t('common.qty')}
                                 invalid={!!errors.quantity}
                             />
                             <FieldError error={errors.quantity} />
@@ -147,10 +149,10 @@ function ItemRow({ invoiceId, item, onChanged, notify }) {
                     </div>
                     <div className="mt-3 flex justify-end gap-2">
                         <Button type="button" variant="secondary" size="sm" onClick={() => setEditing(false)}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button type="button" size="sm" loading={saving} onClick={handleUpdate}>
-                            Save
+                            {t('common.save')}
                         </Button>
                     </div>
                 </td>
@@ -167,7 +169,7 @@ function ItemRow({ invoiceId, item, onChanged, notify }) {
                         to={`/repairs/${item.ref}`}
                         className="text-xs font-medium text-blue-700 hover:underline"
                     >
-                        Repair #{item.ref}
+                        {t('invoices.repair_number', { id: item.ref })}
                     </Link>
                 )}
             </td>
@@ -205,6 +207,7 @@ function ItemRow({ invoiceId, item, onChanged, notify }) {
 }
 
 function NewItemForm({ invoiceId, onChanged, notify, onDone }) {
+    const { t } = useI18n();
     const [form, setForm] = useState({
         name: '',
         description: '',
@@ -248,7 +251,7 @@ function NewItemForm({ invoiceId, onChanged, notify, onDone }) {
                     <Input
                         value={form.name}
                         onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                        placeholder="Item name"
+                        placeholder={t('invoices.item_name')}
                         invalid={!!errors.name}
                         autoFocus
                     />
@@ -256,14 +259,14 @@ function NewItemForm({ invoiceId, onChanged, notify, onDone }) {
                         <Input
                             value={form.description}
                             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                            placeholder="Description"
+                            placeholder={t('invoices.description')}
                             invalid={!!errors.description}
                         />
                         <Input
                             className="mt-1.5"
                             value={form.sub_description}
                             onChange={(e) => setForm((f) => ({ ...f, sub_description: e.target.value }))}
-                            placeholder="Sub description"
+                            placeholder={t('invoices.sub_description')}
                         />
                     </div>
                     <Input
@@ -272,7 +275,7 @@ function NewItemForm({ invoiceId, onChanged, notify, onDone }) {
                         min="0"
                         value={form.unit_cost}
                         onChange={(e) => setForm((f) => ({ ...f, unit_cost: e.target.value }))}
-                        placeholder="Unit cost"
+                        placeholder={t('invoices.unit_cost')}
                         invalid={!!errors.unit_cost}
                     />
                     <Input
@@ -281,15 +284,15 @@ function NewItemForm({ invoiceId, onChanged, notify, onDone }) {
                         min="1"
                         value={form.quantity}
                         onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))}
-                        placeholder="Qty"
+                        placeholder={t('common.qty')}
                         invalid={!!errors.quantity}
                     />
                     <div className="flex gap-2">
                         <Button type="submit" loading={saving} disabled={!form.name.trim()}>
-                            Add
+                            {t('common.add')}
                         </Button>
                         <Button type="button" variant="ghost" onClick={onDone}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                     </div>
                 </form>
@@ -299,6 +302,7 @@ function NewItemForm({ invoiceId, onChanged, notify, onDone }) {
 }
 
 function RepairPicker({ open, onClose, onSelect }) {
+    const { t } = useI18n();
     const [repairs, setRepairs] = useState([]);
     const [search, setSearch] = useState('');
     const [debounced, setDebounced] = useState('');
@@ -340,7 +344,7 @@ function RepairPicker({ open, onClose, onSelect }) {
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                    <h3 className="text-sm font-semibold text-slate-900">Select a repair</h3>
+                    <h3 className="text-sm font-semibold text-slate-900">{t('picker.select_repair')}</h3>
                     <button type="button" onClick={onClose} className={iconButton} aria-label="Close">
                         <X className="h-4 w-4" />
                     </button>
@@ -351,17 +355,17 @@ function RepairPicker({ open, onClose, onSelect }) {
                         type="search"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search target, request, id..."
+                        placeholder={t('picker.search_repair')}
                         autoFocus
                     />
                 </div>
 
                 <div className="flex-1 overflow-y-auto">
                     {loading ? (
-                        <div className="px-5 py-10 text-center text-sm text-slate-400">Loading...</div>
+                        <div className="px-5 py-10 text-center text-sm text-slate-400">{t('common.loading')}</div>
                     ) : repairs.length === 0 ? (
                         <div className="px-5 py-10 text-center text-sm text-slate-400">
-                            Nothing has been found.
+                            {t('common.nothing_found')}
                         </div>
                     ) : (
                         repairs.map((repair) => (
@@ -391,7 +395,7 @@ function RepairPicker({ open, onClose, onSelect }) {
 
                 <div className="flex justify-end border-t border-slate-100 px-5 py-3">
                     <Button type="button" variant="secondary" className="w-full" onClick={onClose}>
-                        Cancel
+                        {t('common.cancel')}
                     </Button>
                 </div>
             </div>
@@ -402,6 +406,7 @@ function RepairPicker({ open, onClose, onSelect }) {
 export default function InvoiceView() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { t } = useI18n();
     const [data, setData] = useState(null);
     const [form, setForm] = useState(null);
     const [errors, setErrors] = useState({});
@@ -528,7 +533,7 @@ export default function InvoiceView() {
         try {
             const { data } = await api.post('/barcode/invoice', { invoice: id, barcode: barcode.trim() });
             const response = data.data ? data.data.response : null;
-            notify(response || 'Product added to the invoice.');
+            notify(response || t('invoices.product_added'));
             setBarcode('');
             setScanOpen(false);
             load();
@@ -540,7 +545,7 @@ export default function InvoiceView() {
     };
 
     const handleCancelTransaction = async (transaction) => {
-        if (!window.confirm('Remove this product line from the invoice?')) return;
+        if (!window.confirm(t('invoices.remove_product_line'))) return;
         try {
             const { data } = await api.delete(`/inventory/invoice/${id}/transactions/${transaction.id}`);
             notify(data.message);
@@ -601,7 +606,7 @@ export default function InvoiceView() {
     };
 
     const handleDelete = async () => {
-        if (!window.confirm('Delete this invoice? It can be restored later from the trash.')) return;
+        if (!window.confirm(t('invoices.delete_invoice_confirm'))) return;
         setDeleting(true);
         try {
             await api.put(`/invoices/${id}/delete`);
@@ -613,7 +618,7 @@ export default function InvoiceView() {
     };
 
     if (!data || !form) {
-        return <div className="py-12 text-center text-sm text-slate-400">Loading...</div>;
+        return <div className="py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>;
     }
 
     const { invoice, items, transactions, payments, repairs, logs, statuses } = data;
@@ -626,22 +631,22 @@ export default function InvoiceView() {
             <Input
                 value={form.company_name}
                 onChange={(e) => setForm((f) => ({ ...f, company_name: e.target.value }))}
-                placeholder="Company name"
+                placeholder={t('invoices.company_name')}
             />
             <Input
                 value={form.company_phone}
                 onChange={(e) => setForm((f) => ({ ...f, company_phone: e.target.value }))}
-                placeholder="Company phone"
+                placeholder={t('invoices.company_phone')}
             />
             <Input
                 value={form.company_email}
                 onChange={(e) => setForm((f) => ({ ...f, company_email: e.target.value }))}
-                placeholder="Company email"
+                placeholder={t('invoices.company_email')}
             />
             <Input
                 value={form.company_address}
                 onChange={(e) => setForm((f) => ({ ...f, company_address: e.target.value }))}
-                placeholder="Company address"
+                placeholder={t('invoices.company_address')}
             />
         </div>
     ) : (
@@ -658,27 +663,27 @@ export default function InvoiceView() {
             <Input
                 value={form.customer_name}
                 onChange={(e) => setForm((f) => ({ ...f, customer_name: e.target.value }))}
-                placeholder="Customer name"
+                placeholder={t('invoices.customer_name')}
             />
             <Input
                 value={form.customer_phone}
                 onChange={(e) => setForm((f) => ({ ...f, customer_phone: e.target.value }))}
-                placeholder="Customer phone"
+                placeholder={t('invoices.customer_phone')}
             />
             <Input
                 value={form.customer_email}
                 onChange={(e) => setForm((f) => ({ ...f, customer_email: e.target.value }))}
-                placeholder="Customer email"
+                placeholder={t('invoices.customer_email')}
             />
             <Input
                 value={form.customer_address}
                 onChange={(e) => setForm((f) => ({ ...f, customer_address: e.target.value }))}
-                placeholder="Customer address"
+                placeholder={t('invoices.customer_address')}
             />
             <Input
                 value={form.customer_company}
                 onChange={(e) => setForm((f) => ({ ...f, customer_company: e.target.value }))}
-                placeholder="Customer company"
+                placeholder={t('invoices.customer_company')}
             />
         </div>
     ) : (
@@ -698,11 +703,11 @@ export default function InvoiceView() {
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                     <Link to="/invoices" className="text-sm font-medium text-blue-700 hover:underline">
-                        &larr; Back to invoices
+                        &larr; {t('invoices.back')}
                     </Link>
                     <div className="mt-2 flex items-center gap-3">
                         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-                            Invoice #{invoice.id}
+                            {t('invoices.invoice_number', { id: invoice.id })}
                         </h1>
                         {invoice.status_data && (
                             <Badge solid tone={toneFor(invoice.status_data.color)}>
@@ -710,28 +715,28 @@ export default function InvoiceView() {
                             </Badge>
                         )}
                     </div>
-                    <p className="mt-1 text-sm text-slate-500">Created {formatDate(invoice.created_at)}</p>
+                    <p className="mt-1 text-sm text-slate-500">{t('common.created_on', { date: formatDate(invoice.created_at) })}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                     <Button type="button" variant="secondary" onClick={() => handlePrint('print')}>
                         <Printer className="h-4 w-4" />
-                        Print
+                        {t('invoices.print')}
                     </Button>
                     <Button type="button" variant="secondary" onClick={() => handlePrint('receipt')}>
                         <FileText className="h-4 w-4" />
-                        Receipt
+                        {t('invoices.receipt')}
                     </Button>
                     <Button type="button" variant="secondary" onClick={handleMail} loading={mailing}>
                         <Mail className="h-4 w-4" />
-                        Email
+                        {t('invoices.email')}
                     </Button>
                     <button
                         type="button"
                         onClick={handleDelete}
                         disabled={deleting}
                         className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
-                        aria-label="Delete invoice"
-                        title="Delete invoice"
+                        aria-label={t('invoices.delete_invoice')}
+                        title={t('invoices.delete_invoice')}
                     >
                         <Trash2 className="h-4 w-4" />
                     </button>
@@ -741,7 +746,7 @@ export default function InvoiceView() {
             <Card className="overflow-hidden">
                 <form onSubmit={handleUpdate}>
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-6 py-4">
-                        <h2 className="text-sm font-semibold text-slate-900">Invoice details</h2>
+                        <h2 className="text-sm font-semibold text-slate-900">{t('invoices.details')}</h2>
                         {editing ? (
                             <div className="flex gap-2">
                                 <Button
@@ -754,11 +759,11 @@ export default function InvoiceView() {
                                         load();
                                     }}
                                 >
-                                    Cancel
+                                    {t('common.cancel')}
                                 </Button>
                                 <Button type="submit" size="sm" loading={saving}>
                                     <Save className="h-3.5 w-3.5" />
-                                    Save
+                                    {t('common.save')}
                                 </Button>
                             </div>
                         ) : (
@@ -769,19 +774,19 @@ export default function InvoiceView() {
                                 onClick={() => setEditing(true)}
                             >
                                 <Pencil className="h-3.5 w-3.5" />
-                                Edit
+                                {t('common.edit')}
                             </Button>
                         )}
                     </div>
 
                     <div className="grid gap-6 px-6 py-5 sm:grid-cols-2">
                         <div>
-                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">From</p>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t('invoices.from')}</p>
                             {fromBlock}
                         </div>
                         <div>
                             <div className="flex items-center justify-between">
-                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">To</p>
+                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t('invoices.to')}</p>
                                 {!editing && (
                                     <button
                                         type="button"
@@ -789,7 +794,7 @@ export default function InvoiceView() {
                                         className="inline-flex items-center gap-1 text-xs font-medium text-blue-700 hover:underline"
                                     >
                                         <UserRound className="h-3.5 w-3.5" />
-                                        {invoice.customer_id ? 'Reassign' : 'Assign'}
+                                        {invoice.customer_id ? t('repairs.reassign') : t('repairs.assign')}
                                     </button>
                                 )}
                             </div>
@@ -799,7 +804,7 @@ export default function InvoiceView() {
 
                     <div className="flex flex-wrap items-center gap-x-8 gap-y-2 border-t border-slate-100 px-6 py-4">
                         <div className="flex items-center gap-2 text-sm">
-                            <span className="text-slate-400">Status</span>
+                            <span className="text-slate-400">{t('common.status')}</span>
                             {editing ? (
                                 <select
                                     className={`${fieldClasses} py-1`}
@@ -822,7 +827,7 @@ export default function InvoiceView() {
                             )}
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                            <span className="text-slate-400">Tax</span>
+                            <span className="text-slate-400">{t('invoices.tax')}</span>
                             {editing ? (
                                 <div className="w-24">
                                     <Input
@@ -847,7 +852,7 @@ export default function InvoiceView() {
                 </form>
 
                 <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 px-6 py-4">
-                    <h2 className="text-sm font-semibold text-slate-900">Items</h2>
+                    <h2 className="text-sm font-semibold text-slate-900">{t('invoices.items')}</h2>
                     <div className="flex flex-wrap gap-2">
                         <Button
                             type="button"
@@ -856,7 +861,7 @@ export default function InvoiceView() {
                             onClick={() => setAddingItem(true)}
                         >
                             <Plus className="h-3.5 w-3.5" />
-                            Add item
+                            {t('invoices.add_item')}
                         </Button>
                         <Button
                             type="button"
@@ -865,7 +870,7 @@ export default function InvoiceView() {
                             onClick={() => setRepairsOpen(true)}
                         >
                             <Wrench className="h-3.5 w-3.5" />
-                            Add repair
+                            {t('invoices.add_repair')}
                         </Button>
                         <Button
                             type="button"
@@ -874,7 +879,7 @@ export default function InvoiceView() {
                             onClick={() => setPartsOpen(true)}
                         >
                             <Plus className="h-3.5 w-3.5" />
-                            Add product
+                            {t('invoices.add_product')}
                         </Button>
                         <Button
                             type="button"
@@ -883,7 +888,7 @@ export default function InvoiceView() {
                             onClick={() => setScanOpen((o) => !o)}
                         >
                             <ScanLine className="h-3.5 w-3.5" />
-                            Scan
+                            {t('invoices.scan')}
                         </Button>
                     </div>
                 </div>
@@ -896,28 +901,28 @@ export default function InvoiceView() {
                         <Input
                             value={barcode}
                             onChange={(e) => setBarcode(e.target.value)}
-                            placeholder="Scan product barcode..."
+                            placeholder={t('invoices.scan_placeholder')}
                             className="min-w-0 flex-1"
                             autoFocus
                         />
                         <Button type="submit" variant="secondary" className="shrink-0" loading={scanning}>
-                            Add
+                            {t('common.add')}
                         </Button>
                     </form>
                 )}
 
                 {items.length === 0 && transactions.length === 0 && !addingItem ? (
-                    <EmptyBlock label="items" />
+                    <EmptyBlock>{t('invoices.empty_items')}</EmptyBlock>
                 ) : (
                     <div className="overflow-x-auto border-t border-slate-100">
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                    <th className="px-6 py-3">Item</th>
-                                    <th className="px-6 py-3">Description</th>
-                                    <th className="px-6 py-3">Unit</th>
-                                    <th className="px-6 py-3">Qty</th>
-                                    <th className="px-6 py-3 text-right">Total</th>
+                                    <th className="px-6 py-3">{t('common.item')}</th>
+                                    <th className="px-6 py-3">{t('invoices.description')}</th>
+                                    <th className="px-6 py-3">{t('invoices.unit')}</th>
+                                    <th className="px-6 py-3">{t('common.qty')}</th>
+                                    <th className="px-6 py-3 text-right">{t('common.total')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -930,30 +935,30 @@ export default function InvoiceView() {
                                         notify={notify}
                                     />
                                 ))}
-                                {transactions.map((t) => (
-                                    <tr key={t.id} className="group border-b border-slate-100 last:border-0">
+                                {transactions.map((tx) => (
+                                    <tr key={tx.id} className="group border-b border-slate-100 last:border-0">
                                         <td className="px-6 py-3">
                                             <p className="text-sm font-medium text-slate-800">
-                                                {t.product ? t.product.name : `#${t.product_id}`}
+                                                {tx.product ? tx.product.name : `#${tx.product_id}`}
                                             </p>
-                                            <span className="text-xs text-slate-400">Product</span>
+                                            <span className="text-xs text-slate-400">{t('inventory.product')}</span>
                                         </td>
                                         <td className="px-6 py-3 text-xs text-slate-400">
-                                            {t.product ? t.product.barcode : ''}
+                                            {tx.product ? tx.product.barcode : ''}
                                         </td>
                                         <td className="px-6 py-3 text-sm text-slate-600">
-                                            {t.selling_price != null
-                                                ? `$ ${formatMoney(t.selling_price)}`
+                                            {tx.selling_price != null
+                                                ? `$ ${formatMoney(tx.selling_price)}`
                                                 : '—'}
                                         </td>
-                                        <td className="px-6 py-3 text-sm text-slate-600">{t.quantity}</td>
+                                        <td className="px-6 py-3 text-sm text-slate-600">{tx.quantity}</td>
                                         <td className="px-6 py-3 text-right">
                                             <p className="text-sm font-medium text-slate-800">
-                                                $ {formatMoney(t.selling_price * t.quantity)}
+                                                $ {formatMoney(tx.selling_price * tx.quantity)}
                                             </p>
                                             <button
                                                 type="button"
-                                                onClick={() => handleCancelTransaction(t)}
+                                                onClick={() => handleCancelTransaction(tx)}
                                                 className="mt-0.5 rounded-lg p-1.5 text-slate-400 opacity-0 transition-opacity hover:bg-red-50 hover:text-red-600 group-hover:opacity-100 focus:opacity-100"
                                                 aria-label="Remove product"
                                             >
@@ -978,15 +983,15 @@ export default function InvoiceView() {
                 <div className="flex justify-end border-t border-slate-100 px-6 py-5">
                     <dl className="w-full max-w-xs space-y-2 text-sm">
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Subtotal</dt>
+                                <dt className="text-slate-400">{t('invoices.subtotal')}</dt>
                                 <dd className="font-medium text-slate-700">$ {formatMoney(invoice.subtotal)}</dd>
                             </div>
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Tax ({invoice.tax_porcentage}%)</dt>
+                                <dt className="text-slate-400">{t('invoices.tax_line', { percent: invoice.tax_porcentage })}</dt>
                                 <dd className="font-medium text-slate-700">$ {formatMoney(invoice.tax)}</dd>
                             </div>
                             <div className="flex justify-between gap-3">
-                                <dt className="text-slate-400">Total</dt>
+                                <dt className="text-slate-400">{t('common.total')}</dt>
                                 <dd className="font-semibold text-slate-900">$ {formatMoney(invoice.total)}</dd>
                             </div>
                             {payments.map((payment) => (
@@ -1011,7 +1016,7 @@ export default function InvoiceView() {
                                 </div>
                             ))}
                             <div className="flex justify-between gap-3 border-t border-slate-100 pt-2">
-                                <dt className="font-medium text-slate-500">Balance</dt>
+                                <dt className="font-medium text-slate-500">{t('common.balance')}</dt>
                                 <dd className={`text-base font-semibold ${balanceTone}`}>
                                     $ {formatMoney(invoice.balance)}
                                 </dd>
@@ -1029,7 +1034,7 @@ export default function InvoiceView() {
                                             onChange={(e) =>
                                                 setPayForm((f) => ({ ...f, amount: e.target.value }))
                                             }
-                                            placeholder="Amount"
+                                            placeholder={t('common.amount')}
                                             invalid={!!payErrors.amount}
                                             autoFocus
                                         />
@@ -1055,7 +1060,7 @@ export default function InvoiceView() {
                                         onChange={(e) =>
                                             setPayForm((f) => ({ ...f, ref: e.target.value }))
                                         }
-                                        placeholder="Reference (optional)"
+                                        placeholder={t('invoices.reference_optional')}
                                         invalid={!!payErrors.ref}
                                     />
                                     {payErrors.ref && (
@@ -1068,7 +1073,7 @@ export default function InvoiceView() {
                                             size="sm"
                                             onClick={() => setPayOpen(false)}
                                         >
-                                            Cancel
+                                            {t('common.cancel')}
                                         </Button>
                                         <Button
                                             type="submit"
@@ -1076,7 +1081,7 @@ export default function InvoiceView() {
                                             loading={paying}
                                             disabled={!payForm.amount}
                                         >
-                                            Record
+                                            {t('invoices.record')}
                                         </Button>
                                     </div>
                                 </form>
@@ -1085,7 +1090,7 @@ export default function InvoiceView() {
                                 <div className="flex justify-end border-t border-slate-100 pt-2">
                                     <Button type="button" variant="secondary" size="sm" onClick={() => setPayOpen(true)}>
                                         <DollarSign className="h-3.5 w-3.5" />
-                                        Record payment
+                                        {t('invoices.record_payment')}
                                     </Button>
                                 </div>
                             )}
@@ -1095,7 +1100,7 @@ export default function InvoiceView() {
                 {repairs.length > 0 && (
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-slate-100 px-6 py-3">
                         <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                            Linked repairs
+                            {t('invoices.linked_repairs')}
                         </span>
                         {repairs.map((repair) => (
                             <Link
@@ -1117,7 +1122,7 @@ export default function InvoiceView() {
                     className="flex w-full items-center justify-between px-6 py-3 text-left transition-colors hover:bg-slate-50"
                 >
                     <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        Activity log
+                        {t('repairs.activity_log')}
                         <span className="ml-1.5 font-normal normal-case text-slate-400">({logs.total})</span>
                     </span>
                     <ChevronDown
@@ -1126,7 +1131,7 @@ export default function InvoiceView() {
                 </button>
                 {logsOpen &&
                     (logs.data.length === 0 ? (
-                        <EmptyBlock label="entries" />
+                        <EmptyBlock>{t('invoices.empty_entries')}</EmptyBlock>
                     ) : (
                         <>
                             <ul className="divide-y divide-slate-100 border-t border-slate-100">

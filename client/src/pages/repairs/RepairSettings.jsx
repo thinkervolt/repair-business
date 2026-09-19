@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Pencil, Plus, Trash2, X } from 'lucide-react';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { getApiError } from '../../utils/format';
 import { toneFor } from '../../utils/colors';
 import Card from '../../components/ui/Card';
@@ -20,6 +21,7 @@ const fieldClasses =
     'block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20';
 
 export default function RepairSettings() {
+    const { t } = useI18n();
     const [settings, setSettings] = useState([]);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
@@ -88,7 +90,7 @@ export default function RepairSettings() {
     };
 
     const handleDelete = async (setting) => {
-        if (!window.confirm(`Delete the setting "${setting.name}"?`)) return;
+        if (!window.confirm(t('repairs.settings.delete_confirm', { name: setting.name }))) return;
         try {
             const { data } = await api.delete(`/repairs/settings/${setting.id}`);
             notify(data.message);
@@ -106,9 +108,9 @@ export default function RepairSettings() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900">Repair settings</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('repairs.settings.title')}</h1>
                 <p className="mt-1 text-sm text-slate-500">
-                    Manage the statuses and priorities used across repair jobs.
+                    {t('repairs.settings.subtitle')}
                 </p>
             </div>
 
@@ -117,12 +119,12 @@ export default function RepairSettings() {
 
             <Card className="p-6">
                 <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
-                    New setting
+                    {t('repairs.settings.new')}
                 </h2>
                 <form onSubmit={handleCreate} className="grid gap-4 sm:grid-cols-3">
                     <div>
                         <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="new-name">
-                            Name
+                            {t('common.name')}
                         </label>
                         <Input
                             id="new-name"
@@ -135,7 +137,7 @@ export default function RepairSettings() {
                     </div>
                     <div>
                         <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="new-group">
-                            Group
+                            {t('repairs.settings.group')}
                         </label>
                         <select
                             id="new-group"
@@ -153,7 +155,7 @@ export default function RepairSettings() {
                     </div>
                     <div>
                         <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="new-color">
-                            Color
+                            {t('repairs.settings.color')}
                         </label>
                         <select
                             id="new-color"
@@ -172,7 +174,7 @@ export default function RepairSettings() {
                     <div className="sm:col-span-3">
                         <Button type="submit">
                             <Plus className="h-4 w-4" />
-                            Create setting
+                            {t('repairs.settings.create')}
                         </Button>
                     </div>
                 </form>
@@ -182,12 +184,12 @@ export default function RepairSettings() {
                 <Card key={group} className="overflow-hidden">
                     <div className="border-b border-slate-100 px-6 py-4">
                         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-                            {group === 'status' ? 'Statuses' : 'Priorities'}
+                            {group === 'status' ? t('repairs.settings.statuses') : t('repairs.settings.priorities')}
                         </h2>
                     </div>
                     {items.length === 0 ? (
                         <div className="px-6 py-8 text-center text-sm text-slate-400">
-                            No {group} settings have been found.
+                            {t('repairs.settings.empty')}
                         </div>
                     ) : (
                         <ul className="divide-y divide-slate-100">
@@ -235,7 +237,7 @@ export default function RepairSettings() {
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex items-center justify-between">
-                            <h3 className="text-sm font-semibold text-slate-900">Edit setting</h3>
+                            <h3 className="text-sm font-semibold text-slate-900">{t('repairs.settings.edit')}</h3>
                             <button
                                 type="button"
                                 onClick={() => setEditing(null)}
@@ -248,7 +250,7 @@ export default function RepairSettings() {
                         <form onSubmit={handleUpdate} className="mt-5 space-y-4">
                             <div>
                                 <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="edit-name">
-                                    Name
+                                    {t('common.name')}
                                 </label>
                                 <Input
                                     id="edit-name"
@@ -263,7 +265,7 @@ export default function RepairSettings() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="edit-group">
-                                        Group
+                                        {t('repairs.settings.group')}
                                     </label>
                                     <select
                                         id="edit-group"
@@ -281,7 +283,7 @@ export default function RepairSettings() {
                                 </div>
                                 <div>
                                     <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="edit-color">
-                                        Color
+                                        {t('repairs.settings.color')}
                                     </label>
                                     <select
                                         id="edit-color"
@@ -300,9 +302,9 @@ export default function RepairSettings() {
                             </div>
                             <div className="flex justify-end gap-3 border-t border-slate-100 pt-4">
                                 <Button type="button" variant="secondary" onClick={() => setEditing(null)}>
-                                    Cancel
+                                    {t('common.cancel')}
                                 </Button>
-                                <Button type="submit">Save changes</Button>
+                                <Button type="submit">{t('common.save_changes')}</Button>
                             </div>
                         </form>
                     </div>

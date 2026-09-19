@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { CirclePlus, Search } from 'lucide-react';
 import clsx from 'clsx';
 import api from '../../api/client';
+import { useI18n } from '../../i18n/I18nContext';
 import { formatDate, formatMoney, getApiError } from '../../utils/format';
 import { solidToneFor, toneFor } from '../../utils/colors';
 import Card from '../../components/ui/Card';
@@ -13,6 +14,7 @@ import Alert from '../../components/ui/Alert';
 import Pagination from '../../components/ui/Pagination';
 
 export default function InvoicesList() {
+    const { t } = useI18n();
     const [searchParams, setSearchParams] = useSearchParams();
     const [data, setData] = useState(null);
     const [search, setSearch] = useState('');
@@ -64,15 +66,15 @@ export default function InvoicesList() {
         <div className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Invoices</h1>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('nav.invoices')}</h1>
                     <p className="mt-1 text-sm text-slate-500">
-                        Create and manage invoices for repairs and walk-in sales.
+                        {t('invoices.subtitle')}
                     </p>
                 </div>
                 <Link to="/invoices/create">
                     <Button>
                         <CirclePlus className="h-4 w-4" />
-                        New invoice
+                        {t('invoices.new')}
                     </Button>
                 </Link>
             </div>
@@ -91,7 +93,7 @@ export default function InvoicesList() {
                                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                             }`}
                         >
-                            All
+                            {t('common.all')}
                         </button>
                         <button
                             type="button"
@@ -102,7 +104,7 @@ export default function InvoicesList() {
                                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                             }`}
                         >
-                            Unpaid
+                            {t('invoices.unpaid')}
                         </button>
                         {data &&
                             data.statuses.map((setting) => (
@@ -133,27 +135,27 @@ export default function InvoicesList() {
                             type="search"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search customer, id, status..."
+                            placeholder={t('invoices.search_placeholder')}
                             className="pl-9"
                         />
                     </div>
                 </div>
 
                 {!data ? (
-                    <div className="px-6 py-12 text-center text-sm text-slate-400">Loading...</div>
+                    <div className="px-6 py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>
                 ) : data.invoices.data.length > 0 ? (
                     <>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                        <th className="px-6 py-3">ID</th>
-                                        <th className="px-6 py-3">Customer</th>
-                                        <th className="px-6 py-3">Status</th>
-                                        <th className="px-6 py-3 text-right">Total</th>
-                                        <th className="px-6 py-3 text-right">Balance</th>
-                                        <th className="px-6 py-3">Date</th>
-                                        <th className="px-6 py-3 text-right">Actions</th>
+                                        <th className="px-6 py-3">{t('common.id')}</th>
+                                        <th className="px-6 py-3">{t('common.customer')}</th>
+                                        <th className="px-6 py-3">{t('common.status')}</th>
+                                        <th className="px-6 py-3 text-right">{t('common.total')}</th>
+                                        <th className="px-6 py-3 text-right">{t('common.balance')}</th>
+                                        <th className="px-6 py-3">{t('common.date')}</th>
+                                        <th className="px-6 py-3 text-right">{t('common.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -200,7 +202,7 @@ export default function InvoicesList() {
                                                     to={`/invoices/${invoice.id}`}
                                                     className="text-sm font-medium text-blue-700 hover:underline"
                                                 >
-                                                    View
+                                                    {t('common.view')}
                                                 </Link>
                                             </td>
                                         </tr>
@@ -212,7 +214,7 @@ export default function InvoicesList() {
                     </>
                 ) : (
                     <div className="px-6 py-12 text-center text-sm text-slate-400">
-                        Nothing has been found.
+                        {t('common.nothing_found')}
                     </div>
                 )}
             </Card>
