@@ -46,7 +46,7 @@ export default function Pagination({ paginator, onChangePage }) {
                     }
 
                     const isPage = !isEllipsis && /^\d+$/.test(label);
-                    const page = isPage ? Number(label) : NaN2; // prettier-ignore
+                    const page = isPage ? Number(label) : NaN; // prettier-ignore
 
                     return (
                         <button
