@@ -14,19 +14,44 @@ Rules for any agent (or developer) working on this project. Read before making c
 
 ## Running Containers (current dev setup)
 
-| Container               | Purpose                | Reachable at            |
-|-------------------------|------------------------|-------------------------|
-| `repair-business-app`   | Laravel 8 + Apache     | http://localhost:5050   |
-| `mysql_development`     | MySQL 8.4              | `mysql_development:3306`|
-| `phpmyadmin_development`| phpMyAdmin             | http://localhost:9010   |
+| Container               | Purpose                                | Reachable at            |
+|-------------------------|----------------------------------------|-------------------------|
+| `repair-business-app`   | Laravel 8 + Apache (API + React SPA)   | http://localhost:5050   |
+| `repair-business-client`| Vite dev server (React, dev-only)      | http://localhost:5173   |
+| `mysql_development`     | MySQL 8.4                              | `mysql_development:3306`|
+| `phpmyadmin_development`| phpMyAdmin                             | http://localhost:9010   |
 
-All three are on the external Docker network `builder.net` (see `.env` → `NETWORK_NAME`).
+All are on the external Docker network `builder.net` (see `.env` → `NETWORK_NAME`).
 The app container's code directory is bind-mounted from this repo root (`.:/var/www`).
 
-> Note: `vendor/`, `public/`, `storage/`, and `bootstrap/cache` are anonymous volumes baked
-> at image build time — they are NOT synced with the host. Commands like
-> `composer require` or changes to `public/` only take effect after
-> `docker compose build` + `docker compose up -d --force-recreate app`.
+## Dev vs Production (one image, one compose file)
+
+The `Dockerfile` is multi-stage and produces a **single self-contained image**:
+composer deps → Node builds the React SPA → `php:8.1-apache` serves **everything on port 80**
+(React SPA for UI routes, Laravel for `/api/*`). `public/.htaccess` has the SPA fallback:
+non-`/api`, non-file requests go to `index.html`; `/api/*` goes to Laravel.
+
+- **Production / GCE**: build and run the image; it listens on TCP 80. `docker compose`
+  maps ports from `.env` (`SERVICE_PORT` → 80 for the app, `CLIENT_PORT` → 5173 for the
+  dev client). Set the deployment URL/env in the Laravel `.env` at deploy time.
+- **Dev**: no image rebuild needed for code. React devs use the Vite server on `:5173`
+  (HMR) which proxies `/api` → app container; PHP changes flow in via the bind mount.
+- **Ports served by the Dockerfile**: `80`. Host ports (5050 / 5173 / 9010) are just
+  compose mappings from `.env` — change `SERVICE_PORT`/`CLIENT_PORT` per environment.
+
+> The baked SPA on the app (`:5050`) is a **build-time snapshot**, not the live dev UI.
+> Editing React source only shows up on `:5173`. Rebuild the image to refresh `:5050`.
+
+> `vendor/`, `public/`, `storage/`, and `bootstrap/cache` are anonymous volumes baked
+> at image build time — they are NOT synced with the host. Changes to Composer deps or
+> `public/` only take effect after `docker compose build` + `docker compose up -d --force-recreate app`.
+> To reseed those volumes from a fresh image (e.g. after SPA/htaccess changes) run
+> `docker compose down -v && docker compose up -d`. This does NOT touch the DB or
+> phpMyAdmin (they are not part of this compose file).
+
+> Container state: `APP_ENV`, `APP_DEBUG`, `APP_URL`, etc. are injected by compose
+> (`env_file: .env`) **at container start** and override the file. After changing them in
+> `.env`, recreate with `docker compose up -d --force-recreate app`.
 
 > Note: the container's default working directory is `/var/www/html`. Always pass
 > `-w /var/www` when running artisan/phpunit in the app container.
@@ -53,13 +78,15 @@ Then rebuild so the new vendor lands in the app container:
 docker compose build && docker compose up -d --force-recreate app
 ```
 
-### npm / asset build (app image has no Node; uses throwaway image)
+### npm / asset build (dev-only; the Dockerfile builds the SPA itself for prod)
 ```
-docker run --rm -v "$PWD":/app -w /app node:16 npm install
-docker run --rm -v "$PWD":/app -w /app node:16 npm run production
+docker run --rm -v "$PWD/client":/app -w /app -v rb_npm_cache:/root/.npm node:20 npm install
+docker run --rm -v "$PWD/client":/app -w /app -v rb_npm_cache:/root/.npm node:20 npm run build
 ```
-Note: files created this way are owned by root. Minor permission churn is acceptable;
-do not `sudo` anything unless strictly needed and safe.
+Output lands in `client/dist` (Vite). Files created this way are owned by root; minor
+permission churn is acceptable — do not `sudo` anything unless strictly needed and safe.
+`.dockerignore` keeps `.env`, `node_modules`, `dist`, `vendor`, and Laravel caches out of
+the image build context so secrets never get baked in.
 
 ### MySQL (inside the DB container)
 ```
@@ -81,7 +108,8 @@ docker exec -w /var/www repair-business-app tail -f storage/logs/laravel.log
 
 ## Required Workflow
 
-1. Make code changes using the repo's existing conventions (Laravel 8, Blade + Bootstrap 4).
+1. Make code changes using the repo's existing conventions (Laravel 8 API in `app/`,
+   React SPA in `client/`).
 2. Verify with in-container commands: run relevant tests and `php artisan` commands.
 3. Do not commit unless the user explicitly asks.
 4. Never modify `.env` for committed examples — keep `.env.example` in sync instead.

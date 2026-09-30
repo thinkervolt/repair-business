@@ -130,7 +130,7 @@ export default function InvoiceForm() {
                                 {t('common.cancel')}
                             </Button>
                         </Link>
-                        <Button type="submit" loading={creating} disabled={!repairId && !customer}>
+                        <Button type="submit" loading={creating}>
                             <FileText className="h-4 w-4" />
                             {repairId ? t('invoices.invoice_this_repair') : t('invoices.create_empty')}
                         </Button>
