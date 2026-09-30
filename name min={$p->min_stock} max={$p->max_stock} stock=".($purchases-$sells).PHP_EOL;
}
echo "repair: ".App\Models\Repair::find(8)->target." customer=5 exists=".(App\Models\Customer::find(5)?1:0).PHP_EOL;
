@@ -1,0 +1,19 @@
+
+   InvalidArgumentException 
+
+  Unexpected end of input
+
+  at vendor/psy/psysh/src/Shell.php:891
+    887| 
+    888|         if (!$this->hasValidCode()) {
+    889|             $this->popCodeStack();
+    890| 
+  > 891|             throw new \InvalidArgumentException('Unexpected end of input');
+    892|         }
+    893|     }
+    894| 
+    895|     /**
+
+      [2m+15 vendor frames [22m
+  16  artisan:37
+      Illuminate\Foundation\Console\Kernel::handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))

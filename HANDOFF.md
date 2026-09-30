@@ -2,6 +2,85 @@
 
 Last updated: 2026-09-19. Written to let a future session/agent resume cleanly.
 
+## PRODUCTION ROLLOUT PLAN (M12 → go-live) — APPROVED as plan; NOT implemented yet
+
+Owner is a Laravel dev (not a React/Vite dev). **Plan only — no code changes made for it.**
+The user reviews the plan via questions first; implement only after they say go.
+
+### Production environment (user-confirmed)
+- **Hosting:** Google Cloud Run (container built from the Dockerfile / repo; HTTPS + domain
+  handled by GCP; they call it "google app run" and "apache port at 80" = the container port).
+- **Database:** Google Cloud SQL (not a DB container on the VM). `DB_HOST`/`.env` stay as-is.
+- **Public pages:** `/` welcome + `/customer-signup` Blade pages are NOT used by real
+  customers — safe to drop. Full cutover to SPA with no public sign-up page.
+
+### The strategy: same-origin, one container
+The React SPA calls Laravel with **same-origin relative** `baseURL: '/api/v1'`
+(`client/src/api/client.js`), auth = Sanctum **bearer token** (stateless — no cookies/CSRF),
+CORS is `'*'` and unnecessary when SPA + API share one origin. So: build the Vite output into
+Laravel's `public/` and serve both from the same Apache container → no CORS, no sessions,
+no second service, no port change.
+
+### The 3 changes (strategy)
+1. **`Dockerfile`** — add a `node:20-alpine` build stage: copy `client/`, `npm ci`,
+   `npm run build`, with Vite `build.outDir` = `../public` (outside project root, so Vite does
+   NOT wipe Laravel's `public/`). Runtime stage then does
+   `COPY --from=client /spa/public/ /var/www/public/` merging `index.html` + `assets/`
+   alongside Laravel's `index.php`. (Node 20 required — see "Node/client gotchas".)
+2. **`public/.htaccess`** — replace "all non-file → `index.php`" routing with:
+   - `/api/*` → `index.php` (Laravel serves the API **only**)
+   - real files/dirs (`/assets/*`, `/storage/*`, mix assets) → serve directly
+   - browser GET/HEAD, everything else → `index.html` (React SPA; makes deep-link refresh work)
+   - leftover other-method requests → `index.php` (→404)
+   Effect: every legacy Blade URL renders the React app; `routes/web.php` stays in the repo
+   but is unreachable (delete later in a cleanup commit, per M12).
+3. **Redeploy to Cloud Run** — rebuild the image (Cloud Run builds/pulls it). On Cloud Run the
+   image content is used directly (no anonymous-volume masking like local `docker compose`).
+
+### Extra detail for the Docker change
+- `.dockerignore` currently only has `.env` → must add `client/node_modules` + `client/dist`
+  so `COPY . /app` in the composer stage doesn't drag the client's deps into the context.
+- Build `client/index.html` + `client/assets/*` are git-ignored additions in `public/`
+  (`public/index.html`, `public/assets`); they are produced by the Docker build, not committed.
+- Health check: Cloud Run calls `/` → now returns index.html (200). Fine.
+
+### Verification after cutover
+- Cloud Run logs show no errors; login → every module → search → print/email PDF
+  (`/api/v1/.../print`) → barcode scanner → language switch.
+- Deep-link refresh (e.g. `/customers/5`) returns the SPA, not 404.
+- `php artisan route:list` — only `api` routes matter now.
+
+### Reminders
+- Local dev flow unchanged: `repair-business-client` Vite dev server (:5173) proxies `/api`.
+- The anonymous-volumes gotcha (`public/`, `vendor/`, `storage/`, `bootstrap/cache`) affects
+  **local** `docker compose` only; Cloud Run uses the baked image.
+- Implement + document with steps here only when the user says go.
+
+### Two production deployments (user-confirmed)
+The plan must work in **both**:
+1. **Google Cloud Run** (main) — container built from the Dockerfile, HTTPS handled by GCP.
+   Just rebuild the image + redeploy; image content is used directly (no anon-volume masking).
+2. **Customer's local server, production via `docker compose`** — same image rebuild works,
+   BUT the repo's `docker-compose.yml` mounts `public/` (plus `vendor/`, `storage/`,
+   `bootstrap/cache`) as **anonymous volumes**, which persist across `--force-recreate` and
+   would mask the freshly-baked SPA files. On that server:
+   - either `docker compose up -d --force-recreate --renew-anon-volumes app`, or
+   - better: a `docker-compose.prod.yml` for prod servers — no anonymous `public/` volume
+     (let the image serve its own SPA), DB env/infra left unchanged (Cloud SQL on the main
+     server; MySQL container / external on the customer's).
+
+### Live-prod DB upgrade SQL (user needs copy-paste — DONE)
+- The ONLY schema change the Blade→React upgrade made is the **`personal_access_tokens`**
+  table (Laravel Sanctum, added by migration `2019_12_14_000001_create_personal_access_tokens_table.php`).
+  All other base tables already exist in prod (they belong to the old Blade app).
+- Deliverable: `database/sql-upgrades/001_personal_access_tokens.sql` — idempotent
+  (`CREATE TABLE IF NOT EXISTS` + guarded `INSERT` into `migrations` with `MAX(batch)+1`).
+  Paste into EACH prod DB (Cloud SQL main + every customer server) via SQL runner.
+- Verified against the dev DB: runs twice cleanly, no duplicate migration record, existing
+  tokens/rows untouched (migration row 18 batch 2, 51 token rows preserved).
+- Optional `sessions` table DDL is commented at the bottom (only needed if
+  `SESSION_DRIVER=database`; it is `file` everywhere).
+
 ## Ground rules (from AGENTS.md — read it)
 
 - Everything runs in Docker. Never install on the host. No bare `php`/`composer`/`npm`/`mysql`.

@@ -333,6 +333,11 @@ return [
     'terms-and-conditions' => 'Términos y Condiciones',
     'new-customer-signed-up' => 'Nuevo cliente registrado',
 
+    /* notifications */
+    'notification.new-repair' => 'Se ha creado la reparación #:id',
+    'notification.unpaid-invoice' => 'La factura #:id tiene un saldo pendiente de $:amount',
+    'notification.out-of-stock' => 'El producto :name está agotado',
+
 
     /* months */
     'january' => 'Enero',

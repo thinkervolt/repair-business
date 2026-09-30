@@ -9,6 +9,7 @@ use App\Models\InventoryTransaction;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Log;
+use App\Models\Notification;
 use App\Models\Repair;
 use App\Models\RepairItem;
 use App\Models\RepairSetting;
@@ -117,6 +118,8 @@ class RepairController extends Controller
         $repair->active = 'yes';
         $repair->save();
 
+        Notification::newRepair($repair);
+
         $log = new Log;
         $log->table = 'repairs';
         $log->data = 'Repair has been Created [target] ' . $data['target'] . ' [request] ' . $data['data_request'];
@@ -220,6 +223,8 @@ class RepairController extends Controller
         $repair->active = 'no';
         $repair->save();
 
+        Notification::clearFor('view-repair', $repair->id);
+
         $log = new Log;
         $log->table = 'repairs';
         $log->data = 'Repair has been Deleted';
@@ -260,6 +265,8 @@ class RepairController extends Controller
         }
 
         $repair->delete();
+
+        Notification::clearFor('view-repair', $repair->id);
 
         RepairItem::where('repair', $id)->delete();
         Log::where('table', 'repairs')->where('ref', $id)->delete();

@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\InventoryTransaction;
 use App\Models\InvoiceItem;
 use App\Models\Log;
+use App\Models\Notification;
 use App\Models\Payment;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
@@ -103,6 +104,8 @@ class PaymentController extends Controller
 
         $this->recomputeInvoice($invoice);
 
+        Notification::syncInvoiceBalance($invoice);
+
         $log = new Log;
         $log->table = 'invoices';
         $log->data = 'Payment has been Created [$' . $data['amount'] . '][' . $data['method'] . '][' . ($data['ref'] ?? '') . ']';
@@ -157,6 +160,7 @@ class PaymentController extends Controller
             $invoice = Invoice::find($payment->invoice);
             if ($invoice) {
                 $this->recomputeInvoice($invoice);
+                Notification::syncInvoiceBalance($invoice);
             }
         }
 
@@ -184,6 +188,7 @@ class PaymentController extends Controller
 
         if ($invoice) {
             $this->recomputeInvoice($invoice);
+            Notification::syncInvoiceBalance($invoice);
         }
 
         return $this->success(null, Lang::get('repair-business.error_payment-has-been-deleted'));

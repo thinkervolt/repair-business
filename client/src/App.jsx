@@ -33,10 +33,13 @@ import LogsList from './pages/logs/LogsList';
 import TrashList from './pages/trash/TrashList';
 import Profile from './pages/users/Profile';
 import UsersList from './pages/users/UsersList';
+import PageTitle from './components/layout/PageTitle';
 
 export default function App() {
     return (
-        <Routes>
+        <>
+            <PageTitle />
+            <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
@@ -152,5 +155,6 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>
         </Routes>
+        </>
     );
 }

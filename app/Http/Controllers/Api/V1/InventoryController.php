@@ -9,6 +9,7 @@ use App\Models\InventoryTransaction;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Log;
+use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\Repair;
 use App\Models\Setting;
@@ -193,6 +194,8 @@ class InventoryController extends Controller
 
         $inventory_product->stock = $this->productStock($inventory_product);
 
+        Notification::syncProductStock($inventory_product);
+
         return $this->success($inventory_product, Lang::get('repair-business.error_inventory-product-and-transaction-has-been-created'), 201);
     }
 
@@ -243,6 +246,8 @@ class InventoryController extends Controller
         $inventory_product->selling_price = $data['selling_price'];
         $inventory_product->save();
 
+        Notification::syncProductStock($inventory_product);
+
         $log = new Log;
         $log->table = 'inventory_products';
         $log->data = 'Inventory Product has been Updated';
@@ -262,6 +267,9 @@ class InventoryController extends Controller
         }
 
         InventoryTransaction::where('product_id', $product->id)->delete();
+
+        Notification::clearFor('view-product', $product->id);
+
         $product->delete();
 
         $log = new Log;
@@ -327,6 +335,11 @@ class InventoryController extends Controller
         $inventory_transaction->quantity = $data['quantity'];
         $inventory_transaction->save();
 
+        $product = InventoryProduct::find($inventory_transaction->product_id);
+        if ($product) {
+            Notification::syncProductStock($product);
+        }
+
         $log = new Log;
         $log->table = 'inventory_transactions';
         $log->data = 'Inventory Transaction has been Updated';
@@ -346,6 +359,11 @@ class InventoryController extends Controller
         }
 
         $transaction->delete();
+
+        $product = InventoryProduct::find($transaction->product_id);
+        if ($product) {
+            Notification::syncProductStock($product);
+        }
 
         $log = new Log;
         $log->table = 'inventory_transactions';
@@ -378,6 +396,8 @@ class InventoryController extends Controller
         $inventory_transaction->purchase_price = $data['purchase_price'];
         $inventory_transaction->quantity = $data['quantity'];
         $inventory_transaction->save();
+
+        Notification::syncProductStock($product);
 
         $log = new Log;
         $log->table = 'inventory_transactions';
@@ -417,6 +437,8 @@ class InventoryController extends Controller
             $inventory_transaction->quantity = 1;
             $inventory_transaction->save();
         }
+
+        Notification::syncProductStock($product);
 
         $log = new Log;
         $log->table = 'inventory_transactions';
@@ -461,6 +483,9 @@ class InventoryController extends Controller
 
         $this->recomputeInvoice($invoice);
 
+        Notification::syncProductStock($product);
+        Notification::syncInvoiceBalance($invoice);
+
         $log = new Log;
         $log->table = 'inventory_transactions';
         $log->data = 'Inventory Transaction has been Created';
@@ -481,12 +506,18 @@ class InventoryController extends Controller
 
         $transaction->delete();
 
+        $product = InventoryProduct::find($transaction->product_id);
+        if ($product) {
+            Notification::syncProductStock($product);
+        }
+
         if ($task === 'invoice') {
             $invoice = Invoice::find($id);
             if (!$invoice) {
                 return $this->error(Lang::get('repair-business.error_not-found'), 404);
             }
             $this->recomputeInvoice($invoice);
+            Notification::syncInvoiceBalance($invoice);
         }
 
         $log = new Log;
@@ -562,6 +593,8 @@ class InventoryController extends Controller
         $payment->save();
 
         $this->recomputeInvoice($invoice);
+
+        Notification::syncProductStock($product);
 
         $log = new Log;
         $log->table = 'invoices';

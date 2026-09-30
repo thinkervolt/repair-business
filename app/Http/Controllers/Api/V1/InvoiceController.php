@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\InvoiceSetting;
 use App\Models\Log;
+use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\Repair;
 use App\Models\RepairItem;
@@ -223,6 +224,8 @@ class InvoiceController extends Controller
 
         $this->recomputeInvoice($invoice);
 
+        Notification::syncInvoiceBalance($invoice);
+
         $log = new Log;
         $log->table = 'invoices';
         $log->data = 'Invoice has been Created';
@@ -327,6 +330,8 @@ class InvoiceController extends Controller
 
         $this->recomputeInvoice($invoice);
 
+        Notification::syncInvoiceBalance($invoice);
+
         $log = new Log;
         $log->table = 'invoices';
         $log->data = 'Invoice has been Updated' . $invoice_log_update;
@@ -348,6 +353,8 @@ class InvoiceController extends Controller
         $invoice->active = 'no';
         $invoice->save();
 
+        Notification::syncInvoiceBalance($invoice);
+
         $log = new Log;
         $log->table = 'invoices';
         $log->data = 'Invoice has been Deleted';
@@ -368,6 +375,8 @@ class InvoiceController extends Controller
 
         $invoice->active = 'yes';
         $invoice->save();
+
+        Notification::syncInvoiceBalance($invoice);
 
         $log = new Log;
         $log->table = 'invoices';
@@ -391,6 +400,8 @@ class InvoiceController extends Controller
         Payment::where('invoice', $id)->delete();
         InventoryTransaction::where('invoice_id', $id)->delete();
         Log::where('table', 'invoices')->where('ref', $id)->delete();
+
+        Notification::clearFor('view-invoice', $id);
 
         $invoice->delete();
 

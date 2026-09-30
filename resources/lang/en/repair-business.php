@@ -337,6 +337,11 @@ return [
     'terms-and-conditions' => 'Terms & Conditions',
     'new-customer-signed-up'=>'New Customer Signed-Up',
 
+    /* notifications */
+    'notification.new-repair' => 'New repair #:id has been created',
+    'notification.unpaid-invoice' => 'Invoice #:id has an unpaid balance of $:amount',
+    'notification.out-of-stock' => 'Product :name is out of stock',
+
     /* months */
     'january' => 'January',
     'february' => 'February',
