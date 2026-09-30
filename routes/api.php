@@ -91,6 +91,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/inventory/repairs/{repair}/products/{product}/sell', [InventoryController::class, 'sellOnRepair'])->middleware(['auth:sanctum', 'api.locale']);
     Route::post('/inventory/invoices/{invoice}/products/{product}/sell', [InventoryController::class, 'sellOnInvoice'])->middleware(['auth:sanctum', 'api.locale']);
     Route::delete('/inventory/{task}/{id}/transactions/{transaction}', [InventoryController::class, 'cancelTransaction'])->middleware(['auth:sanctum', 'api.locale']);
+    Route::put('/inventory/{task}/{id}/transactions/{transaction}', [InventoryController::class, 'updateTransactionQuantity'])->middleware(['auth:sanctum', 'api.locale']);
 
     Route::post('/barcode', [BarcodeController::class, 'scan'])->middleware(['auth:sanctum', 'api.locale']);
     Route::post('/barcode/invoice', [BarcodeController::class, 'scanInvoice'])->middleware(['auth:sanctum', 'api.locale']);

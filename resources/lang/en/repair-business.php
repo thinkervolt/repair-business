@@ -26,6 +26,8 @@ return [
 
     'error_product-is-out-of-stock'=>'Product is out of Stock',
 
+    'error_invoice-has-payments'=>'This invoice already has payments.',
+
     'error_invoice-has-been-created'=>'Invoice has been Created.',
     'error_invoice-has-been-updated'=>'Invoice has been Updated.',
     'error_invoice-has-been-deleted'=>'Invoice has been Deleted.',

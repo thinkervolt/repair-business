@@ -5,6 +5,7 @@ import {
     DollarSign,
     FileText,
     Mail,
+    Minus,
     Pencil,
     Plus,
     Printer,
@@ -209,6 +210,259 @@ function ItemRow({ invoiceId, item, onChanged, notify, confirm }) {
                         <Trash2 className="h-3.5 w-3.5" />
                     </button>
                 </div>
+            </td>
+        </tr>
+    );
+}
+
+function TransactionRow({ invoiceId, transaction, onChanged, notify, confirm, clearNotice }) {
+    const { t } = useI18n();
+    const [editing, setEditing] = useState(false);
+    const [quantity, setQuantity] = useState(String(transaction.quantity));
+    const [saving, setSaving] = useState(false);
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        setQuantity(String(transaction.quantity));
+    }, [transaction.quantity]);
+
+    useEffect(() => {
+        if (editing && inputRef.current) {
+            inputRef.current.focus();
+            inputRef.current.select();
+        }
+    }, [editing]);
+
+    const startEditing = () => {
+        setQuantity(String(transaction.quantity));
+        clearNotice();
+        setEditing(true);
+    };
+
+    const cancel = () => {
+        setQuantity(String(transaction.quantity));
+        setEditing(false);
+    };
+
+    const paymentsConfirm = async ({ paymentsTotal, message }) => {
+        const ok = await confirm({
+            title: t('invoices.qty_confirm_title'),
+            message,
+            tone: 'warning',
+            confirmLabel: t('invoices.qty_confirm_add'),
+            cancelLabel: t('common.cancel'),
+            amount: paymentsTotal,
+        });
+        return ok;
+    };
+
+    const save = async ({ confirmed = false } = {}) => {
+        const value = Number(quantity);
+
+        if (!Number.isInteger(value) || value < 1 || value > 99999) {
+            notify(t('invoices.qty_invalid'), 'error');
+            return;
+        }
+
+        const current = Number(transaction.quantity);
+
+        setSaving(true);
+        try {
+            const { data } = await api.put(
+                `/inventory/invoice/${invoiceId}/transactions/${transaction.id}`,
+                { quantity: value, confirm: confirmed }
+            );
+            notify(data.message);
+            setEditing(false);
+            onChanged();
+        } catch (err) {
+            const payload = (err.response && err.response.data && err.response.data.data) || {};
+
+            if (payload.response === 'invoice-has-payments') {
+                const amount = `$${formatMoney(payload.payments_total || 0)}`;
+                const message =
+                    value > current
+                        ? t('invoices.qty_confirm_body', { qty: value, amount })
+                        : t('invoices.qty_confirm_body_decrease', { qty: value, amount });
+                const ok = await paymentsConfirm({ paymentsTotal: payload.payments_total, message });
+
+                if (ok) {
+                    await save({ confirmed: true });
+                } else {
+                    setEditing(false);
+                }
+
+                return;
+            }
+
+            notify(getApiError(err), 'error');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const remove = async ({ confirmed = false, guardPayments = false } = {}) => {
+        if (!guardPayments) {
+            const ok = await confirm({
+                title: t('common.confirm_title'),
+                message: t('invoices.delete_product_confirm', {
+                    name: transaction.product ? transaction.product.name : `#${transaction.product_id}`,
+                    qty: transaction.quantity,
+                }),
+                confirmLabel: t('common.delete'),
+                cancelLabel: t('common.cancel'),
+            });
+            if (!ok) return;
+        }
+
+        try {
+            const { data } = await api.delete(
+                `/inventory/invoice/${invoiceId}/transactions/${transaction.id}`,
+                { params: { guard_payments: guardPayments ? 1 : 0, confirm: confirmed ? 1 : 0 } }
+            );
+            notify(data.message);
+            onChanged();
+        } catch (err) {
+            const payload = (err.response && err.response.data && err.response.data.data) || {};
+
+            if (payload.response === 'invoice-has-payments') {
+                const ok = await paymentsConfirm({
+                    paymentsTotal: payload.payments_total,
+                    message: t('invoices.qty_confirm_body_delete', {
+                        amount: `$${formatMoney(payload.payments_total || 0)}`,
+                    }),
+                });
+
+                if (ok) {
+                    await remove({ confirmed: true, guardPayments: true });
+                }
+
+                return;
+            }
+
+            notify(getApiError(err), 'error');
+        }
+    };
+
+    const step = (delta) => {
+        const value = Number(quantity);
+        const next = (Number.isInteger(value) ? value : transaction.quantity) + delta;
+        setQuantity(String(Math.max(1, next)));
+    };
+
+    const preview = editing && Number.isInteger(Number(quantity)) && Number(quantity) > 0
+        ? Number(quantity)
+        : transaction.quantity;
+
+    return (
+        <tr className="group border-b border-slate-100 last:border-0">
+            <td className="px-6 py-3">
+                <p className="text-sm font-medium text-slate-800">
+                    {transaction.product ? transaction.product.name : `#${transaction.product_id}`}
+                </p>
+                <span className="text-xs text-slate-400">{t('inventory.product')}</span>
+            </td>
+            <td className="px-6 py-3 text-xs text-slate-400">
+                {transaction.product ? transaction.product.barcode : ''}
+            </td>
+            <td className="px-6 py-3 text-sm text-slate-600">
+                {transaction.selling_price != null ? `$ ${formatMoney(transaction.selling_price)}` : '—'}
+            </td>
+            <td className="px-6 py-3">
+                {editing ? (
+                    <div className="flex items-center gap-1">
+                        <button
+                            type="button"
+                            onClick={() => step(-1)}
+                            disabled={saving || Number(quantity) <= 1}
+                            className="rounded-lg border border-slate-300 p-1 text-slate-500 transition-colors hover:bg-slate-100 disabled:opacity-40"
+                            aria-label="Decrease quantity"
+                        >
+                            <Minus className="h-3 w-3" />
+                        </button>
+                        <Input
+                            ref={inputRef}
+                            type="number"
+                            step="1"
+                            min="1"
+                            value={quantity}
+                            onChange={(e) => setQuantity(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    save();
+                                }
+                                if (e.key === 'Escape') {
+                                    e.preventDefault();
+                                    cancel();
+                                }
+                            }}
+                            className="w-16 text-center"
+                            disabled={saving}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => step(1)}
+                            disabled={saving}
+                            className="rounded-lg border border-slate-300 p-1 text-slate-500 transition-colors hover:bg-slate-100 disabled:opacity-40"
+                            aria-label="Increase quantity"
+                        >
+                            <Plus className="h-3 w-3" />
+                        </button>
+                    </div>
+                ) : (
+                    <span className="text-sm text-slate-600">{transaction.quantity}</span>
+                )}
+            </td>
+            <td className="px-6 py-3 text-right">
+                <p className="text-sm font-medium text-slate-800">
+                    $ {formatMoney(transaction.selling_price * preview)}
+                </p>
+                {editing ? (
+                    <div className="mt-0.5 flex justify-end gap-0.5">
+                        <button
+                            type="button"
+                            onClick={cancel}
+                            disabled={saving}
+                            className={`${iconButton} disabled:opacity-40`}
+                            aria-label={t('common.cancel')}
+                            title={t('common.cancel')}
+                        >
+                            <X className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => save()}
+                            disabled={saving}
+                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-blue-50 hover:text-blue-700 disabled:opacity-40"
+                            aria-label={t('common.save')}
+                            title={t('common.save')}
+                        >
+                            <Save className="h-3.5 w-3.5" />
+                        </button>
+                    </div>
+                ) : (
+                    <div className="mt-0.5 flex justify-end gap-0.5">
+                        <button
+                            type="button"
+                            onClick={startEditing}
+                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-blue-50 hover:text-blue-700"
+                            aria-label={t('invoices.edit_qty')}
+                            title={t('invoices.edit_qty')}
+                        >
+                            <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => remove()}
+                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                            aria-label="Remove product"
+                            title={t('common.delete')}
+                        >
+                            <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                    </div>
+                )}
             </td>
         </tr>
     );
@@ -440,8 +694,8 @@ export default function InvoiceView() {
     const scanInputRef = useRef(null);
     const [pendingScan, setPendingScan] = useState(null);
     const { confirm, confirmElement } = useConfirm();
-    const [pendingRemove, setPendingRemove] = useState(null);
-    const [removing, setRemoving] = useState(false);
+    const { confirm: confirmProduct, confirmElement: productConfirmElement } = useConfirm();
+    const [productNotice, setProductNotice] = useState(null);
     const { setScanHandler } = useScan();
 
     const notify = useCallback((text, tone = 'success') => {
@@ -449,6 +703,12 @@ export default function InvoiceView() {
         setMessageTone(tone);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
+
+    const notifyProduct = useCallback((text, tone = 'success') => {
+        setProductNotice({ text, tone, key: Date.now() });
+    }, []);
+
+    const clearProductNotice = useCallback(() => setProductNotice(null), []);
 
     const load = useCallback(
         (page = logsPage) => {
@@ -613,28 +873,6 @@ export default function InvoiceView() {
         const { code } = pendingScan;
         setPendingScan(null);
         await scanProduct(code, true);
-    };
-
-    const handleCancelTransaction = async (transaction) => {
-        setPendingRemove({ transaction, quantity: String(transaction.quantity) });
-    };
-
-    const submitRemove = async (amount) => {
-        if (!pendingRemove) return;
-        const { transaction } = pendingRemove;
-        setPendingRemove(null);
-        setRemoving(true);
-        try {
-            const { data } = await api.delete(`/inventory/invoice/${id}/transactions/${transaction.id}`, {
-                params: amount > 0 ? { quantity: amount } : {},
-            });
-            notify(data.message);
-            load();
-        } catch (err) {
-            notify(getApiError(err), 'error');
-        } finally {
-            setRemoving(false);
-        }
     };
 
     const handleCreatePayment = async (e) => {
@@ -982,6 +1220,25 @@ export default function InvoiceView() {
                     </div>
                 </div>
 
+                <div className="border-t border-slate-100 px-6 py-3 empty:hidden">
+                    {productNotice && (
+                        <Alert key={productNotice.key} tone={productNotice.tone}>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                                <div className="min-w-0 flex-1">{productNotice.text}</div>
+                                <button
+                                    type="button"
+                                    onClick={() => setProductNotice(null)}
+                                    className="shrink-0 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                                    aria-label="Dismiss"
+                                >
+                                    <X className="h-3.5 w-3.5" />
+                                </button>
+                            </div>
+                        </Alert>
+                    )}
+                    {productConfirmElement}
+                </div>
+
                 {scanOpen && (
                     <form
                         onSubmit={handleScanBarcode}
@@ -1037,71 +1294,6 @@ export default function InvoiceView() {
                     </div>
                 )}
 
-                {pendingRemove && (
-                    <div className="border-t border-slate-100 px-6 py-3">
-                        <Alert tone="warning">
-                            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                                <div className="min-w-0 flex-1">
-                                    <strong>{t('invoices.remove_line_title')}</strong>{' '}
-                                    <span>
-                                        {t('invoices.remove_line_body', {
-                                            name:
-                                                pendingRemove.transaction.product?.name ||
-                                                `#${pendingRemove.transaction.product_id}`,
-                                            qty: pendingRemove.transaction.quantity,
-                                        })}
-                                    </span>
-                                </div>
-                                <label className="flex shrink-0 items-center gap-2 text-sm text-slate-600">
-                                    <span>{t('common.quantity')}</span>
-                                    <Input
-                                        type="number"
-                                        min="1"
-                                        max={pendingRemove.transaction.quantity}
-                                        value={pendingRemove.quantity}
-                                        onChange={(e) =>
-                                            setPendingRemove((p) => ({ ...p, quantity: e.target.value }))
-                                        }
-                                        className="w-20"
-                                    />
-                                </label>
-                                <div className="flex shrink-0 gap-2">
-                                    <Button
-                                        type="button"
-                                        variant="secondary"
-                                        size="sm"
-                                        onClick={() => setPendingRemove(null)}
-                                    >
-                                        {t('common.cancel')}
-                                    </Button>
-                                    <Button
-                                        type="button"
-                                        size="sm"
-                                        loading={removing}
-                                        disabled={
-                                            !Number.isInteger(Number(pendingRemove.quantity)) ||
-                                            Number(pendingRemove.quantity) < 1 ||
-                                            Number(pendingRemove.quantity) > pendingRemove.transaction.quantity
-                                        }
-                                        onClick={() => submitRemove(Number(pendingRemove.quantity))}
-                                    >
-                                        {t('invoices.remove_qty', { qty: pendingRemove.quantity })}
-                                    </Button>
-                                    <Button
-                                        type="button"
-                                        variant="danger"
-                                        size="sm"
-                                        loading={removing}
-                                        onClick={() => submitRemove(pendingRemove.transaction.quantity)}
-                                    >
-                                        {t('invoices.remove_all')}
-                                    </Button>
-                                </div>
-                            </div>
-                        </Alert>
-                    </div>
-                )}
-
                 {items.length === 0 && transactions.length === 0 && !addingItem ? (
                     <EmptyBlock>{t('invoices.empty_items')}</EmptyBlock>
                 ) : (
@@ -1128,36 +1320,15 @@ export default function InvoiceView() {
                                     />
                                 ))}
                                 {transactions.map((tx) => (
-                                    <tr key={tx.id} className="group border-b border-slate-100 last:border-0">
-                                        <td className="px-6 py-3">
-                                            <p className="text-sm font-medium text-slate-800">
-                                                {tx.product ? tx.product.name : `#${tx.product_id}`}
-                                            </p>
-                                            <span className="text-xs text-slate-400">{t('inventory.product')}</span>
-                                        </td>
-                                        <td className="px-6 py-3 text-xs text-slate-400">
-                                            {tx.product ? tx.product.barcode : ''}
-                                        </td>
-                                        <td className="px-6 py-3 text-sm text-slate-600">
-                                            {tx.selling_price != null
-                                                ? `$ ${formatMoney(tx.selling_price)}`
-                                                : '—'}
-                                        </td>
-                                        <td className="px-6 py-3 text-sm text-slate-600">{tx.quantity}</td>
-                                        <td className="px-6 py-3 text-right">
-                                            <p className="text-sm font-medium text-slate-800">
-                                                $ {formatMoney(tx.selling_price * tx.quantity)}
-                                            </p>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleCancelTransaction(tx)}
-                                                className="mt-0.5 rounded-lg p-1.5 text-slate-400 opacity-0 transition-opacity hover:bg-red-50 hover:text-red-600 group-hover:opacity-100 focus:opacity-100"
-                                                aria-label="Remove product"
-                                            >
-                                                <Trash2 className="h-3.5 w-3.5" />
-                                            </button>
-                                        </td>
-                                    </tr>
+                                    <TransactionRow
+                                        key={tx.id}
+                                        invoiceId={invoice.id}
+                                        transaction={tx}
+                                        onChanged={load}
+                                        notify={notifyProduct}
+                                        confirm={confirmProduct}
+                                        clearNotice={clearProductNotice}
+                                    />
                                 ))}
                                 {addingItem && (
                                     <NewItemForm

@@ -15,7 +15,7 @@ trait ApiResponses
         ], $status);
     }
 
-    protected function error(string $message = '', int $status = 400, $errors = null): JsonResponse
+    protected function error(string $message = '', int $status = 400, $errors = null, $data = null): JsonResponse
     {
         $payload = [
             'success' => false,
@@ -24,6 +24,10 @@ trait ApiResponses
 
         if (!is_null($errors)) {
             $payload['errors'] = $errors;
+        }
+
+        if (!is_null($data)) {
+            $payload['data'] = $data;
         }
 
         return response()->json($payload, $status);

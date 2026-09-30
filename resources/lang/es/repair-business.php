@@ -26,6 +26,8 @@ return [
 
     'error_product-is-out-of-stock' => 'El producto está agotado.',
 
+    'error_invoice-has-payments' => 'Esta factura ya tiene pagos.',
+
     'error_invoice-has-been-created' => 'La factura ha sido creada.',
     'error_invoice-has-been-updated' => 'La factura ha sido actualizada.',
     'error_invoice-has-been-deleted' => 'La factura ha sido eliminada.',

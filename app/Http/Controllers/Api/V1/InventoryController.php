@@ -507,6 +507,23 @@ class InventoryController extends Controller
         $quantity = (int)$request->input('quantity');
         $deleted = false;
 
+        if ($task === 'invoice' && $request->boolean('guard_payments') && !$request->boolean('confirm')) {
+            $payments = Payment::where('invoice', $id)->where('active', 'yes');
+
+            if ($payments->exists()) {
+                return $this->error(
+                    Lang::get('repair-business.error_invoice-has-payments'),
+                    422,
+                    null,
+                    [
+                        'response' => 'invoice-has-payments',
+                        'payments_count' => (clone $payments)->count(),
+                        'payments_total' => (float)$payments->sum('amount'),
+                    ]
+                );
+            }
+        }
+
         if ($quantity > 0 && $quantity < $transaction->quantity) {
             $transaction->quantity = $transaction->quantity - $quantity;
             $transaction->save();
@@ -544,6 +561,88 @@ class InventoryController extends Controller
                 ? Lang::get('repair-business.error_transaction-has-been-deleted')
                 : Lang::get('repair-business.error_inventory-transaction-has-been-updated')
         );
+    }
+
+    public function updateTransactionQuantity(Request $request, $task, $id, $transactionId)
+    {
+        $transaction = InventoryTransaction::find($transactionId);
+
+        if (!$transaction) {
+            return $this->error(Lang::get('repair-business.error_not-found'), 404);
+        }
+
+        $data = $request->validate([
+            'quantity' => 'required|integer|min:1|max:99999',
+            'confirm' => 'nullable|boolean',
+        ]);
+
+        if ($task === 'invoice') {
+            $invoice = Invoice::find($id);
+
+            if (!$invoice || (int)$transaction->invoice_id !== (int)$invoice->id) {
+                return $this->error(Lang::get('repair-business.error_not-found'), 404);
+            }
+        } else {
+            $repair = Repair::find($id);
+
+            if (!$repair || (int)$transaction->repair_id !== (int)$repair->id) {
+                return $this->error(Lang::get('repair-business.error_not-found'), 404);
+            }
+        }
+
+        $product = InventoryProduct::find($transaction->product_id);
+        $current = (int)$transaction->quantity;
+        $quantity = (int)$data['quantity'];
+
+        if ($quantity !== $current) {
+            if ($quantity > $current) {
+                if (!$product) {
+                    return $this->error(Lang::get('repair-business.error_not-found'), 404);
+                }
+
+                if ($this->productStock($product) < ($quantity - $current)) {
+                    return $this->error(Lang::get('repair-business.error_product-is-out-of-stock'), 422);
+                }
+            }
+
+            if ($task === 'invoice') {
+                $payments = Payment::where('invoice', $id)->where('active', 'yes');
+
+                if ($payments->exists() && !$request->boolean('confirm')) {
+                    return $this->error(
+                        Lang::get('repair-business.error_invoice-has-payments'),
+                        422,
+                        null,
+                        [
+                            'response' => 'invoice-has-payments',
+                            'payments_count' => (clone $payments)->count(),
+                            'payments_total' => (float)$payments->sum('amount'),
+                        ]
+                    );
+                }
+            }
+
+            $transaction->quantity = $quantity;
+            $transaction->save();
+        }
+
+        if ($product) {
+            Notification::syncProductStock($product);
+        }
+
+        if ($task === 'invoice') {
+            $this->recomputeInvoice($invoice);
+            Notification::syncInvoiceBalance($invoice);
+        }
+
+        $log = new Log;
+        $log->table = 'inventory_transactions';
+        $log->data = 'Inventory Transaction quantity has been Updated';
+        $log->ref = $transactionId;
+        $log->user = Auth::id();
+        $log->save();
+
+        return $this->success($transaction, Lang::get('repair-business.error_inventory-transaction-has-been-updated'));
     }
 
     public function quickSell($productId)

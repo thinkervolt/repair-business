@@ -242,10 +242,18 @@ export const locales = {
         'invoices.delete_invoice_confirm': 'Delete this invoice? It can be restored later from the trash.',
         'invoices.delete_item_confirm': 'Delete this invoice item?',
         'invoices.remove_product_line': 'Remove this product line from the invoice?',
-        'invoices.remove_line_title': 'Remove product from invoice',
-        'invoices.remove_line_body': 'This line has {qty} units of {name}. How many do you want to remove?',
-        'invoices.remove_qty': 'Remove {qty}',
-        'invoices.remove_all': 'Remove all',
+        'invoices.edit_qty': 'Change quantity',
+        'invoices.qty_invalid': 'Quantity must be a whole number of 1 or more.',
+        'invoices.qty_confirm_title': 'Invoice already has payments',
+        'invoices.qty_confirm_body':
+            'This invoice already has {amount} in payments. Raising this line to {qty} units will increase the amount still due. Continue?',
+        'invoices.qty_confirm_body_decrease':
+            'This invoice already has {amount} in payments. Lowering this line to {qty} units will change the amount still due. Continue?',
+        'invoices.qty_confirm_body_delete':
+            'This invoice already has {amount} in payments. Removing this line will change the amount still due. Continue?',
+        'invoices.qty_confirm_add': 'Continue',
+        'invoices.delete_product_confirm':
+            'Remove all {qty} units of {name} from this invoice? The units go back into stock.',
         'invoices.product_added': 'Product added to the invoice.',
         'invoices.scan_added_named': '{name} added to the invoice.',
         'invoices.scan_not_found': 'Product not found ({barcode}). Scan again or check your inventory.',
@@ -694,10 +702,18 @@ export const locales = {
         'invoices.delete_invoice_confirm': '¿Eliminar esta factura? Puede restaurarse más tarde desde la papelera.',
         'invoices.delete_item_confirm': '¿Eliminar este artículo de la factura?',
         'invoices.remove_product_line': '¿Quitar esta línea de producto de la factura?',
-        'invoices.remove_line_title': 'Quitar producto de la factura',
-        'invoices.remove_line_body': 'Esta línea tiene {qty} unidades de {name}. ¿Cuántas desea quitar?',
-        'invoices.remove_qty': 'Quitar {qty}',
-        'invoices.remove_all': 'Quitar todo',
+        'invoices.edit_qty': 'Cambiar cantidad',
+        'invoices.qty_invalid': 'La cantidad debe ser un número entero de 1 o más.',
+        'invoices.qty_confirm_title': 'La factura ya tiene pagos',
+        'invoices.qty_confirm_body':
+            'Esta factura ya tiene {amount} en pagos. Subir esta línea a {qty} unidades aumentará el monto pendiente de pago. ¿Continuar?',
+        'invoices.qty_confirm_body_decrease':
+            'Esta factura ya tiene {amount} en pagos. Bajar esta línea a {qty} unidades cambiará el monto pendiente de pago. ¿Continuar?',
+        'invoices.qty_confirm_body_delete':
+            'Esta factura ya tiene {amount} en pagos. Quitar esta línea cambiará el monto pendiente de pago. ¿Continuar?',
+        'invoices.qty_confirm_add': 'Continuar',
+        'invoices.delete_product_confirm':
+            '¿Quitar todas las {qty} unidades de {name} de esta factura? Las unidades vuelven al inventario.',
         'invoices.product_added': 'Producto agregado a la factura.',
         'invoices.scan_added_named': '{name} agregado a la factura.',
         'invoices.scan_not_found': 'Producto no encontrado ({barcode}). Escanee de nuevo o revise su inventario.',
