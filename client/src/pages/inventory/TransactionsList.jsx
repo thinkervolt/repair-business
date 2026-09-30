@@ -9,9 +9,11 @@ import Input from '../../components/ui/Input';
 import Badge from '../../components/ui/Badge';
 import Alert from '../../components/ui/Alert';
 import Pagination from '../../components/ui/Pagination';
+import { useConfirm } from '../../components/ui/ConfirmAlert';
 
 export default function TransactionsList() {
     const { t } = useI18n();
+    const { confirm, confirmElement } = useConfirm();
     const [data, setData] = useState(null);
     const [search, setSearch] = useState('');
     const [debounced, setDebounced] = useState('');
@@ -40,7 +42,13 @@ export default function TransactionsList() {
     }, [debounced, page]);
 
     const handleDelete = async (tx) => {
-        if (!window.confirm(t('inventory.delete_transaction_confirm'))) return;
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('inventory.delete_transaction_confirm'),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (!ok) return;
         const task = tx.repair_id ? 'repair' : tx.invoice_id ? 'invoice' : null;
         try {
             if (task && (tx.repair_id || tx.invoice_id)) {
@@ -57,6 +65,7 @@ export default function TransactionsList() {
 
     return (
         <div className="space-y-6">
+            {confirmElement}
             <div>
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('inventory.transactions')}</h1>
                 <p className="mt-1 text-sm text-slate-500">

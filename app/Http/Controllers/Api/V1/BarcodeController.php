@@ -13,6 +13,7 @@ use App\Models\Repair;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class BarcodeController extends Controller
 {
@@ -110,29 +111,54 @@ class BarcodeController extends Controller
         $invoice = Invoice::where('id', $data['invoice'])->first();
         $product = InventoryProduct::where('barcode', $data['barcode'])->first();
 
+        if (!$invoice) {
+            return $this->success(['response' => 'invoice-not-found']);
+        }
+
         if (!$product) {
-            return $this->success(['response' => 'barcode-not-found']);
+            return $this->success(['response' => 'barcode-not-found', 'barcode' => $data['barcode']]);
         }
 
         if ($this->productStock($product->id) <= 0) {
-            return $this->success(['response' => 'product-out-stock']);
+            return $this->success([
+                'response' => 'product-out-stock',
+                'product' => ['id' => $product->id, 'name' => $product->name, 'barcode' => $product->barcode],
+            ]);
         }
 
-        $check_transaction = InventoryTransaction::where('product_id', $product->id)->where('invoice_id', $invoice->id)->first();
+        $payments = Payment::where('invoice', $invoice->id)->where('active', 'yes');
 
-        if ($check_transaction) {
-            $inventory_transaction = $check_transaction;
-            $inventory_transaction->quantity = $inventory_transaction->quantity + 1;
-            $inventory_transaction->save();
-        } else {
-            $inventory_transaction = new InventoryTransaction;
-            $inventory_transaction->product_id = $product->id;
-            $inventory_transaction->invoice_id = $invoice->id;
-            $inventory_transaction->transaction = 'sell';
-            $inventory_transaction->selling_price = $product->selling_price;
-            $inventory_transaction->quantity = 1;
-            $inventory_transaction->save();
+        if ($payments->exists() && !$request->boolean('confirm')) {
+            return $this->success([
+                'response' => 'invoice-has-payments',
+                'product' => ['id' => $product->id, 'name' => $product->name, 'barcode' => $product->barcode],
+                'payments_count' => (clone $payments)->count(),
+                'payments_total' => (float)$payments->sum('amount'),
+            ]);
         }
+
+        $inventory_transaction = DB::transaction(function () use ($product, $invoice) {
+            $check_transaction = InventoryTransaction::where('product_id', $product->id)
+                ->where('invoice_id', $invoice->id)
+                ->where('transaction', 'sell')
+                ->lockForUpdate()
+                ->first();
+
+            if ($check_transaction) {
+                $check_transaction->quantity = $check_transaction->quantity + 1;
+                $check_transaction->save();
+                return $check_transaction;
+            }
+
+            $created = new InventoryTransaction;
+            $created->product_id = $product->id;
+            $created->invoice_id = $invoice->id;
+            $created->transaction = 'sell';
+            $created->selling_price = $product->selling_price;
+            $created->quantity = 1;
+            $created->save();
+            return $created;
+        });
 
         $this->recomputeInvoice($invoice);
 
@@ -143,7 +169,18 @@ class BarcodeController extends Controller
         $log->user = Auth::id();
         $log->save();
 
-        return $this->success(['response' => 'new-transaction-created']);
+        return $this->success([
+            'response' => 'new-transaction-created',
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'barcode' => $product->barcode,
+                'selling_price' => $product->selling_price,
+            ],
+            'transaction_id' => $inventory_transaction->id,
+            'quantity' => $inventory_transaction->quantity,
+            'stock' => $this->productStock($product->id),
+        ]);
     }
 
     public function scanRepair(Request $request)

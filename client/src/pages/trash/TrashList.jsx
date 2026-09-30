@@ -7,6 +7,7 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Alert from '../../components/ui/Alert';
+import { useConfirm } from '../../components/ui/ConfirmAlert';
 
 const ACTIONS = {
     customer: { restore: '/customers', destroy: '/customers' },
@@ -81,6 +82,7 @@ function ActionButtons({ kind, id, busy, onRestore, onDestroy }) {
 
 export default function TrashList() {
     const { t } = useI18n();
+    const { confirm, confirmElement } = useConfirm();
     const [customers, setCustomers] = useState(null);
     const [repairs, setRepairs] = useState(null);
     const [invoices, setInvoices] = useState(null);
@@ -139,10 +141,14 @@ export default function TrashList() {
     };
 
     const restore = (kind, id) => act(kind, id, 'restore', 'put');
-    const destroy = (kind, id) => {
-        if (window.confirm(t('trash.destroy_confirm'))) {
-            act(kind, id, 'destroy', 'delete');
-        }
+    const destroy = async (kind, id) => {
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('trash.destroy_confirm'),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (ok) act(kind, id, 'destroy', 'delete');
     };
 
     const loaded = customers !== null;
@@ -150,6 +156,7 @@ export default function TrashList() {
 
     return (
         <div className="space-y-6">
+            {confirmElement}
             <div>
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('nav.trash')}</h1>
                 <p className="mt-1 text-sm text-slate-500">

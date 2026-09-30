@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
     ChevronDown,
@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import api from '../../api/client';
 import { useI18n } from '../../i18n/I18nContext';
+import { useScan } from '../../scan/ScanContext';
 import { formatMoney, formatDate, formatDateTime, getApiError } from '../../utils/format';
 import { toneFor } from '../../utils/colors';
 import Card from '../../components/ui/Card';
@@ -24,6 +25,7 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Badge from '../../components/ui/Badge';
 import Alert from '../../components/ui/Alert';
+import { useConfirm } from '../../components/ui/ConfirmAlert';
 import Pagination from '../../components/ui/Pagination';
 import CustomerPicker from '../../components/customers/CustomerPicker';
 import ProductPicker from '../../components/inventory/ProductPicker';
@@ -46,7 +48,7 @@ function EmptyBlock({ children }) {
     );
 }
 
-function ItemRow({ invoiceId, item, onChanged, notify }) {
+function ItemRow({ invoiceId, item, onChanged, notify, confirm }) {
     const { t } = useI18n();
     const [editing, setEditing] = useState(false);
     const [form, setForm] = useState({
@@ -84,7 +86,13 @@ function ItemRow({ invoiceId, item, onChanged, notify }) {
     };
 
     const handleDelete = async () => {
-        if (!window.confirm(t('invoices.delete_item_confirm'))) return;
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('invoices.delete_item_confirm'),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (!ok) return;
         try {
             const { data } = await api.delete(`/invoices/${invoiceId}/items/${item.id}`);
             notify(data.message);
@@ -429,28 +437,41 @@ export default function InvoiceView() {
     const [logsPage, setLogsPage] = useState(1);
     const [barcode, setBarcode] = useState('');
     const [scanning, setScanning] = useState(false);
+    const scanInputRef = useRef(null);
+    const [pendingScan, setPendingScan] = useState(null);
+    const { confirm, confirmElement } = useConfirm();
+    const { setScanHandler } = useScan();
 
-    const load = (page = logsPage) => {
-        api.get(`/invoices/${id}`, { params: { page } })
-            .then(({ data }) => {
-                setData(data.data);
-                const i = data.data.invoice;
-                setForm({
-                    company_name: i.company_name || '',
-                    company_phone: i.company_phone || '',
-                    company_email: i.company_email || '',
-                    company_address: i.company_address || '',
-                    customer_name: i.customer_name || '',
-                    customer_phone: i.customer_phone || '',
-                    customer_email: i.customer_email || '',
-                    customer_address: i.customer_address || '',
-                    customer_company: i.customer_company || '',
-                    status: i.status != null ? String(i.status) : '',
-                    tax_porcentage: i.tax_porcentage != null ? String(i.tax_porcentage) : '',
-                });
-            })
-            .catch((err) => notify(getApiError(err, 'Could not load this invoice.'), 'error'));
-    };
+    const notify = useCallback((text, tone = 'success') => {
+        setMessage(text);
+        setMessageTone(tone);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
+
+    const load = useCallback(
+        (page = logsPage) => {
+            api.get(`/invoices/${id}`, { params: { page } })
+                .then(({ data }) => {
+                    setData(data.data);
+                    const i = data.data.invoice;
+                    setForm({
+                        company_name: i.company_name || '',
+                        company_phone: i.company_phone || '',
+                        company_email: i.company_email || '',
+                        company_address: i.company_address || '',
+                        customer_name: i.customer_name || '',
+                        customer_phone: i.customer_phone || '',
+                        customer_email: i.customer_email || '',
+                        customer_address: i.customer_address || '',
+                        customer_company: i.customer_company || '',
+                        status: i.status != null ? String(i.status) : '',
+                        tax_porcentage: i.tax_porcentage != null ? String(i.tax_porcentage) : '',
+                    });
+                })
+                .catch((err) => notify(getApiError(err, 'Could not load this invoice.'), 'error'));
+        },
+        [id, logsPage, notify]
+    );
 
     useEffect(() => {
         setMessage('');
@@ -459,12 +480,6 @@ export default function InvoiceView() {
         load(1);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
-
-    const notify = (text, tone = 'success') => {
-        setMessage(text);
-        setMessageTone(tone);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
 
     const handleUpdate = async (e) => {
         e.preventDefault();
@@ -526,26 +541,86 @@ export default function InvoiceView() {
         }
     };
 
+    const scanProduct = useCallback(
+        async (code, confirmed = false) => {
+            const value = String(code == null ? '' : code).trim();
+            if (!value) return;
+
+            setScanning(true);
+            try {
+                const { data } = await api.post('/barcode/invoice', {
+                    invoice: id,
+                    barcode: value,
+                    confirm: confirmed,
+                });
+                const payload = data.data || {};
+                const name = (payload.product && payload.product.name) || '';
+
+                if (payload.response === 'barcode-not-found') {
+                    setPendingScan(null);
+                    notify(t('invoices.scan_not_found', { barcode: value }), 'error');
+                    return;
+                }
+
+                if (payload.response === 'product-out-stock') {
+                    setPendingScan(null);
+                    notify(t('invoices.scan_out_of_stock', { name: name || value }), 'error');
+                    return;
+                }
+
+                if (payload.response === 'invoice-has-payments') {
+                    setPendingScan({ code: value, name, payments: payload.payments_total });
+                    return;
+                }
+
+                setPendingScan(null);
+                notify(
+                    name ? t('invoices.scan_added_named', { name }) : t('invoices.product_added'),
+                    'success'
+                );
+                setBarcode('');
+                load();
+            } catch (err) {
+                setPendingScan(null);
+                notify(getApiError(err), 'error');
+            } finally {
+                setScanning(false);
+                setTimeout(() => {
+                    if (scanInputRef.current) {
+                        scanInputRef.current.focus({ preventScroll: true });
+                        scanInputRef.current.select();
+                    }
+                }, 0);
+            }
+        },
+        [id, t, load, notify]
+    );
+
+    useEffect(() => {
+        setScanHandler(scanProduct);
+        return () => setScanHandler(null);
+    }, [setScanHandler, scanProduct]);
+
     const handleScanBarcode = async (e) => {
         e.preventDefault();
-        if (!barcode.trim()) return;
-        setScanning(true);
-        try {
-            const { data } = await api.post('/barcode/invoice', { invoice: id, barcode: barcode.trim() });
-            const response = data.data ? data.data.response : null;
-            notify(response || t('invoices.product_added'));
-            setBarcode('');
-            setScanOpen(false);
-            load();
-        } catch (err) {
-            notify(getApiError(err), 'error');
-        } finally {
-            setScanning(false);
-        }
+        await scanProduct(barcode);
+    };
+
+    const confirmPendingScan = async () => {
+        if (!pendingScan) return;
+        const { code } = pendingScan;
+        setPendingScan(null);
+        await scanProduct(code, true);
     };
 
     const handleCancelTransaction = async (transaction) => {
-        if (!window.confirm(t('invoices.remove_product_line'))) return;
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('invoices.remove_product_line'),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (!ok) return;
         try {
             const { data } = await api.delete(`/inventory/invoice/${id}/transactions/${transaction.id}`);
             notify(data.message);
@@ -606,7 +681,13 @@ export default function InvoiceView() {
     };
 
     const handleDelete = async () => {
-        if (!window.confirm(t('invoices.delete_invoice_confirm'))) return;
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('invoices.delete_invoice_confirm'),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (!ok) return;
         setDeleting(true);
         try {
             await api.put(`/invoices/${id}/delete`);
@@ -699,6 +780,7 @@ export default function InvoiceView() {
     return (
         <div className="mx-auto max-w-4xl space-y-6">
             {message && <Alert tone={messageTone}>{message}</Alert>}
+            {confirmElement}
 
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -899,6 +981,7 @@ export default function InvoiceView() {
                         className="flex gap-2 border-t border-slate-100 px-6 py-3"
                     >
                         <Input
+                            ref={scanInputRef}
                             value={barcode}
                             onChange={(e) => setBarcode(e.target.value)}
                             placeholder={t('invoices.scan_placeholder')}
@@ -909,6 +992,42 @@ export default function InvoiceView() {
                             {t('common.add')}
                         </Button>
                     </form>
+                )}
+
+                {pendingScan && (
+                    <div className="border-t border-slate-100 px-6 py-3">
+                        <Alert tone="warning">
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                                <div className="min-w-0 flex-1">
+                                    <strong>{t('invoices.scan_confirm_title')}</strong>{' '}
+                                    <span>
+                                        {t('invoices.scan_confirm_body', {
+                                            name: pendingScan.name || pendingScan.code,
+                                            amount: `$${formatMoney(pendingScan.payments || 0)}`,
+                                        })}
+                                    </span>
+                                </div>
+                                <div className="flex shrink-0 gap-2">
+                                    <Button
+                                        type="button"
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={() => setPendingScan(null)}
+                                    >
+                                        {t('common.cancel')}
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        loading={scanning}
+                                        onClick={confirmPendingScan}
+                                    >
+                                        {t('invoices.scan_confirm_add')}
+                                    </Button>
+                                </div>
+                            </div>
+                        </Alert>
+                    </div>
                 )}
 
                 {items.length === 0 && transactions.length === 0 && !addingItem ? (
@@ -933,6 +1052,7 @@ export default function InvoiceView() {
                                         item={item}
                                         onChanged={load}
                                         notify={notify}
+                                        confirm={confirm}
                                     />
                                 ))}
                                 {transactions.map((tx) => (

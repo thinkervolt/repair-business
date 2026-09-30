@@ -9,6 +9,7 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Badge from '../../components/ui/Badge';
 import Alert from '../../components/ui/Alert';
+import { useConfirm } from '../../components/ui/ConfirmAlert';
 
 const METHODS = ['cash', 'card', 'check', 'other'];
 
@@ -21,6 +22,7 @@ const fieldClasses =
 
 export default function PaymentView() {
     const { t } = useI18n();
+    const { confirm, confirmElement } = useConfirm();
     const { id } = useParams();
     const navigate = useNavigate();
     const [data, setData] = useState(null);
@@ -87,7 +89,13 @@ export default function PaymentView() {
     };
 
     const handleDelete = async () => {
-        if (!window.confirm(t('payments.delete_confirm'))) return;
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('payments.delete_confirm'),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (!ok) return;
         setDeleting(true);
         try {
             await api.delete(`/payments/${id}`);
@@ -106,6 +114,7 @@ export default function PaymentView() {
 
     return (
         <div className="mx-auto max-w-2xl space-y-6">
+            {confirmElement}
             {message && <Alert tone={messageTone}>{message}</Alert>}
 
             <div className="flex flex-wrap items-start justify-between gap-3">

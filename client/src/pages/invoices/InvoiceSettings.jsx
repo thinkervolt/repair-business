@@ -9,6 +9,7 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Badge from '../../components/ui/Badge';
 import Alert from '../../components/ui/Alert';
+import { useConfirm } from '../../components/ui/ConfirmAlert';
 
 const COLORS = ['primary', 'secondary', 'success', 'danger', 'warning', 'info'];
 
@@ -21,6 +22,7 @@ const fieldClasses =
 
 export default function InvoiceSettings() {
     const { t } = useI18n();
+    const { confirm, confirmElement } = useConfirm();
     const [statuses, setStatuses] = useState([]);
     const [tax, setTax] = useState('0');
     const [error, setError] = useState('');
@@ -94,7 +96,13 @@ export default function InvoiceSettings() {
     };
 
     const handleDelete = async (setting) => {
-        if (!window.confirm(t('invoices.settings.delete_confirm', { name: setting.name }))) return;
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('invoices.settings.delete_confirm', { name: setting.name }),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (!ok) return;
         try {
             const { data } = await api.delete(`/invoice-settings/${setting.id}`);
             notify(data.message);
@@ -120,6 +128,7 @@ export default function InvoiceSettings() {
 
     return (
         <div className="space-y-6">
+            {confirmElement}
             <div>
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('invoices.settings.title')}</h1>
                 <p className="mt-1 text-sm text-slate-500">

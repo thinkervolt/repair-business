@@ -7,9 +7,11 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Alert from '../../components/ui/Alert';
 import { useAuth } from '../../auth/AuthContext';
+import { useConfirm } from '../../components/ui/ConfirmAlert';
 
 export default function CategoriesList() {
     const { t } = useI18n();
+    const { confirm, confirmElement } = useConfirm();
     const [data, setData] = useState(null);
     const [message, setMessage] = useState('');
     const [messageTone, setMessageTone] = useState('success');
@@ -74,7 +76,13 @@ export default function CategoriesList() {
     };
 
     const handleDelete = async (category) => {
-        if (!window.confirm(t('inventory.categories.delete_confirm', { name: category.name }))) return;
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('inventory.categories.delete_confirm', { name: category.name }),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (!ok) return;
         try {
             const { data } = await api.delete(`/inventory/categories/${category.id}`);
             notify(data.message);
@@ -88,6 +96,7 @@ export default function CategoriesList() {
 
     return (
         <div className="space-y-6">
+            {confirmElement}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('nav.categories')}</h1>

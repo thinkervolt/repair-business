@@ -22,6 +22,7 @@ import Alert from '../../components/ui/Alert';
 import Pagination from '../../components/ui/Pagination';
 import CustomerPicker from '../../components/customers/CustomerPicker';
 import ProductPicker from '../../components/inventory/ProductPicker';
+import { useConfirm } from '../../components/ui/ConfirmAlert';
 
 function FieldError({ error }) {
     return error ? <p className="mt-1 text-xs text-red-600">{error[0]}</p> : null;
@@ -45,6 +46,7 @@ export default function RepairView() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { t } = useI18n();
+    const { confirm, confirmElement } = useConfirm();
     const [data, setData] = useState(null);
     const [form, setForm] = useState(null);
     const [errors, setErrors] = useState({});
@@ -183,7 +185,13 @@ export default function RepairView() {
     };
 
     const handleDelete = async () => {
-        if (!window.confirm(t('repairs.delete_confirm'))) return;
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('repairs.delete_confirm'),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (!ok) return;
         setDeleting(true);
         try {
             await api.put(`/repairs/${id}/delete`);
@@ -202,6 +210,7 @@ export default function RepairView() {
 
     return (
         <div className="space-y-6">
+            {confirmElement}
             {message && <Alert tone={messageTone}>{message}</Alert>}
 
             <div className="flex flex-wrap items-start justify-between gap-3">

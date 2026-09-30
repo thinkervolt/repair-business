@@ -7,8 +7,9 @@ import Card, { CardHeader, CardBody } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Alert from '../../components/ui/Alert';
 import Input from '../../components/ui/Input';
+import { useConfirm } from '../../components/ui/ConfirmAlert';
 
-function UserRow({ user, notify, onChanged, onResetPassword }) {
+function UserRow({ user, notify, onChanged, onResetPassword, confirm }) {
     const { t } = useI18n();
     const [form, setForm] = useState({
         name: user.name,
@@ -34,7 +35,13 @@ function UserRow({ user, notify, onChanged, onResetPassword }) {
     };
 
     const destroy = async () => {
-        if (!window.confirm(t('users.delete_confirm', { name: user.name, email: user.email }))) return;
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('users.delete_confirm', { name: user.name, email: user.email }),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (!ok) return;
         setBusy('delete');
         try {
             const { data } = await api.delete(`/users/${user.id}`);
@@ -351,6 +358,7 @@ function ResetPasswordModal({ user, notify, onChanged, onClose }) {
 
 export default function UsersList() {
     const { t } = useI18n();
+    const { confirm, confirmElement } = useConfirm();
     const [users, setUsers] = useState(null);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
@@ -383,6 +391,7 @@ export default function UsersList() {
 
             {error && <Alert tone="error">{error}</Alert>}
             {message && <Alert tone="success">{message}</Alert>}
+            {confirmElement}
 
             <CreateUserCard notify={notify} onCreated={() => load()} />
 
@@ -423,6 +432,7 @@ export default function UsersList() {
                                         notify={notify}
                                         onChanged={() => load()}
                                         onResetPassword={setResetUser}
+                                        confirm={confirm}
                                     />
                                 ))}
                             </tbody>

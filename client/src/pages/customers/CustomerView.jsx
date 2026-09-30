@@ -10,6 +10,7 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Alert from '../../components/ui/Alert';
 import CustomerFields from '../../components/customers/CustomerFields';
+import { useConfirm } from '../../components/ui/ConfirmAlert';
 
 function EmptyTable() {
     const { t } = useI18n();
@@ -20,6 +21,7 @@ export default function CustomerView() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { t } = useI18n();
+    const { confirm, confirmElement } = useConfirm();
     const [data, setData] = useState(null);
     const [form, setForm] = useState(null);
     const [errors, setErrors] = useState({});
@@ -83,7 +85,13 @@ export default function CustomerView() {
     };
 
     const handleDelete = async () => {
-        if (!window.confirm(t('customers.view.delete_confirm'))) return;
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('customers.view.delete_confirm'),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (!ok) return;
         setDeleting(true);
         try {
             await api.put(`/customers/${id}/delete`);
@@ -102,6 +110,7 @@ export default function CustomerView() {
 
     return (
         <div className="space-y-6">
+            {confirmElement}
             {message && <Alert tone={messageTone}>{message}</Alert>}
 
             <div className="flex flex-wrap items-start justify-between gap-3">

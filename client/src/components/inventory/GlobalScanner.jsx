@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ScanBarcode, PackagePlus, X, Zap } from 'lucide-react';
 import api from '../../api/client';
 import { useI18n } from '../../i18n/I18nContext';
+import { useScan } from '../../scan/ScanContext';
 import Button from '../ui/Button';
 
 const SCAN_GAP_MS = 80;
@@ -10,6 +11,7 @@ const SCAN_GAP_MS = 80;
 export default function GlobalScanner() {
     const navigate = useNavigate();
     const { t } = useI18n();
+    const { dispatchScan } = useScan();
     const [result, setResult] = useState(null);
     const bufferRef = useRef({ code: '', lastTime: 0 });
 
@@ -39,7 +41,9 @@ export default function GlobalScanner() {
                 bufferRef.current.code = '';
                 bufferRef.current.lastTime = 0;
                 if (code.length >= 2) {
-                    submit(code);
+                    if (!dispatchScan(code)) {
+                        submit(code);
+                    }
                 }
                 return;
             }
@@ -67,7 +71,7 @@ export default function GlobalScanner() {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, [result]);
+    }, [result, dispatchScan]);
 
     if (!result) return null;
 

@@ -11,6 +11,7 @@ import Badge from '../../components/ui/Badge';
 import Alert from '../../components/ui/Alert';
 import Pagination from '../../components/ui/Pagination';
 import { useAuth } from '../../auth/AuthContext';
+import { useConfirm } from '../../components/ui/ConfirmAlert';
 
 function stockTone(stock, product) {
     const min = Number(product.min_stock);
@@ -23,6 +24,7 @@ export default function ProductView() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { t } = useI18n();
+    const { confirm, confirmElement } = useConfirm();
     const [data, setData] = useState(null);
     const [restock, setRestock] = useState({ purchase_price: '', quantity: '' });
     const [errors, setErrors] = useState({});
@@ -97,7 +99,13 @@ export default function ProductView() {
     };
 
     const handleDeleteTransaction = async (transaction) => {
-        if (!window.confirm(t('inventory.delete_transaction_confirm'))) return;
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('inventory.delete_transaction_confirm'),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (!ok) return;
         const task = transaction.repair_id ? 'repair' : transaction.invoice_id ? 'invoice' : null;
         try {
             if (task && (transaction.repair_id || transaction.invoice_id)) {
@@ -113,7 +121,13 @@ export default function ProductView() {
     };
 
     const handleDeleteProduct = async () => {
-        if (!window.confirm(t('inventory.delete_product_confirm'))) return;
+        const ok = await confirm({
+            title: t('common.confirm_title'),
+            message: t('inventory.delete_product_confirm'),
+            confirmLabel: t('common.delete'),
+            cancelLabel: t('common.cancel'),
+        });
+        if (!ok) return;
         try {
             await api.delete(`/inventory/products/${id}`);
             navigate('/inventory/products');
@@ -130,6 +144,7 @@ export default function ProductView() {
 
     return (
         <div className="space-y-6">
+            {confirmElement}
             {message && <Alert tone={messageTone}>{message}</Alert>}
 
             <div className="flex flex-wrap items-start justify-between gap-3">
