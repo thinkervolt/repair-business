@@ -440,6 +440,8 @@ export default function InvoiceView() {
     const scanInputRef = useRef(null);
     const [pendingScan, setPendingScan] = useState(null);
     const { confirm, confirmElement } = useConfirm();
+    const [pendingRemove, setPendingRemove] = useState(null);
+    const [removing, setRemoving] = useState(false);
     const { setScanHandler } = useScan();
 
     const notify = useCallback((text, tone = 'success') => {
@@ -614,19 +616,24 @@ export default function InvoiceView() {
     };
 
     const handleCancelTransaction = async (transaction) => {
-        const ok = await confirm({
-            title: t('common.confirm_title'),
-            message: t('invoices.remove_product_line'),
-            confirmLabel: t('common.delete'),
-            cancelLabel: t('common.cancel'),
-        });
-        if (!ok) return;
+        setPendingRemove({ transaction, quantity: String(transaction.quantity) });
+    };
+
+    const submitRemove = async (amount) => {
+        if (!pendingRemove) return;
+        const { transaction } = pendingRemove;
+        setPendingRemove(null);
+        setRemoving(true);
         try {
-            const { data } = await api.delete(`/inventory/invoice/${id}/transactions/${transaction.id}`);
+            const { data } = await api.delete(`/inventory/invoice/${id}/transactions/${transaction.id}`, {
+                params: amount > 0 ? { quantity: amount } : {},
+            });
             notify(data.message);
             load();
         } catch (err) {
             notify(getApiError(err), 'error');
+        } finally {
+            setRemoving(false);
         }
     };
 
@@ -1023,6 +1030,71 @@ export default function InvoiceView() {
                                         onClick={confirmPendingScan}
                                     >
                                         {t('invoices.scan_confirm_add')}
+                                    </Button>
+                                </div>
+                            </div>
+                        </Alert>
+                    </div>
+                )}
+
+                {pendingRemove && (
+                    <div className="border-t border-slate-100 px-6 py-3">
+                        <Alert tone="warning">
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                                <div className="min-w-0 flex-1">
+                                    <strong>{t('invoices.remove_line_title')}</strong>{' '}
+                                    <span>
+                                        {t('invoices.remove_line_body', {
+                                            name:
+                                                pendingRemove.transaction.product?.name ||
+                                                `#${pendingRemove.transaction.product_id}`,
+                                            qty: pendingRemove.transaction.quantity,
+                                        })}
+                                    </span>
+                                </div>
+                                <label className="flex shrink-0 items-center gap-2 text-sm text-slate-600">
+                                    <span>{t('common.quantity')}</span>
+                                    <Input
+                                        type="number"
+                                        min="1"
+                                        max={pendingRemove.transaction.quantity}
+                                        value={pendingRemove.quantity}
+                                        onChange={(e) =>
+                                            setPendingRemove((p) => ({ ...p, quantity: e.target.value }))
+                                        }
+                                        className="w-20"
+                                    />
+                                </label>
+                                <div className="flex shrink-0 gap-2">
+                                    <Button
+                                        type="button"
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={() => setPendingRemove(null)}
+                                    >
+                                        {t('common.cancel')}
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        loading={removing}
+                                        disabled={
+                                            !Number.isInteger(Number(pendingRemove.quantity)) ||
+                                            Number(pendingRemove.quantity) < 1 ||
+                                            Number(pendingRemove.quantity) > pendingRemove.transaction.quantity
+                                        }
+                                        onClick={() => submitRemove(Number(pendingRemove.quantity))}
+                                    >
+                                        {t('invoices.remove_qty', { qty: pendingRemove.quantity })}
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="danger"
+                                        size="sm"
+                                        loading={removing}
+                                        onClick={() => submitRemove(pendingRemove.transaction.quantity)}
+                                    >
+                                        {t('invoices.remove_all')}
                                     </Button>
                                 </div>
                             </div>

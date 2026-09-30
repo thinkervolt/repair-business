@@ -25,6 +25,7 @@ export default function ProductsList() {
     const [debounced, setDebounced] = useState('');
     const [page, setPage] = useState(1);
     const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
     const [selling, setSelling] = useState(null);
     const timer = useRef(null);
 
@@ -47,11 +48,13 @@ export default function ProductsList() {
         setSelling(product.id);
         try {
             const { data } = await api.post(`/inventory/products/${product.id}/quick-sell`);
-            alert(data.message);
+            setMessage(data.message);
+            setError('');
             setPage(1);
             const res = await api.get('/inventory/products', { params: { search: debounced, page: 1 } });
             setData(res.data.data);
         } catch (err) {
+            setMessage('');
             setError(getApiError(err));
         } finally {
             setSelling(null);
@@ -76,6 +79,7 @@ export default function ProductsList() {
             </div>
 
             {error && <Alert tone="error">{error}</Alert>}
+            {message && <Alert tone="success">{message}</Alert>}
 
             <Card className="overflow-hidden">
                 <div className="border-b border-slate-100 p-4 sm:p-5">

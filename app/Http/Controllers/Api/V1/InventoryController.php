@@ -496,7 +496,7 @@ class InventoryController extends Controller
         return $this->success($inventory_transaction, Lang::get('repair-business.error_transaction-has-been-created'), 201);
     }
 
-    public function cancelTransaction($task, $id, $transactionId)
+    public function cancelTransaction(Request $request, $task, $id, $transactionId)
     {
         $transaction = InventoryTransaction::find($transactionId);
 
@@ -504,7 +504,16 @@ class InventoryController extends Controller
             return $this->error(Lang::get('repair-business.error_not-found'), 404);
         }
 
-        $transaction->delete();
+        $quantity = (int)$request->input('quantity');
+        $deleted = false;
+
+        if ($quantity > 0 && $quantity < $transaction->quantity) {
+            $transaction->quantity = $transaction->quantity - $quantity;
+            $transaction->save();
+        } else {
+            $deleted = true;
+            $transaction->delete();
+        }
 
         $product = InventoryProduct::find($transaction->product_id);
         if ($product) {
@@ -522,12 +531,19 @@ class InventoryController extends Controller
 
         $log = new Log;
         $log->table = 'inventory_transactions';
-        $log->data = 'Inventory Transaction has been Deleted';
+        $log->data = $deleted
+            ? 'Inventory Transaction has been Deleted'
+            : 'Inventory Transaction quantity has been Updated';
         $log->ref = $transactionId;
         $log->user = Auth::id();
         $log->save();
 
-        return $this->success(null, Lang::get('repair-business.error_transaction-has-been-deleted'));
+        return $this->success(
+            null,
+            $deleted
+                ? Lang::get('repair-business.error_transaction-has-been-deleted')
+                : Lang::get('repair-business.error_inventory-transaction-has-been-updated')
+        );
     }
 
     public function quickSell($productId)
