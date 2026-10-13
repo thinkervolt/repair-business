@@ -285,12 +285,12 @@
         }
 
         .terms-text {
-            font-size: 10px;
+            font-size: 8px;
             color: #64748b;
             text-align: justify;
             margin: 0;
             padding: 0;
-            line-height: 1.6;
+            line-height: 1.2;
         }
 
         .qrcode {

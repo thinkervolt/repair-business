@@ -792,10 +792,12 @@ export default function InvoiceView() {
         }
     };
 
-    const handleAddPart = async (product) => {
+    const handleAddPart = async (product, quantity = 1) => {
         setPartsOpen(false);
         try {
-            const { data } = await api.post(`/inventory/invoices/${id}/products/${product.id}/sell`);
+            const { data } = await api.post(`/inventory/invoices/${id}/products/${product.id}/sell`, {
+                quantity,
+            });
             notify(data.message);
             load();
         } catch (err) {
@@ -1521,7 +1523,12 @@ export default function InvoiceView() {
                     ))}
             </Card>
 
-            <ProductPicker open={partsOpen} onClose={() => setPartsOpen(false)} onSelect={handleAddPart} />
+            <ProductPicker
+                open={partsOpen}
+                onClose={() => setPartsOpen(false)}
+                onSelect={handleAddPart}
+                quantityEnabled
+            />
             <CustomerPicker
                 open={pickerOpen}
                 onClose={() => setPickerOpen(false)}

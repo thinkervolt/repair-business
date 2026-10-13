@@ -1,18 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Search, X } from 'lucide-react';
+import { Check, Search, X } from 'lucide-react';
 import api from '../../api/client';
 import { useI18n } from '../../i18n/I18nContext';
 import { formatMoney, getApiError } from '../../utils/format';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 
-export default function ProductPicker({ open, onClose, onSelect }) {
+export default function ProductPicker({ open, onClose, onSelect, quantityEnabled = false }) {
     const { t } = useI18n();
     const [search, setSearch] = useState('');
     const [debounced, setDebounced] = useState('');
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [selected, setSelected] = useState(null);
+    const [quantity, setQuantity] = useState('1');
     const timer = useRef(null);
 
     useEffect(() => {
@@ -20,9 +22,34 @@ export default function ProductPicker({ open, onClose, onSelect }) {
             setSearch('');
             setDebounced('');
             setProducts([]);
+            setSelected(null);
+            setQuantity('1');
             return;
         }
     }, [open]);
+
+    const choose = (product) => {
+        if (!quantityEnabled) {
+            onSelect(product);
+            return;
+        }
+        setSelected(product);
+        setQuantity('1');
+    };
+
+    const back = () => {
+        setSelected(null);
+        setQuantity('1');
+    };
+
+    const confirmAdd = () => {
+        const value = Number(quantity);
+        if (value < 1) {
+            setQuantity('1');
+            return;
+        }
+        onSelect(selected, value);
+    };
 
     useEffect(() => {
         clearTimeout(timer.current);
@@ -86,27 +113,75 @@ export default function ProductPicker({ open, onClose, onSelect }) {
                             {t('common.nothing_found')}
                         </div>
                     ) : (
-                        products.map((product) => (
-                            <button
-                                key={product.id}
-                                type="button"
-                                onClick={() => onSelect(product)}
-                                className="flex w-full items-center justify-between gap-3 border-b border-slate-50 px-5 py-3 text-left transition-colors hover:bg-blue-50/60"
-                            >
-                                <span className="min-w-0">
-                                    <span className="block truncate text-sm font-medium text-slate-800">
-                                        {product.name}
+                        products.map((product) => {
+                            const isSelected = quantityEnabled && selected && selected.id === product.id;
+                            return (
+                                <div
+                                    key={product.id}
+                                    role={isSelected ? undefined : 'button'}
+                                    tabIndex={isSelected ? undefined : 0}
+                                    onClick={() => {
+                                        if (!isSelected) choose(product);
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (!isSelected && (e.key === 'Enter' || e.key === ' ')) {
+                                            e.preventDefault();
+                                            choose(product);
+                                        }
+                                    }}
+                                    className="flex w-full items-center justify-between gap-3 border-b border-slate-50 px-5 py-3 text-left transition-colors hover:bg-blue-50/60"
+                                >
+                                    <span className="min-w-0">
+                                        <span className="block truncate text-sm font-medium text-slate-800">
+                                            {product.name}
+                                        </span>
+                                        <span className="block truncate text-xs text-slate-500">
+                                            {product.barcode ? `${product.barcode} · ` : ''}
+                                            {product.category ? product.category.name : ''}
+                                        </span>
                                     </span>
-                                    <span className="block truncate text-xs text-slate-500">
-                                        {product.barcode ? `${product.barcode} · ` : ''}
-                                        {product.category ? product.category.name : ''}
-                                    </span>
-                                </span>
-                                <span className="shrink-0 text-xs text-slate-500">
-                                    {t('picker.stock', { stock: product.stock })}
-                                </span>
-                            </button>
-                        ))
+                                    {isSelected ? (
+                                        <div
+                                            className="flex shrink-0 items-center gap-1.5"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <Input
+                                                type="number"
+                                                step="1"
+                                                min="1"
+                                                value={quantity}
+                                                onChange={(e) => setQuantity(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        confirmAdd();
+                                                    }
+                                                    if (e.key === 'Escape') {
+                                                        e.preventDefault();
+                                                        back();
+                                                    }
+                                                }}
+                                                className="w-16 text-center"
+                                                autoFocus
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={confirmAdd}
+                                                className="rounded-lg border border-slate-300 p-1.5 text-slate-500 transition-colors hover:bg-blue-50 hover:text-blue-700"
+                                                aria-label={t('common.add')}
+                                                title={t('common.add')}
+                                            >
+                                                <Check className="h-3.5 w-3.5" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <span className="shrink-0 text-xs text-slate-500">
+                                            {t('picker.stock', { stock: product.stock })}
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        })
                     )}
                 </div>
 
