@@ -7,6 +7,7 @@ return [
     'error_customer-has-been-deleted'=>'Customer has been Deleted.',
     'error_customer-has-been-restored'=>'Customer has been Restored.',
     'error_customer-has-been-destroyed'=>'Customer has been Destroyed.',
+    'error_not-found'=>'Not found.',
 
     'error_inventory-category-has-been-created'=>'Inventory Category has been Created.',
     'error_inventory-category-has-been-updated'=>'Inventory Category has been Updated.',
@@ -21,8 +22,11 @@ return [
 
     'error_transaction-has-been-deleted'=>'Transactions has been Deleted.',
     'error_transaction-has-been-created'=>'Transactions has been Created.',
+    'transaction-has-been-created'=>'Transaction has been Created.',
 
     'error_product-is-out-of-stock'=>'Product is out of Stock',
+
+    'error_invoice-has-payments'=>'This invoice already has payments.',
 
     'error_invoice-has-been-created'=>'Invoice has been Created.',
     'error_invoice-has-been-updated'=>'Invoice has been Updated.',
@@ -31,6 +35,16 @@ return [
     'error_invoice-has-been-destroyed'=>'Invoice has been Destroyed.',
 
     'error_email-has-been-sent'=>'Email has been Sent.',
+
+    'login-success' => 'You are now logged in.',
+    'logout-success' => 'You are now logged out.',
+    'user-created' => 'User has been Created.',
+    'error_invalid-login' => 'The provided credentials do not match our records.',
+    'error_invalid-verification' => 'The verification link is not valid.',
+    'error_verification-expired' => 'The verification link has expired.',
+    'verification-success' => 'Your email address has been verified.',
+    'email-already-verified' => 'Your email address is already verified.',
+    'error_password-reset-failed' => 'We could not reset your password with the given information.',
 
     'error_something-went-wrong'=>'Something went Wrong.',
 
@@ -46,7 +60,7 @@ return [
 
     'error_payment-has-been-created'=>'Payment has been Created',
     'error_payment-has-been-deleted'=>'Payment has been Deleted',
-    'error_payment-has-been-deleted'=>'Payment has been Updated',
+    'error_payment-has-been-updated'=>'Payment has been Updated',
     'error_payments-have-been-created'=>'Payments have been Created',
 
     'error_you-have-been-signed-up'=> 'You have been Signed-Up',
@@ -59,9 +73,11 @@ return [
 
     'error_current-password-does-not-match'=>'Current Password does not Match.',
     'error_new-password-does-not-match'=>'New Password does not Match.',
+    'error_password-has-been-updated'=>'Password has been Updated.',
 
     'error_user-has-been-updated'=>'User has been Updated.',
     'error_user-has-been-deleted'=>'User has been Deleted.',
+    'error_user-password-reset'=>'User Password has been Reset.',
     'error_admin-only-access'=>'You need to be Administrator to perform this Action.',
 
 
@@ -292,6 +308,7 @@ return [
     'estimate' => 'Estimate',
     'to'=>'To',
     'from' => 'From',
+    'bill-to' => 'Bill to:',
     'subtotal' => 'Subtotal',
     'tax' => 'Tax',
     'total' => 'Total',
@@ -304,6 +321,9 @@ return [
     'check' => 'Check',
     'other' => 'Other',
     'date' => 'Date',
+    'terms' => 'Terms',
+    'ref' => 'Ref',
+    'breakdown' => 'Breakdown',
     'total-cash-regiter' => 'TOTAL CASH REGISTER',
     'total-cash-invoices' => 'TOTAL CASH INVOICES',
     'no-invoice-cash-transactions' => 'NOT-INVOICED CASH TRANSACTIONS',
@@ -318,6 +338,11 @@ return [
     'home' => 'Home',
     'terms-and-conditions' => 'Terms & Conditions',
     'new-customer-signed-up'=>'New Customer Signed-Up',
+
+    /* notifications */
+    'notification.new-repair' => 'New repair #:id has been created',
+    'notification.unpaid-invoice' => 'Invoice #:id has an unpaid balance of $:amount',
+    'notification.out-of-stock' => 'Product :name is out of stock',
 
     /* months */
     'january' => 'January',

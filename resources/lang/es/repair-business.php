@@ -7,6 +7,7 @@ return [
     'error_customer-has-been-deleted' => 'El cliente ha sido eliminado.',
     'error_customer-has-been-restored' => 'El cliente ha sido restaurado.',
     'error_customer-has-been-destroyed' => 'El cliente ha sido destruido.',
+    'error_not-found' => 'No encontrado.',
 
     'error_inventory-category-has-been-created' => 'La categoría de inventario ha sido creada.',
     'error_inventory-category-has-been-updated' => 'La categoría de inventario ha sido actualizada.',
@@ -21,8 +22,11 @@ return [
 
     'error_transaction-has-been-deleted' => 'La transacción ha sido eliminada.',
     'error_transaction-has-been-created' => 'La transacción ha sido creada.',
+    'transaction-has-been-created' => 'La transacción ha sido creada.',
 
     'error_product-is-out-of-stock' => 'El producto está agotado.',
+
+    'error_invoice-has-payments' => 'Esta factura ya tiene pagos.',
 
     'error_invoice-has-been-created' => 'La factura ha sido creada.',
     'error_invoice-has-been-updated' => 'La factura ha sido actualizada.',
@@ -31,6 +35,16 @@ return [
     'error_invoice-has-been-destroyed' => 'La factura ha sido destruida.',
 
     'error_email-has-been-sent' => 'El correo electrónico ha sido enviado.',
+
+    'login-success' => 'Has iniciado sesión.',
+    'logout-success' => 'Has cerrado sesión.',
+    'user-created' => 'El usuario ha sido creado.',
+    'error_invalid-login' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+    'error_invalid-verification' => 'El enlace de verificación no es válido.',
+    'error_verification-expired' => 'El enlace de verificación ha caducado.',
+    'verification-success' => 'Tu dirección de correo electrónico ha sido verificada.',
+    'email-already-verified' => 'Tu dirección de correo electrónico ya está verificada.',
+    'error_password-reset-failed' => 'No pudimos restablecer tu contraseña con la información proporcionada.',
 
     'error_something-went-wrong' => 'Algo salió mal.',
 
@@ -59,9 +73,11 @@ return [
 
     'error_current-password-does-not-match' => 'La contraseña actual no coincide.',
     'error_new-password-does-not-match' => 'La nueva contraseña no coincide.',
+    'error_password-has-been-updated' => 'La contraseña ha sido actualizada.',
 
     'error_user-has-been-updated' => 'El usuario ha sido actualizado.',
     'error_user-has-been-deleted' => 'El usuario ha sido eliminado.',
+    'error_user-password-reset' => 'La contraseña del usuario ha sido restablecida.',
     'error_admin-only-access' => 'Necesitas ser administrador para realizar esta acción.',
 
 
@@ -291,6 +307,7 @@ return [
     'estimate' => 'Estimado',
     'to' => 'A',
     'from' => 'De',
+    'bill-to' => 'Facturar a:',
     'subtotal' => 'Subtotal',
     'tax' => 'Impuesto',
     'total' => 'Total',
@@ -317,6 +334,11 @@ return [
     'home' => 'Inicio',
     'terms-and-conditions' => 'Términos y Condiciones',
     'new-customer-signed-up' => 'Nuevo cliente registrado',
+
+    /* notifications */
+    'notification.new-repair' => 'Se ha creado la reparación #:id',
+    'notification.unpaid-invoice' => 'La factura #:id tiene un saldo pendiente de $:amount',
+    'notification.out-of-stock' => 'El producto :name está agotado',
 
 
     /* months */
